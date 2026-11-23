@@ -1,581 +1,906 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA. transfer-rumour kategorisi confidence confirmed olamaz. Kesinleşmemiş öğenin metninde kesinlik ifadesi geçemez ve çekince ifadesi zorunludur. en.text yalnızca editörün kaynak metinden yazdığı İngilizce cümledir.",
-  "updatedAt": "2026-11-20T16:52:59Z",
+  "updatedAt": "2026-11-23T21:30:00Z",
   "items": [
     {
-      "id": "genclerbirligi-arda-cakmak-aday-olmayacak-2026-11-20",
+      "id": "super-lig-12-hafta-bitti-bjk-gs-derbi-2026-11-23",
+      "category": "fixture",
+      "confidence": "confirmed",
+      "team": "Beşiktaş",
+      "competition": "Süper Lig",
+      "text": "Süper Lig'de 12. hafta sona erdi: Galatasaray 31 puanla lider, Trabzonspor 28, Beşiktaş 25. 13. haftada Beşiktaş-Galatasaray derbisi 30 Kasım Pazartesi 21.00'de Tüpraş Stadyumu'nda (Yeni Şafak/AA)",
+      "en": {
+        "text": "Super Lig matchweek 12 is over: Galatasaray lead on 31 points, Trabzonspor have 28 and Beşiktaş 25. The week 13 Beşiktaş-Galatasaray derby is on Monday 30 November at 21:00 at Tüpraş Stadium (Yeni Şafak/AA)"
+      },
+      "timestamp": "2026-11-23T22:30:00+03:00",
+      "expiresAt": "2026-11-30T23:59:00+03:00",
+      "source": {
+        "name": "Yeni Şafak",
+        "url": "https://www.yenisafak.com/spor/super-lig-12-hafta-tamamlandi-iste-guncel-puan-durumu-ve-mac-sonuclari-4875828"
+      }
+    },
+    {
+      "id": "basaksehir-corum-fk-4-2-bertug-hattrick-2026-11-23",
+      "category": "post-match",
+      "confidence": "confirmed",
+      "team": "Başakşehir",
+      "competition": "Süper Lig",
+      "text": "Başakşehir 4-2 Arca Çorum FK: 0-2'den dönen ev sahibinde Eldor Shomurodov (77) ve oyuna sonradan giren Bertuğ Yıldırım hat-trick yaptı (82, 86, 90+1); Çorum golleri Jesús Ramírez (29) ve Ermin Mahmic (68). Başakşehir 20 puanla 7. sırada (BBC)",
+      "en": {
+        "text": "Başakşehir 4-2 Arca Çorum FK: the hosts came back from 0-2 through Eldor Shomurodov (77) and a Bertuğ Yıldırım hat-trick after he came on as a substitute (82, 86, 90+1); Çorum scored through Jesús Ramírez (29) and Ermin Mahmic (68). Başakşehir moved to 20 points and 7th place (BBC)"
+      },
+      "timestamp": "2026-11-23T21:55:00+03:00",
+      "expiresAt": "2026-11-25T21:55:00+03:00",
+      "source": {
+        "name": "BBC Sport",
+        "url": "https://www.bbc.com/sport/football/live/c9n70g5462djt"
+      }
+    },
+    {
+      "id": "emin-bayram-corum-sakatlik-2026-11-23",
+      "category": "squad-update",
+      "confidence": "confirmed",
+      "team": "Başakşehir",
+      "competition": "Süper Lig",
+      "text": "Başakşehir stoperi Emin Bayram, Çorum FK maçında sağ dizinden sakatlanarak oyuna devam edemedi; 18. dakikada yerine Onur Ergün girdi (Sabah)",
+      "en": {
+        "text": "Başakşehir centre-back Emin Bayram could not continue after a right-knee injury against Çorum FK and was replaced by Onur Ergün in the 18th minute (Sabah)"
+      },
+      "timestamp": "2026-11-23T21:03:00+03:00",
+      "expiresAt": "2026-11-25T21:03:00+03:00",
+      "source": {
+        "name": "Sabah",
+        "url": "https://www.sabah.com.tr/spor/futbol/2026/11/23/emin-bayram-maca-devam-edemedi"
+      }
+    },
+    {
+      "id": "aston-villa-cash-ruggeri-onana-madjo-eksik-2026-11-23",
+      "category": "squad-update",
+      "confidence": "confirmed",
+      "team": "Aston Villa",
+      "competition": "UEFA Şampiyonlar Ligi",
+      "text": "Galatasaray maçı öncesi Aston Villa'da 4 eksik var: Matty Cash sarsıntı protokolü nedeniyle forma giyemeyecek; Matteo Ruggeri ve Amadou Onana'nın sakatlıkları sürüyor, forvet Brian Madjo ise UEFA kadrosunda yer almadığı için oynayamayacak (Cumhuriyet)",
+      "en": {
+        "text": "Aston Villa will be without four players for the Galatasaray match: Matty Cash is out under concussion protocol, Matteo Ruggeri and Amadou Onana remain injured, and forward Brian Madjo cannot play because he is not on the UEFA list (Cumhuriyet)"
+      },
+      "timestamp": "2026-11-23T20:02:00+03:00",
+      "expiresAt": "2026-11-24T23:59:00+03:00",
+      "source": {
+        "name": "Cumhuriyet",
+        "url": "https://www.cumhuriyet.com.tr/spor/galatasaray-maci-oncesi-aston-villa-da-bir-eksik-daha-2558732"
+      }
+    },
+    {
+      "id": "corum-fk-under-sazdagi-sengul-sakatlik-2026-11-23",
+      "category": "squad-update",
+      "confidence": "confirmed",
+      "team": "Çorum FK",
+      "competition": "Süper Lig",
+      "text": "Çorum FK, Başakşehir maçı öncesi Cengiz Ünder, Gökhan Sazdağı ve Arda Hilmi Şengül'ün sakatlık nedeniyle forma giyemeyeceğini açıkladı (Fanatik)",
+      "en": {
+        "text": "Çorum FK said Cengiz Ünder, Gökhan Sazdağı and Arda Hilmi Şengül would miss the Başakşehir match because of injuries (Fanatik)"
+      },
+      "timestamp": "2026-11-23T18:44:00+03:00",
+      "expiresAt": "2026-11-25T18:44:00+03:00",
+      "source": {
+        "name": "Fanatik",
+        "url": "https://www.fanatik.com.tr/corum-fk/cengiz-under-kadrodan-cikarildi-corum-fkda-mac-oncesi-sakatlik-aciklamasi-2645560"
+      }
+    },
+    {
+      "id": "david-raya-dortmund-formasiz-omuz-2026-11-23",
+      "category": "squad-update",
+      "confidence": "confirmed",
+      "team": "Arsenal",
+      "competition": "UEFA Şampiyonlar Ligi",
+      "text": "Arsenal kalecisi David Raya, sol omuz sakatlığı nedeniyle bu akşamki Şampiyonlar Ligi maçında Borussia Dortmund karşısında forma giyemeyecek; teknik direktör Mikel Arteta, sakatlığın ciddi görünmediğini ve ameliyat gerekmediğini belirtti (BBC)",
+      "en": {
+        "text": "Arsenal goalkeeper David Raya will miss tonight's Champions League match against Borussia Dortmund with a left-shoulder injury; manager Mikel Arteta said the injury does not look too serious and that surgery is not needed (BBC)"
+      },
+      "timestamp": "2026-11-23T17:42:00+03:00",
+      "expiresAt": "2026-11-24T23:59:00+03:00",
+      "source": {
+        "name": "BBC Sport",
+        "url": "https://www.bbc.com/sport/football/articles/cjx2rqpr7l9lo"
+      }
+    },
+    {
+      "id": "ismail-jakobs-aston-villa-son-antrenman-2026-11-23",
+      "category": "squad-update",
+      "confidence": "confirmed",
+      "team": "Galatasaray",
+      "competition": "UEFA Şampiyonlar Ligi",
+      "text": "Galatasaray'da sakatlığını atlatan Ismail Jakobs, yarınki Aston Villa maçı için yapılan son antrenmanda yer aldı (Fotomaç)",
+      "en": {
+        "text": "Galatasaray's Ismail Jakobs, who has recovered from injury, took part in the final training session before tomorrow's Aston Villa match (Fotomaç)"
+      },
+      "timestamp": "2026-11-23T14:07:00+03:00",
+      "expiresAt": "2026-11-24T23:59:00+03:00",
+      "source": {
+        "name": "Fotomaç",
+        "url": "https://www.fotomac.com.tr/galatasaray/2026/11/23/okan-buruktan-osimhen-jakobs-ve-sallai-aciklamasi-aston-villa-macinda-forma-giyecekler-mi"
+      }
+    },
+    {
+      "id": "lamine-yamal-sabah-macinda-yok-2026-11-23",
+      "category": "official",
+      "confidence": "confirmed",
+      "team": "Barcelona",
+      "competition": "UEFA Şampiyonlar Ligi",
+      "text": "Barcelona, Lamine Yamal'ın sağ bileğindeki rahatsızlık nedeniyle tedbir amaçlı olarak 25 Kasım'daki Şampiyonlar Ligi maçında Sabah karşısında forma giymeyeceğini; pazar günkü Deportivo de A Coruña maçında hazır olacağını duyurdu (FC Barcelona)",
+      "en": {
+        "text": "Barcelona said Lamine Yamal has discomfort in his right ankle and, as a precaution, will miss the 25 November Champions League match against Sabah, but will be available for Sunday's game against Deportivo de A Coruña (FC Barcelona)"
+      },
+      "timestamp": "2026-11-23T13:01:00+03:00",
+      "expiresAt": "2026-11-25T23:59:00+03:00",
+      "source": {
+        "name": "FC Barcelona",
+        "url": "https://www.fcbarcelona.com/en/football/first-team/news/4613043/lamine-yamal-availability-news"
+      }
+    },
+    {
+      "id": "ucl-24-kasim-2300-yayin-trt-spor-2026-11-23",
+      "category": "fixture",
+      "confidence": "confirmed",
+      "team": "Real Madrid",
+      "competition": "UEFA Şampiyonlar Ligi",
+      "text": "Şampiyonlar Ligi yarın 23.00'te: Real Madrid-PSV, Arsenal-Borussia Dortmund ve Manchester City-Napoli Tabii Spor'da yayımlanacak (TRT Spor/AA)",
+      "en": {
+        "text": "Champions League tomorrow at 23:00 TR: Real Madrid-PSV, Arsenal-Borussia Dortmund and Manchester City-Napoli will be shown on Tabii Spor (TRT Spor/AA)"
+      },
+      "timestamp": "2026-11-23T07:26:00+03:00",
+      "expiresAt": "2026-11-24T23:59:00+03:00",
+      "source": {
+        "name": "TRT Spor",
+        "url": "https://www.trtspor.com.tr/haber/futbol/iste-sampiyonlar-liginin-yayin-ekrani-34204408"
+      }
+    },
+    {
+      "id": "okan-buruk-aston-villa-oncesi-osimhen-yok-2026-11-23",
+      "category": "squad-update",
+      "confidence": "confirmed",
+      "team": "Galatasaray",
+      "competition": "UEFA Şampiyonlar Ligi",
+      "text": "Okan Buruk, Aston Villa maçı öncesi (AA): \"Victor Osimhen, yarın olmayacak. Ismail Jakobs için bir kontrol yapacağız. Şu anda tek aday Jakobs. Antrenmana çıkabilirse kadroda olabilir.\"",
+      "en": {
+        "text": "Okan Buruk ahead of Aston Villa (AA): \"Victor Osimhen will not be available tomorrow. We will run a check on Ismail Jakobs. Right now Jakobs is the only candidate. If he can train, he could be in the squad.\""
+      },
+      "timestamp": "2026-11-23T13:30:00+03:00",
+      "expiresAt": "2026-11-24T23:59:00+03:00",
+      "source": {
+        "name": "Anadolu Ajansı",
+        "url": "https://www.aa.com.tr/tr/spor/-galatasaray-teknik-direktoru-okan-buruk-kazanmak-icin-sahaya-cikiyoruz/4134498"
+      }
+    },
+    {
+      "id": "okan-buruk-hayallerimiz-var-aston-villa-2026-11-23",
+      "category": "manager-quote",
+      "confidence": "confirmed",
+      "team": "Galatasaray",
+      "competition": "UEFA Şampiyonlar Ligi",
+      "text": "Galatasaray Teknik Direktörü Okan Buruk, Aston Villa maçı öncesi (AA): \"Sahamızda oynuyoruz. Öz güvenimiz yerinde. Hayallerimiz var. Bu hayallerimizi gerçekleştirmek için yarın önemli bir fırsatımız var.\"",
+      "en": {
+        "text": "Galatasaray head coach Okan Buruk ahead of Aston Villa (AA): \"We are playing at home. Our confidence is high. We have dreams, and tomorrow is an important chance to make them come true.\""
+      },
+      "timestamp": "2026-11-23T13:31:00+03:00",
+      "expiresAt": "2026-11-24T23:59:00+03:00",
+      "source": {
+        "name": "Anadolu Ajansı",
+        "url": "https://www.aa.com.tr/tr/spor/-galatasaray-teknik-direktoru-okan-buruk-kazanmak-icin-sahaya-cikiyoruz/4134498"
+      }
+    },
+    {
+      "id": "unai-emery-zemin-mazeret-degil-2026-11-23",
+      "category": "manager-quote",
+      "confidence": "confirmed",
+      "team": "Aston Villa",
+      "competition": "UEFA Şampiyonlar Ligi",
+      "text": "Aston Villa Teknik Direktörü Unai Emery, Galatasaray maçı öncesi (Hürriyet): \"Zeminin nasıl olacağı önemli fakat her iki takım için de aynı olacağından bu bir mazeret değil. Zeminin durumu planlarımızı değiştirmeyecek.\"",
+      "en": {
+        "text": "Aston Villa head coach Unai Emery ahead of Galatasaray (Hürriyet): \"How the pitch will be is important, but it is the same for both teams, so it is not an excuse. The state of the pitch will not change our plans.\""
+      },
+      "timestamp": "2026-11-23T16:11:00+03:00",
+      "expiresAt": "2026-11-24T23:59:00+03:00",
+      "source": {
+        "name": "Hürriyet",
+        "url": "https://www.hurriyet.com.tr/sporarena/unai-emery-zeminin-durumu-bir-mazeret-degil-43388212"
+      }
+    },
+    {
+      "id": "fenerbahce-shakhtar-istanbul-etabi-tamam-2026-11-23",
+      "category": "squad-update",
+      "confidence": "confirmed",
+      "team": "Fenerbahçe",
+      "competition": "UEFA Şampiyonlar Ligi",
+      "text": "Fenerbahçe, Shakhtar Donetsk maçı hazırlıklarının İstanbul etabını tamamladı; takım yarın İngiltere'ye uçacak ve son çalışmasını TSİ 21.30'da Stamford Bridge'de yapacak (Fenerbahçe)",
+      "en": {
+        "text": "Fenerbahçe completed the Istanbul leg of their Shakhtar Donetsk preparations; the squad flies to England tomorrow and holds its final session at Stamford Bridge at 21:30 Turkish time (Fenerbahçe)"
+      },
+      "timestamp": "2026-11-23T15:57:00+03:00",
+      "expiresAt": "2026-11-25T23:59:00+03:00",
+      "source": {
+        "name": "Fenerbahçe",
+        "url": "https://www.fenerbahce.org/haberler/futbol/2026/11/hazirliklar-suruyor"
+      }
+    },
+    {
+      "id": "mourinho-psv-oncesi-12-puan-2026-11-23",
+      "category": "manager-quote",
+      "confidence": "confirmed",
+      "team": "Real Madrid",
+      "competition": "UEFA Şampiyonlar Ligi",
+      "text": "Real Madrid Teknik Direktörü José Mourinho, yarınki PSV maçı öncesi (Real Madrid): \"12 puan bize puan tablosunda biraz nefes aldırıyor ama bu, olmak istemediğimiz play-off sırası için.\"",
+      "en": {
+        "text": "Real Madrid head coach José Mourinho ahead of tomorrow's PSV match (Real Madrid): \"The 12 points give us some breathing space in the table, but it's for a play-off spot that we don't want to be in.\""
+      },
+      "timestamp": "2026-11-23T14:00:00+03:00",
+      "expiresAt": "2026-11-24T23:59:00+03:00",
+      "source": {
+        "name": "Real Madrid",
+        "url": "https://www.realmadrid.com/en-US/news/football/first-team/press-conference/mourinho-23-11-2026"
+      }
+    },
+    {
+      "id": "orkun-kokcu-besiktastan-ayrilmak-hedefim-yok-2026-11-23",
+      "category": "player-quote",
+      "confidence": "confirmed",
+      "team": "Beşiktaş",
+      "competition": "Süper Lig",
+      "text": "Beşiktaş kaptanı Orkun Kökçü, geleceği için (Sporx): \"Açıkçası Beşiktaş'tan ayrılmak gibi bir hedefim yok. Tek hedefim burada başarılı olmak ve çok kupa kazanmak.\"",
+      "en": {
+        "text": "Beşiktaş captain Orkun Kökçü on his future (Sporx): \"Honestly, I have no aim of leaving Beşiktaş. My only goal is to succeed here and win lots of trophies.\""
+      },
+      "timestamp": "2026-11-23T17:30:00+03:00",
+      "expiresAt": "2026-11-25T17:30:00+03:00",
+      "source": {
+        "name": "Sporx",
+        "url": "https://www.sporx.com/orkun-kokcu-den-besiktas-taki-gelecegine-dair-aciklama-SXHBQ1183811SXQ"
+      }
+    },
+    {
+      "id": "genclerbirligi-avsar-metehan-nhaga-2026-11-23",
       "category": "club-agenda",
       "confidence": "confirmed",
       "team": "Gençlerbirliği",
       "competition": "Süper Lig",
-      "text": "Gençlerbirliği Başkanı Haydar Arda Çakmak, 22 Kasım Pazar günkü olağanüstü seçimli genel kurulda yeniden aday olmayacağını açıkladı (Hürriyet)",
+      "text": "Gençlerbirliği Başkanı Ali Osman Avşar, Galatasaray'dan kiralık Metehan Baltacı için Radyospor'a (Sporx): \"Galatasaray'la konuşup kulüp de uygun görürse Metehan'ın bonservisini alırız.\" Avşar, Nhaga'yı da kadrolarında görmek istediklerini söyledi",
       "en": {
-        "text": "Gençlerbirliği president Haydar Arda Çakmak said he will not stand again at Sunday's (22 Nov) extraordinary elective general assembly (Hürriyet)"
+        "text": "Gençlerbirliği president Ali Osman Avşar on Metehan Baltacı to Radyospor (Sporx): \"If we talk to Galatasaray and the club agrees, we will buy Metehan outright.\" Avşar said they would also like to have Nhaga in the squad"
       },
-      "timestamp": "2026-11-20T19:46:00+03:00",
-      "expiresAt": "2026-11-22T19:46:00+03:00",
+      "timestamp": "2026-11-23T17:26:00+03:00",
+      "expiresAt": "2026-11-25T17:26:00+03:00",
       "source": {
-        "name": "Hürriyet",
-        "url": "https://www.hurriyet.com.tr/sporarena/genclerbirliginde-haydar-arda-cakmak-yeniden-baskanliga-aday-olmayacak-43385513"
+        "name": "Sporx",
+        "url": "https://www.sporx.com/genclerbirligi-nden-iki-galatasarayli-icin-transfer-mesaji-SXHBQ1183810SXQ"
       }
     },
     {
-      "id": "galatasaray-sallai-jakobs-sakatlik-aciklamasi-2026-11-20",
+      "id": "galatasaray-aston-villa-2045-trt1-2026-11-23",
+      "category": "fixture",
+      "confidence": "confirmed",
+      "team": "Galatasaray",
+      "competition": "UEFA Şampiyonlar Ligi",
+      "text": "Şampiyonlar Ligi 5. hafta: Galatasaray-Aston Villa maçı yarın 20.45'te RAMS Park'ta; karşılaşmayı TRT 1 ve tabii canlı yayımlayacak (TRT Spor/AA)",
+      "en": {
+        "text": "Champions League matchday 5: Galatasaray v Aston Villa tomorrow at 20:45 at RAMS Park, live on TRT 1 and tabii (TRT Spor/AA)"
+      },
+      "timestamp": "2026-11-23T06:30:00+03:00",
+      "expiresAt": "2026-11-24T23:59:00+03:00",
+      "source": {
+        "name": "TRT Spor",
+        "url": "https://www.trtspor.com.tr/haber/futbol/galatasaray-aston-villa-maci-trt-1de-34204004"
+      }
+    },
+    {
+      "id": "galatasaray-aston-villa-eksikler-2026-11-23",
       "category": "squad-update",
       "confidence": "confirmed",
       "team": "Galatasaray",
-      "competition": "Süper Lig",
-      "text": "Galatasaray'ın sakatlık açıklaması: Sallai ve Jakobs'ta orta düzeyde zorlanma tespit edildi, tedavileri başladı; Batrakov, Davinson Sánchez ve Uğurcan takımla çalıştı (Hürriyet)",
+      "competition": "UEFA Şampiyonlar Ligi",
+      "text": "Galatasaray'da Roland Sallai, Ismail Jakobs ve Rafael Leao sakatlıkları nedeniyle yarınki Aston Villa maçında forma giyemeyecek; dizinden ameliyat olan Victor Osimhen'in durumu maç günü belli olacak (TRT Spor/AA)",
       "en": {
-        "text": "Galatasaray injury update: moderate strains found for Sallai and Jakobs, treatment started; Batrakov, Davinson Sánchez and Uğurcan trained with the team (Hürriyet)"
+        "text": "Galatasaray will be without Roland Sallai, Ismail Jakobs and Rafael Leao through injury for tomorrow's Aston Villa match; Victor Osimhen, who had knee surgery, will be assessed on matchday (TRT Spor/AA)"
       },
-      "timestamp": "2026-11-20T16:20:00+03:00",
-      "expiresAt": "2026-11-22T16:20:00+03:00",
+      "timestamp": "2026-11-23T06:30:00+03:00",
+      "expiresAt": "2026-11-24T23:59:00+03:00",
       "source": {
-        "name": "Hürriyet",
-        "url": "https://www.hurriyet.com.tr/sporarena/galatasaraydan-batrakov-davinson-sanchez-sallai-jakobs-ugurcan-cakir-osimhen-ve-leao-icin-sakatlik-aciklamasi-43385281"
+        "name": "TRT Spor",
+        "url": "https://www.trtspor.com.tr/haber/futbol/galatasaray-aston-villa-maci-trt-1de-34204004"
       }
     },
     {
-      "id": "eyupspor-kayyum-donemi-sona-erdi-2026-11-20",
-      "category": "club-agenda",
+      "id": "shakhtar-fenerbahce-25-kasim-trt1-2026-11-23",
+      "category": "fixture",
+      "confidence": "confirmed",
+      "team": "Fenerbahçe",
+      "competition": "UEFA Şampiyonlar Ligi",
+      "text": "Şampiyonlar Ligi 5. hafta: Shakhtar Donetsk-Fenerbahçe maçı 25 Kasım Çarşamba 23.00'te Stamford Bridge'de; karşılaşmayı TRT 1 canlı yayımlayacak (TRT 1, Fenerbahçe)",
+      "en": {
+        "text": "Champions League matchday 5: Shakhtar Donetsk v Fenerbahçe on Wednesday 25 November at 23:00 at Stamford Bridge, live on TRT 1 (TRT 1, Fenerbahçe)"
+      },
+      "timestamp": "2026-11-23T10:40:00+03:00",
+      "expiresAt": "2026-11-25T23:59:00+03:00",
+      "source": {
+        "name": "TRT 1",
+        "url": "https://www.trt1.com.tr/tv/haber-spor/shaktar-donetsk-fenerbahce-or-uefa-sampiyonlar-ligi-grup-maclari"
+      }
+    },
+    {
+      "id": "cska-sofya-trabzonspor-26-kasim-2026-11-23",
+      "category": "fixture",
+      "confidence": "confirmed",
+      "team": "Trabzonspor",
+      "competition": "UEFA Konferans Ligi",
+      "text": "Konferans Ligi 4. hafta: CSKA Sofya-Trabzonspor maçı 26 Kasım Perşembe 23.00'te Sofya'da; karşılaşmayı TRT 1 canlı ve şifresiz yayımlayacak (Sabah)",
+      "en": {
+        "text": "Conference League matchday 4: CSKA Sofia v Trabzonspor on Thursday 26 November at 23:00 in Sofia, live and unencrypted on TRT 1 (Sabah)"
+      },
+      "timestamp": "2026-11-23T09:28:00+03:00",
+      "expiresAt": "2026-11-26T23:59:00+03:00",
+      "source": {
+        "name": "Sabah",
+        "url": "https://www.sabah.com.tr/yasam/cska-sofia-trabzonspor-maci-ne-zaman-saat-kacta-hangi-kanalda-uefa-konferans-ligi-mac-programi-7707478"
+      }
+    },
+    {
+      "id": "besiktas-hapoel-beer-sheva-26-kasim-2026-11-22",
+      "category": "fixture",
+      "confidence": "confirmed",
+      "team": "Beşiktaş",
+      "competition": "UEFA Avrupa Ligi",
+      "text": "Avrupa Ligi 5. hafta: Beşiktaş-Hapoel Beer-Sheva maçı 26 Kasım Perşembe 20.45'te Gürcistan'ın Batum kentindeki Batumi Dinamo Stadyumu'nda; maç TRT 1'de şifresiz yayımlanacak (Fotomaç)",
+      "en": {
+        "text": "Europa League matchday 5: Beşiktaş v Hapoel Beer-Sheva on Thursday 26 November at 20:45 at Batumi Dinamo Stadium in Georgia, unencrypted on TRT 1 (Fotomaç)"
+      },
+      "timestamp": "2026-11-22T23:15:00+03:00",
+      "expiresAt": "2026-11-26T23:59:00+03:00",
+      "source": {
+        "name": "Fotomaç",
+        "url": "https://www.fotomac.com.tr/besiktas/2026/11/22/besiktasin-avrupa-ligi-maci-ne-zaman-hapoel-maci-hangi-gun"
+      }
+    },
+    {
+      "id": "vlahovic-konya-sonrasi-sozleri-2026-11-23",
+      "category": "player-quote",
+      "confidence": "confirmed",
+      "team": "Beşiktaş",
+      "competition": "Süper Lig",
+      "text": "Beşiktaşlı Dusan Vlahovic, Konyaspor maçı sonrası (Fotomaç): \"Goller ve rekorlar güzel. Ancak Beşiktaş olmasa, hocam olmasa, Beşiktaş taraftarı beni sevmese ben bunları yapamazdım. Takım iyi olduğu için ben golleri atıyorum. Önümüzde uzun bir yol var. Beşiktaş için elimden gelen her şeyi yapacağım.\"",
+      "en": {
+        "text": "Beşiktaş striker Dusan Vlahovic after the Konyaspor match (Fotomaç): \"Goals and records are nice. But if it weren't for Beşiktaş, my coach, and the Beşiktaş supporters loving me, I couldn't do these things. I score because the team is good. We have a long road ahead. I will do everything I can for Beşiktaş.\""
+      },
+      "timestamp": "2026-11-23T06:50:00+03:00",
+      "expiresAt": "2026-11-25T06:50:00+03:00",
+      "source": {
+        "name": "Fotomaç",
+        "url": "https://www.fotomac.com.tr/besiktas/2026/11/23/rekortmen-dusan"
+      }
+    },
+    {
+      "id": "galatasaray-aston-villa-hakem-daniel-siebert-2026-11-24",
+      "category": "fixture",
+      "confidence": "confirmed",
+      "team": "Galatasaray",
+      "competition": "UEFA Şampiyonlar Ligi",
+      "text": "Şampiyonlar Ligi 5. hafta: Galatasaray-Aston Villa maçı 24 Kasım Salı RAMS Park'ta; hakem Almanya'dan Daniel Siebert, VAR'da Sören Storks (Sözcü)",
+      "en": {
+        "text": "Champions League matchday 5: Galatasaray v Aston Villa on Tuesday 24 November at RAMS Park; referee Daniel Siebert of Germany, with Sören Storks on VAR (Sözcü)"
+      },
+      "timestamp": "2026-11-22T12:17:00+03:00",
+      "expiresAt": "2026-11-24T23:59:00+03:00",
+      "source": {
+        "name": "Sözcü",
+        "url": "https://www.sozcu.com.tr/galatasaray-aston-villa-macina-alman-hakem-p383421"
+      }
+    },
+    {
+      "id": "atalanta-inter-4-4-2026-11-22",
+      "category": "post-match",
+      "confidence": "confirmed",
+      "team": "Inter",
+      "competition": "Serie A",
+      "text": "Serie A'da Atalanta ile Inter 4-4 berabere kaldı; Inter'de Francesco Pio Esposito 16, 32 ve 52. dakikalarda hat-trick yaptı, Atalanta'ya beraberliği 90+1'de Franck Kessie penaltıyla getirdi. Inter 29 puana yükseldi (Habertürk)",
+      "en": {
+        "text": "Atalanta and Inter drew 4-4 in Serie A; Francesco Pio Esposito scored a hat-trick for Inter (16, 32, 52) and Franck Kessie levelled from the spot in the 91st minute. Inter moved to 29 points (Habertürk)"
+      },
+      "timestamp": "2026-11-23T01:06:00+03:00",
+      "expiresAt": "2026-11-25T01:06:00+03:00",
+      "source": {
+        "name": "Habertürk",
+        "url": "https://www.haberturk.com/spor/atalanta-inter-mac-sonucu-ozeti-ve-golleri-iste-atalanta-inter-maci-detaylari-3929279"
+      }
+    },
+    {
+      "id": "getafe-atletico-madrid-0-3-2026-11-22",
+      "category": "post-match",
+      "confidence": "confirmed",
+      "team": "Atlético Madrid",
+      "competition": "La Liga",
+      "text": "La Liga'da Atlético Madrid, Getafe deplasmanında Alex Baena (10), Johnny Cardoso (30) ve Alejandro Grimaldo'nun (90+2, P) golleriyle 3-0 kazandı ve puanını 31'e yükseltti (Habertürk)",
+      "en": {
+        "text": "Atlético Madrid won 3-0 at Getafe in La Liga with goals from Alex Baena (10), Johnny Cardoso (30) and Alejandro Grimaldo (90+2, pen), moving to 31 points (Habertürk)"
+      },
+      "timestamp": "2026-11-23T01:14:00+03:00",
+      "expiresAt": "2026-11-25T01:14:00+03:00",
+      "source": {
+        "name": "Habertürk",
+        "url": "https://www.haberturk.com/spor/getafe-atletico-madrid-mac-sonucu-ozeti-ve-golleri-ispanya-la-liga-3929281"
+      }
+    },
+    {
+      "id": "milan-frosinone-5-1-2026-11-22",
+      "category": "post-match",
+      "confidence": "confirmed",
+      "team": "Milan",
+      "competition": "Serie A",
+      "text": "Serie A'da Milan, San Siro'da Frosinone'yi 5-1 yendi; goller Gabriele Calvani (KK), Gonçalo Ramos, Ardon Jashari, Alphadjo Cisse ve Christian Pulisic'ten. Milan 27 puanla 4. sıraya yerleşti (Habertürk)",
+      "en": {
+        "text": "Milan beat Frosinone 5-1 at San Siro in Serie A; goals from Gabriele Calvani (og), Gonçalo Ramos, Ardon Jashari, Alphadjo Cisse and Christian Pulisic. Milan are fourth on 27 points (Habertürk)"
+      },
+      "timestamp": "2026-11-23T00:15:00+03:00",
+      "expiresAt": "2026-11-25T00:15:00+03:00",
+      "source": {
+        "name": "Habertürk",
+        "url": "https://www.haberturk.com/spor/milan-frosinone-mac-sonucu-ozeti-ve-golleri-iste-milan-frosinone-maci-detaylari-3929275"
+      }
+    },
+    {
+      "id": "hull-city-brighton-2-0-mcburnie-2026-11-22",
+      "category": "post-match",
+      "confidence": "confirmed",
+      "team": "Hull City",
+      "competition": "Premier Lig",
+      "text": "Acun Ilıcalı'nın takımı Hull City, ligde 8 maçlık galibiyet hasretini Brighton'ı 2-0 yenerek bitirdi; goller 90+2 ve 90+5'te Oliver McBurnie'den. Hull City 14, Brighton 22 puanda (Hürriyet/AA)",
+      "en": {
+        "text": "Acun Ilıcalı's Hull City ended an eight-match winless league run by beating Brighton 2-0, with Oliver McBurnie scoring in the 92nd and 95th minutes. Hull City have 14 points, Brighton 22 (Hürriyet/AA)"
+      },
+      "timestamp": "2026-11-22T19:56:00+03:00",
+      "expiresAt": "2026-11-24T19:56:00+03:00",
+      "source": {
+        "name": "Hürriyet",
+        "url": "https://www.hurriyet.com.tr/sporarena/hull-city-8-maclik-hasreti-mcburnie-ile-bitirdi-43387298"
+      }
+    },
+    {
+      "id": "trabzonspor-eyupspor-1-0-2026-11-22",
+      "category": "post-match",
+      "confidence": "confirmed",
+      "team": "Trabzonspor",
+      "competition": "Süper Lig",
+      "text": "Trabzonspor, Eyüpspor'u Ozan Tufan'ın 5. dakikada attığı golle 1-0 yendi; üst üste 7. galibiyetini alarak puanını 28 yaptı ve zirveyi 3 puan geriden takip ediyor. Eyüpspor 3 puanda kaldı (Hürriyet)",
+      "en": {
+        "text": "Trabzonspor beat Eyüpspor 1-0 with Ozan Tufan's 5th-minute goal; a 7th straight win took them to 28 points, 3 behind the leaders. Eyüpspor stay on 3 points (Hürriyet)"
+      },
+      "timestamp": "2026-11-22T20:52:00+03:00",
+      "expiresAt": "2026-11-24T20:52:00+03:00",
+      "source": {
+        "name": "Hürriyet",
+        "url": "https://www.hurriyet.com.tr/sporarena/trabzonspor-1-0-eyupspor-super-lig-maci-ozeti-43386935"
+      }
+    },
+    {
+      "id": "thomas-reis-yabanci-hoca-seri-rekoru-2026-11-23",
+      "category": "post-match",
+      "confidence": "confirmed",
+      "team": "Trabzonspor",
+      "competition": "Süper Lig",
+      "text": "Thomas Reis, Trabzonspor'la ligde üst üste 7. galibiyetini alarak 1991-92'de 6 maçlık seri yakalayan Urbain Braems'i geride bıraktı; bordo-mavililerin lig tarihinde en uzun galibiyet serisine sahip yabancı teknik direktörü oldu (Fanatik)",
+      "en": {
+        "text": "Thomas Reis made it seven straight league wins with Trabzonspor, passing Urbain Braems' six-match run of 1991-92 to become the foreign coach with the longest winning streak in the club's league history (Fanatik)"
+      },
+      "timestamp": "2026-11-23T07:00:00+03:00",
+      "expiresAt": "2026-11-25T07:00:00+03:00",
+      "source": {
+        "name": "Fanatik",
+        "url": "https://www.fanatik.com.tr/trabzonspor/trabzonsporda-thomas-reis-tarihe-gecti-35-yillik-efsaneyi-geride-birakti-2645438"
+      }
+    },
+    {
+      "id": "thomas-reis-eyupspor-sonrasi-sakatlik-2026-11-22",
+      "category": "manager-quote",
+      "confidence": "confirmed",
+      "team": "Trabzonspor",
+      "competition": "Süper Lig",
+      "text": "Trabzonspor Teknik Direktörü Thomas Reis, Eyüpspor galibiyeti sonrası (Habertürk): \"İkinci yarıdan mutlu değilim. Çok da sakat oyuncumuz var. Onların dönmesini istiyoruz ama Sofya maçına kadar dönen olmayacak.\"",
+      "en": {
+        "text": "Trabzonspor coach Thomas Reis after the Eyüpspor win (Habertürk): \"I am not happy with the second half. We have a lot of injured players. We want them back, but nobody will return before the Sofia game.\""
+      },
+      "timestamp": "2026-11-22T22:23:00+03:00",
+      "expiresAt": "2026-11-24T22:23:00+03:00",
+      "source": {
+        "name": "Habertürk",
+        "url": "https://www.haberturk.com/spor/eyupspor-maci-sonrasi-trabzonspor-da-thomas-reis-ten-sakatlik-aciklamasi-sofya-macina-kadar-donen-olmayacak-3929258"
+      }
+    },
+    {
+      "id": "mustafa-dalci-trabzonspor-sonrasi-2026-11-22",
+      "category": "manager-quote",
       "confidence": "confirmed",
       "team": "Eyüpspor",
       "competition": "Süper Lig",
-      "text": "Eyüpspor'da TMSF kayyum süreci sona erdi; kulüp, Başkan Murat Özkaya ve Asbaşkan Fatih Kulaksız'a iade edildi (Sporx)",
+      "text": "Eyüpspor Teknik Direktörü Mustafa Dalcı, Trabzonspor yenilgisi sonrası (Fanatik): \"Trabzon'a 10 oyuncumuzdan yoksun geldik. U19 takımından oyuncularla buraya geldik. Skora baktığımızda istediğimizi aldığımızı söyleyemeyiz. Ancak oynadığımız oyun gelecek için umut veriyor.\"",
       "en": {
-        "text": "Eyüpspor's TMSF trusteeship has ended; the club was returned to president Murat Özkaya and vice-president Fatih Kulaksız (Sporx)"
+        "text": "Eyüpspor coach Mustafa Dalcı after the Trabzonspor defeat (Fanatik): \"We came to Trabzon without 10 players, with players from the U19 team. We cannot say we got what we wanted from the score, but the way we played gives hope for the future.\""
       },
-      "timestamp": "2026-11-20T15:23:00+03:00",
-      "expiresAt": "2026-11-22T15:23:00+03:00",
-      "source": {
-        "name": "Sporx",
-        "url": "https://www.sporx.com/eyupspor-da-kayyum-donemi-sona-erdi-murat-ozkaya-ve-fatih-kulaksiz-a-iade-edildi-SXHBQ1183447SXQ"
-      }
-    },
-    {
-      "id": "gsb-super-lig-kulupleri-denetim-2026-11-20",
-      "category": "club-agenda",
-      "confidence": "confirmed",
-      "competition": "Süper Lig",
-      "text": "Gençlik ve Spor Bakanlığı müfettişleri, Süper Lig kulüplerini ve spor AŞ'lerini 23 Kasım Pazartesi'den itibaren denetlemeye başlayacak (Hürriyet)",
-      "en": {
-        "text": "Youth and Sports Ministry inspectors will begin auditing Süper Lig clubs and their companies from Monday 23 November (Hürriyet)"
-      },
-      "timestamp": "2026-11-20T15:04:00+03:00",
-      "expiresAt": "2026-11-22T15:04:00+03:00",
-      "source": {
-        "name": "Hürriyet",
-        "url": "https://www.hurriyet.com.tr/sporarena/genclik-ve-spor-bakanliginin-super-lig-kuluplerine-yonelik-denetimi-basliyor-43385139"
-      }
-    },
-    {
-      "id": "fenerbahce-emre-belozoglu-teknik-ekip-2026-11-20",
-      "category": "club-agenda",
-      "confidence": "confirmed",
-      "team": "Fenerbahçe",
-      "competition": "Süper Lig",
-      "text": "Fenerbahçe'de Emre Belözoğlu'nun teknik ekibi belli oldu: İlker Püren 1. yardımcı, Caner Erol 2. yardımcı antrenör (Sporx)",
-      "en": {
-        "text": "Fenerbahçe confirmed Emre Belözoğlu's staff: İlker Püren first assistant, Caner Erol second assistant coach (Sporx)"
-      },
-      "timestamp": "2026-11-20T15:02:00+03:00",
-      "expiresAt": "2026-11-22T15:02:00+03:00",
-      "source": {
-        "name": "Sporx",
-        "url": "https://www.sporx.com/emre-belozoglu-nun-teknik-ekibi-belli-oldu-SXHBQ1183445SXQ"
-      }
-    },
-    {
-      "id": "real-madrid-courtois-2028-2026-11-20",
-      "category": "club-agenda",
-      "confidence": "confirmed",
-      "team": "Real Madrid",
-      "competition": "La Liga",
-      "text": "Belçikalı kaleci Thibaut Courtois, yeni kontratla 30 Haziran 2028'e kadar Real Madrid'de kalacak; kulüp resmî açıklama yaptı (Hürriyet)",
-      "en": {
-        "text": "Belgian goalkeeper Thibaut Courtois will stay at Real Madrid until 30 June 2028 under a new deal, the club announced (Hürriyet)"
-      },
-      "timestamp": "2026-11-20T14:54:00+03:00",
-      "expiresAt": "2026-11-22T14:54:00+03:00",
-      "source": {
-        "name": "Hürriyet",
-        "url": "https://www.hurriyet.com.tr/sporarena/real-madrid-resmen-acikladi-sozlesmesi-2028e-kadar-uzatildi-43385103"
-      }
-    },
-    {
-      "id": "gaziantep-volkan-demirel-ilk-mac-kulube-yok-2026-11-20",
-      "category": "squad-update",
-      "confidence": "confirmed",
-      "team": "Gaziantep FK",
-      "competition": "Süper Lig",
-      "text": "Gaziantep FK'nin yeni teknik direktörü Volkan Demirel, daha önce aldığı ceza nedeniyle yarınki Gençlerbirliği maçında kulübede olamayacak (Sporx)",
-      "en": {
-        "text": "Gaziantep FK's new head coach Volkan Demirel will miss the bench in tomorrow's Gençlerbirliği match due to an earlier suspension (Sporx)"
-      },
-      "timestamp": "2026-11-20T13:00:00+03:00",
-      "expiresAt": "2026-11-22T01:00:00+03:00",
-      "source": {
-        "name": "Sporx",
-        "url": "https://www.sporx.com/gaziantep-fk-de-volkan-demirel-soku-ilk-macinda-kulubede-yok-SXHBQ1183422SXQ"
-      }
-    },
-    {
-      "id": "arsenal-saka-2-ay-yok-2026-11-20",
-      "category": "squad-update",
-      "confidence": "confirmed",
-      "team": "Arsenal",
-      "competition": "Premier League",
-      "text": "Arsenal Teknik Direktörü Mikel Arteta, Bukayo Saka'nın sakatlığı nedeniyle yaklaşık 2 ay forma giyemeyeceğini açıkladı (Sporx)",
-      "en": {
-        "text": "Arsenal manager Mikel Arteta said Bukayo Saka will be out for about two months with injury (Sporx)"
-      },
-      "timestamp": "2026-11-20T12:53:00+03:00",
-      "expiresAt": "2026-11-22T12:53:00+03:00",
-      "source": {
-        "name": "Sporx",
-        "url": "https://www.sporx.com/bukayo-saka-2-ay-sahalardan-uzak-kalacak-SXHBQ1183421SXQ"
-      }
-    },
-    {
-      "id": "besiktas-agbadou-konyaspor-hazir-2026-11-20",
-      "category": "squad-update",
-      "confidence": "reported",
-      "team": "Beşiktaş",
-      "competition": "Süper Lig",
-      "text": "Beşiktaş'ta milli takımdan erken dönen Emmanuel Agbadou'nun durumunun iyi olduğu ve pazar günkü Konyaspor maçında oynayabileceği aktarıldı (Hürriyet)",
-      "en": {
-        "text": "Beşiktaş's Emmanuel Agbadou, sent back early from national duty, is reported fit to play in Sunday's Konyaspor match (Hürriyet)"
-      },
-      "timestamp": "2026-11-20T07:00:00+03:00",
-      "expiresAt": "2026-11-22T07:00:00+03:00",
-      "source": {
-        "name": "Hürriyet",
-        "url": "https://www.hurriyet.com.tr/sporarena/besiktasta-agbadou-oynamaya-hazir-miretti-onay-bekliyor-43384313"
-      }
-    },
-    {
-      "id": "samsunspor-bjelica-galatasaray-kismen-deplasman-2026-11-19",
-      "category": "manager-quote",
-      "confidence": "confirmed",
-      "team": "Samsunspor",
-      "competition": "Süper Lig",
-      "text": "Nenad Bjelica: Galatasaray, Başakşehir Fatih Terim Stadı'nda kısmen deplasmanda oynayacak; 50 binden fazla taraftar önünde oynamayacaklar (Habertürk)",
-      "en": {
-        "text": "Nenad Bjelica: Galatasaray will partly be playing away at Başakşehir Fatih Terim Stadium, without 50,000+ fans behind them (Habertürk)"
-      },
-      "timestamp": "2026-11-19T16:09:00+03:00",
-      "expiresAt": "2026-11-21T23:59:00+03:00",
-      "source": {
-        "name": "Habertürk",
-        "url": "https://www.haberturk.com/spor/samsunspor-teknik-direktoru-nenad-bjelica-galatasaray-kismen-deplasmanda-oynayacak-3928556"
-      }
-    },
-    {
-      "id": "gokhan-tore-madalya-iddiasi-yalanlama-2026-11-20",
-      "category": "player-quote",
-      "confidence": "confirmed",
-      "team": "Beşiktaş",
-      "text": "Gökhan Töre, şampiyonluk madalyalarını sattığı iddialarını reddetti ve hukuki süreç başlatacağını açıkladı (Fanatik)",
-      "en": {
-        "text": "Gökhan Töre denied claims that he sold his championship medals and said he will take legal action (Fanatik)"
-      },
-      "timestamp": "2026-11-20T06:59:00+03:00",
-      "expiresAt": "2026-11-22T06:59:00+03:00",
+      "timestamp": "2026-11-22T22:54:00+03:00",
+      "expiresAt": "2026-11-24T22:54:00+03:00",
       "source": {
         "name": "Fanatik",
-        "url": "https://www.fanatik.com.tr/besiktas/gokhan-toreden-sampiyonluk-madalyalarini-sattigi-iddialarina-sert-yanit-hukuki-surec-baslatiyor-2645120"
+        "url": "https://www.fanatik.com.tr/eyupspor/eyupspor-teknik-direktoru-mustafa-dalci-direnc-gostermek-zor-2645430"
       }
     },
     {
-      "id": "galatasaray-ozbek-okan-buruk-beraber-gideriz-2026-11-20",
-      "category": "club-agenda",
-      "confidence": "confirmed",
-      "team": "Galatasaray",
-      "competition": "Süper Lig",
-      "text": "Dursun Özbek: Okan Buruk'la beraber geldik, beraber gideriz; görev sürem Mayıs 2028'e kadar, teknik direktörümüz Okan Buruk'tur (Sporx/Türkiye Gazetesi)",
-      "en": {
-        "text": "Dursun Özbek: we came with Okan Buruk and will leave together; my term runs to May 2028 and Okan Buruk is our coach (Sporx/Türkiye Gazetesi)"
-      },
-      "timestamp": "2026-11-20T07:16:00+03:00",
-      "expiresAt": "2026-11-22T07:16:00+03:00",
-      "source": {
-        "name": "Sporx",
-        "url": "https://www.sporx.com/futbol/superlig/galatasaray/dursun-ozbek-ten-okan-buruk-ve-secim-aciklamasi-SXGLQ81283SXQ"
-      }
-    },
-    {
-      "id": "galatasaray-ugurcan-cakir-takimla-calisti-2026-11-19",
-      "category": "squad-update",
-      "confidence": "confirmed",
-      "team": "Galatasaray",
-      "competition": "Süper Lig",
-      "text": "Galatasaray'da Uğurcan Çakır, Samsunspor maçı hazırlıklarında takımla birlikte çalıştı (Hürriyet)",
-      "en": {
-        "text": "Galatasaray's Uğurcan Çakır trained with the squad ahead of the Samsunspor match (Hürriyet)"
-      },
-      "timestamp": "2026-11-19T22:28:00+03:00",
-      "expiresAt": "2026-11-21T23:59:00+03:00",
-      "source": {
-        "name": "Hürriyet",
-        "url": "https://www.hurriyet.com.tr/sporarena/galatasaraya-ugurcan-cakir-mujdesi-43384380"
-      }
-    },
-    {
-      "id": "ertugrul-dogan-yayin-ihalesi-premier-lig-kalitesi-2026-11-19",
-      "category": "club-agenda",
-      "confidence": "confirmed",
-      "competition": "Süper Lig",
-      "text": "Ertuğrul Doğan: Yayın ihalesinde 500 milyon dolar hedefine yeniden ulaşılmalı, yayınlar Premier Lig ayarında olmalı; çalışmamızı TFF'ye sunduk (TRT Spor)",
-      "en": {
-        "text": "Ertuğrul Doğan: the broadcast tender must again reach the $500m target and coverage should match Premier League quality; proposals sent to TFF (TRT Spor)"
-      },
-      "timestamp": "2026-11-19T21:19:00+03:00",
-      "expiresAt": "2026-11-21T21:19:00+03:00",
-      "source": {
-        "name": "TRT Spor",
-        "url": "https://www.trtspor.com.tr/haber/futbol/ertugrul-dogandan-yayin-ihalesi-aciklamasi-34151988"
-      }
-    },
-    {
-      "id": "man-utd-pochettino-ilk-mesaj-2026-11-19",
-      "category": "manager-quote",
-      "confidence": "confirmed",
-      "competition": "Premier Lig",
-      "text": "Manchester United'ın yeni teknik direktörü Mauricio Pochettino, kulüp medyasına ilk mesajında 'Elimizdeki oyuncuları sevmeliyiz' dedi (Sporx)",
-      "en": {
-        "text": "Manchester United's new head coach Mauricio Pochettino told club media in his first message: 'We must love the players we have' (Sporx)"
-      },
-      "timestamp": "2026-11-19T20:11:00+03:00",
-      "expiresAt": "2026-11-21T20:11:00+03:00",
-      "source": {
-        "name": "Sporx",
-        "url": "https://www.sporx.com/pochettino-dan-manu-ya-ilk-mesaj-oyuncularimizi-sevmeliyiz-SXHBQ1183347SXQ"
-      }
-    },
-    {
-      "id": "fenerbahce-guendouzi-emre-belozoglu-2026-11-19",
+      "id": "ozan-tufan-milli-takim-sergen-yalcin-2026-11-22",
       "category": "player-quote",
       "confidence": "confirmed",
-      "team": "Fenerbahçe",
+      "team": "Trabzonspor",
       "competition": "Süper Lig",
-      "text": "Guendouzi: Emre Belözoğlu antrenmanlarda bana sürekli tavsiye veriyor; Kocaelispor maçı zor olacak (Anadolu Ajansı)",
+      "text": "Trabzonsporlu Ozan Tufan, milli takıma çağrılmaması için (Fanatik): \"Haksızlık edildiğini düşünmüyorum. Sonuçta benim gibi A Milli Takım formasını hak eden bir sürü futbolcu var. Sergen Hoca'ya da bu konuda saygı duyuyorum.\"",
       "en": {
-        "text": "Guendouzi: Emre Belözoğlu keeps giving me advice in training; the Kocaelispor match will be tough (Anadolu Agency)"
+        "text": "Trabzonspor's Ozan Tufan on not being called up to the national team (Fanatik): \"I don't think I was treated unfairly. There are lots of players like me who deserve the national team shirt. I respect Sergen Hoca on this.\""
       },
-      "timestamp": "2026-11-19T19:32:00+03:00",
-      "expiresAt": "2026-11-21T19:32:00+03:00",
-      "source": {
-        "name": "Anadolu Ajansı",
-        "url": "https://www.aa.com.tr/tr/spor/fenerbahcenin-fransiz-futbolcusu-matteo-guendouziden-emre-belozoglu-vurgusu/4131282"
-      }
-    },
-    {
-      "id": "ekvador-perlaza-hakeme-tas-8-yil-men-2026-11-19",
-      "category": "club-agenda",
-      "confidence": "confirmed",
-      "text": "Ekvador Futbol Federasyonu, 3. Lig maçında yardımcı hakeme taş atan Jhon Perlaza'ya 8 yıl men cezası verdi; hakem ameliyat oldu (Sporx)",
-      "en": {
-        "text": "Ecuador's football federation banned Jhon Perlaza for 8 years for hitting an assistant referee with a stone in a third-tier match (Sporx)"
-      },
-      "timestamp": "2026-11-19T20:44:00+03:00",
-      "expiresAt": "2026-11-21T20:44:00+03:00",
-      "source": {
-        "name": "Sporx",
-        "url": "https://www.sporx.com/hakeme-tas-atan-futbolcuya-8-yil-men-SXHBQ1183349SXQ"
-      }
-    },
-    {
-      "id": "super-lig-12-hafta-hakemleri-2026-11-19",
-      "category": "club-agenda",
-      "confidence": "confirmed",
-      "competition": "Süper Lig",
-      "text": "Süper Lig 12. hafta hakemleri: Galatasaray-Samsunspor Ali Şansalan, Kocaelispor-Fenerbahçe Kadir Sağlam, Konyaspor-Beşiktaş Çağdaş Altay (Hürriyet)",
-      "en": {
-        "text": "Referees named for Süper Lig week 12: Galatasaray-Samsunspor Ali Şansalan, Kocaelispor-Fenerbahçe Kadir Sağlam, Konyaspor-Beşiktaş Çağdaş Altay (Hürriyet)"
-      },
-      "timestamp": "2026-11-19T13:36:00+03:00",
-      "expiresAt": "2026-11-22T23:59:00+03:00",
-      "source": {
-        "name": "Hürriyet",
-        "url": "https://www.hurriyet.com.tr/sporarena/super-ligde-12-haftanin-hakemleri-aciklandi-43383745"
-      }
-    },
-    {
-      "id": "galatasaray-ic-saha-yenilmezlik-rekoru-2026-11-19",
-      "category": "club-agenda",
-      "confidence": "confirmed",
-      "team": "Galatasaray",
-      "competition": "Süper Lig",
-      "text": "Galatasaray, 21 Kasım'da Samsunspor'a kaybetmezse ligdeki iç saha yenilmezlik serisini 42 maça çıkararak kulüp rekoru kıracak (Hürriyet/AA)",
-      "en": {
-        "text": "If Galatasaray avoid defeat to Samsunspor on 21 Nov, their league home unbeaten run reaches a club-record 42 matches (Hürriyet/AA)"
-      },
-      "timestamp": "2026-11-19T13:37:00+03:00",
-      "expiresAt": "2026-11-21T23:59:00+03:00",
-      "source": {
-        "name": "Hürriyet",
-        "url": "https://www.hurriyet.com.tr/sporarena/galatasaray-rekor-icin-samsunspor-karsisina-cikacak-43383744"
-      }
-    },
-    {
-      "id": "real-madrid-tchouameni-2032-2026-11-19",
-      "category": "club-agenda",
-      "confidence": "confirmed",
-      "competition": "LaLiga",
-      "text": "Real Madrid, Aurelien Tchouameni'nin sözleşmesini 2032'ye kadar uzattığını duyurdu (Hürriyet)",
-      "en": {
-        "text": "Real Madrid announced Aurelien Tchouameni's contract has been extended until 2032 (Hürriyet)"
-      },
-      "timestamp": "2026-11-19T16:33:00+03:00",
-      "expiresAt": "2026-11-21T16:33:00+03:00",
-      "source": {
-        "name": "Hürriyet",
-        "url": "https://www.hurriyet.com.tr/sporarena/real-madrid-tchouameninin-sozlesmesini-uzatti-43384073"
-      }
-    },
-    {
-      "id": "hakem-zorbay-kucuk-sahalara-donuyor-2026-11-19",
-      "category": "club-agenda",
-      "confidence": "confirmed",
-      "text": "Bahis soruşturması nedeniyle yaklaşık 1 yıldır maç alamayan hakem Zorbay Küçük, TFF 2. Lig'deki Menemen FK-Şanlıurfaspor maçıyla sahalara dönüyor (Sporx)",
-      "en": {
-        "text": "Referee Zorbay Küçük, without a match for about a year due to the betting probe, returns with Menemen FK-Şanlıurfaspor in TFF 2. Lig (Sporx)"
-      },
-      "timestamp": "2026-11-19T18:56:00+03:00",
-      "expiresAt": "2026-11-21T18:56:00+03:00",
-      "source": {
-        "name": "Sporx",
-        "url": "https://www.sporx.com/zorbay-kucuk-sahalara-donuyor-yonetecegi-mac-belli-oldu-SXHBQ1183344SXQ"
-      }
-    },
-    {
-      "id": "konyaspor-demirbag-eksik-besiktas-2026-11-19",
-      "category": "squad-update",
-      "confidence": "confirmed",
-      "team": "Konyaspor",
-      "competition": "Süper Lig",
-      "text": "Konyaspor Basın Sözcüsü Cengiz Yönet (NTV Spor): Beşiktaş maçı öncesi tek eksik Adil Demirbağ; \"İnancımız bu karşılaşmadan puanlarla ayrılacağımız yönünde\"",
-      "en": {
-        "text": "Konyaspor spokesperson Cengiz Yönet (NTV Spor): Adil Demirbağ is the only absentee before the Beşiktaş match; \"İnancımız bu karşılaşmadan puanlarla ayrılacağımız yönünde\""
-      },
-      "timestamp": "2026-11-19T13:27:00+03:00",
-      "expiresAt": "2026-11-21T13:27:00+03:00",
-      "source": {
-        "name": "NTV Spor",
-        "url": "https://www.ntvspor.net/futbol/galeri-konyasporda-besiktas-maci-oncesi-takimdaki-tek-eksik-duyuruldu-433247"
-      }
-    },
-    {
-      "id": "frosinone-castagnini-kvernadze-2026-11-19",
-      "category": "club-agenda",
-      "confidence": "confirmed",
-      "team": "Fenerbahçe",
-      "competition": "Süper Lig",
-      "text": "Frosinone sportif direktörü Renzo Castagnini, Kvernadze için (NTV): \"Oyuncu satmamıza gerek yok. Ocak ayında istediklerini sorabilirler ancak durum değişmeyecek\"",
-      "en": {
-        "text": "Frosinone sporting director Renzo Castagnini, on Kvernadze (NTV): \"Oyuncu satmamıza gerek yok. Ocak ayında istediklerini sorabilirler ancak durum değişmeyecek\""
-      },
-      "timestamp": "2026-11-19T13:06:00+03:00",
-      "expiresAt": "2026-11-21T13:06:00+03:00",
-      "source": {
-        "name": "NTV",
-        "url": "https://www.ntv.com.tr/sporskor/fenerbahce-istedi-resmi-aciklama-yapildi-ocak-ayinda-sorabilirler-1751613"
-      }
-    },
-    {
-      "id": "galatasaray-leao-derbi-yok-2026-11-19",
-      "category": "squad-update",
-      "confidence": "reported",
-      "team": "Galatasaray",
-      "competition": "Süper Lig",
-      "text": "Sözcü'ye göre Galatasaray'da Rafael Leao, 30 Kasım'daki Beşiktaş derbisi ile Samsunspor ve Aston Villa maçlarında yok; dönüş için Rizespor maçı hedefleniyor",
-      "en": {
-        "text": "According to Sözcü, Galatasaray's Rafael Leao will miss the 30 November Beşiktaş derby plus the Samsunspor and Aston Villa matches; return is targeted for the Rizespor game"
-      },
-      "timestamp": "2026-11-19T12:32:00+03:00",
-      "expiresAt": "2026-11-21T12:32:00+03:00",
-      "source": {
-        "name": "Sözcü",
-        "url": "https://www.sozcu.com.tr/galatasaraya-kotu-haber-derbide-oynamayacak-p382735"
-      }
-    },
-    {
-      "id": "fifa-baskanlik-secimi-uc-aday-2026-11-19",
-      "category": "official",
-      "confidence": "confirmed",
-      "text": "FIFA: 18 Mart 2027'de Rabat'taki kongrede yapılacak başkanlık seçimi için üç aday başvurusu alındı: Philippe Diallo, Gianni Infantino ve Kohzo Tashima",
-      "en": {
-        "text": "FIFA has received three candidatures for the 18 March 2027 presidential election at the Congress in Rabat: Philippe Diallo, Gianni Infantino and Kohzo Tashima"
-      },
-      "timestamp": "2026-11-19T09:00:00+01:00",
-      "expiresAt": "2026-11-21T09:00:00+01:00",
-      "source": {
-        "name": "FIFA",
-        "url": "https://inside.fifa.com/organisation/media-releases/three-candidatures-for-next-years-presidential-election"
-      }
-    },
-    {
-      "id": "galatasaray-ozbek-ara-transfer-2026-11-19",
-      "category": "club-agenda",
-      "confidence": "reported",
-      "team": "Galatasaray",
-      "competition": "Süper Lig",
-      "text": "TRT Spor'a göre Galatasaray'da ara transfer dönemini Başkan Dursun Özbek yönetecek; Maruf Güneş ve Eray Yazgan'ın da süreçte kilit isimler olması bekleniyor",
-      "en": {
-        "text": "According to TRT Spor, President Dursun Özbek will lead Galatasaray's January window, with Maruf Güneş and Eray Yazgan also expected to be key figures"
-      },
-      "timestamp": "2026-11-19T08:46:00+03:00",
-      "expiresAt": "2026-11-21T08:46:00+03:00",
-      "source": {
-        "name": "TRT Spor",
-        "url": "https://www.trtspor.com.tr/haber/futbol/galatasarayin-transfer-plani-34145176"
-      }
-    },
-    {
-      "id": "besiktas-trossard-kart-sinirinda-2026-11-19",
-      "category": "squad-update",
-      "confidence": "reported",
-      "team": "Beşiktaş",
-      "competition": "Süper Lig",
-      "text": "Sözcü'ye göre Beşiktaş'ta 3 sarı kartı olan Trossard, 22 Kasım'daki Konyaspor maçında kart görürse Galatasaray derbisinde cezalı duruma düşecek",
-      "en": {
-        "text": "According to Sözcü, Beşiktaş's Trossard, on 3 yellow cards, will be suspended for the Galatasaray derby if booked at Konyaspor on 22 November"
-      },
-      "timestamp": "2026-11-19T08:49:00+03:00",
-      "expiresAt": "2026-11-21T08:49:00+03:00",
-      "source": {
-        "name": "Sözcü",
-        "url": "https://www.sozcu.com.tr/besiktas-ta-trossard-a-kritik-uyari-p382624"
-      }
-    },
-    {
-      "id": "acun-ilicali-super-lig-ihalesi-talip-2026-11-19",
-      "category": "club-agenda",
-      "confidence": "confirmed",
-      "competition": "Süper Lig",
-      "text": "Acun Ilıcalı (Hürriyet): \"Şartnameyi aldık, Süper Lig'e talip olabilirim\"; EXXEN, UEFA turnuvalarının 4 yıllık yayın haklarını yıllık 78 milyon dolara aldı",
-      "en": {
-        "text": "Acun Ilıcalı (Hürriyet): \"We have the tender documents, I may bid for the Süper Lig\"; EXXEN bought 4-year UEFA rights for $78m a year"
-      },
-      "timestamp": "2026-11-19T04:25:00+03:00",
-      "expiresAt": "2026-11-21T04:25:00+03:00",
-      "source": {
-        "name": "Hürriyet",
-        "url": "https://www.hurriyet.com.tr/sporarena/acun-ilicali-super-lige-talip-olabilirim-43383165"
-      }
-    },
-    {
-      "id": "galatasaray-14-gunde-5-sakat-2026-11-19",
-      "category": "squad-update",
-      "confidence": "confirmed",
-      "team": "Galatasaray",
-      "competition": "Süper Lig",
-      "text": "Galatasaray'da son 14 günde 5 sakatlık: Osimhen, Leao, Uğurcan, Sallai ve Sanchez; Sallai'nin durumu bugün netleşecek (Hürriyet)",
-      "en": {
-        "text": "Galatasaray have had 5 injuries in 14 days: Osimhen, Leao, Uğurcan, Sallai and Sanchez; Sallai's status will be clear today (Hürriyet)"
-      },
-      "timestamp": "2026-11-19T04:20:00+03:00",
-      "expiresAt": "2026-11-21T04:20:00+03:00",
-      "source": {
-        "name": "Hürriyet",
-        "url": "https://www.hurriyet.com.tr/sporarena/kabus-geri-dondu-14-gunde-5-sakat-43383161"
-      }
-    },
-    {
-      "id": "amedspor-nahit-eren-milli-maca-talibiz-2026-11-19",
-      "category": "club-agenda",
-      "confidence": "confirmed",
-      "team": "Amed Sportif Faaliyetler",
-      "text": "Amedspor Başkanı Nahit Eren (Fanatik): \"Milli maça talibiz. Bu kent, bunu hak ediyor\"",
-      "en": {
-        "text": "Amedspor president Nahit Eren (Fanatik): \"We want to host a national team match. This city deserves it\""
-      },
-      "timestamp": "2026-11-19T07:00:00+03:00",
-      "expiresAt": "2026-11-21T07:00:00+03:00",
+      "timestamp": "2026-11-22T21:47:00+03:00",
+      "expiresAt": "2026-11-24T21:47:00+03:00",
       "source": {
         "name": "Fanatik",
-        "url": "https://www.fanatik.com.tr/amed-sportif/amedspor-baskani-nahit-eren-milli-maca-talibiz-2645011"
+        "url": "https://www.fanatik.com.tr/trabzonspor/trabzonsporun-tecrubeli-oyuncusu-ozan-tufan-haksizlik-oldugunu-dusunmuyorum-2645415"
       }
     },
     {
-      "id": "fenerbahce-lukaku-anderlecht-kapi-2026-11-18",
-      "category": "club-agenda",
-      "confidence": "reported",
-      "team": "Fenerbahçe",
-      "teams": [
-        "Fenerbahçe",
-        "Anderlecht"
-      ],
-      "text": "Sözcü'ye göre (La Dernière Heure) Anderlecht Başkanı Coucke, Lukaku'nun dönüşüne kapıların açık olduğunu söyledi; yakını ocak transferini yalanladı",
-      "en": {
-        "text": "According to Sözcü, citing La Dernière Heure, Anderlecht president Coucke said the door is open for Lukaku; his circle denied a January move"
-      },
-      "timestamp": "2026-11-18T10:43:00+03:00",
-      "expiresAt": "2026-11-21T10:43:00+03:00",
-      "source": {
-        "name": "Sözcü",
-        "url": "https://www.sozcu.com.tr/lukakuya-eski-kulubunden-acik-kapi-p382398"
-      }
-    },
-    {
-      "id": "fenerbahce-irfan-can-mert-muldur-yenileme-2026-11-18",
-      "category": "club-agenda",
-      "confidence": "reported",
-      "team": "Fenerbahçe",
-      "text": "NTV Spor'a göre (Sabah) Fenerbahçe, İrfan Can Kahveci'ye 1+1 ve Mert Müldür'e 3 yıllık yenileme hazırlığında; kalmak isterlerse imza atılacağı belirtildi",
-      "en": {
-        "text": "According to NTV Spor, citing Sabah, Fenerbahçe is preparing a 1+1 renewal for İrfan Can Kahveci and 3 years for Mert Müldür if they want to stay"
-      },
-      "timestamp": "2026-11-18T09:33:00+03:00",
-      "expiresAt": "2026-11-21T09:33:00+03:00",
-      "source": {
-        "name": "NTV Spor",
-        "url": "https://www.ntvspor.net/futbol/galeri-ve-fenerbahcede-flas-karar-cikti-iki-isim-kalmak-istiyoruz-dedigi-saniye-imzalar-atilacak-433196"
-      }
-    },
-    {
-      "id": "besiktas-miretti-konyaspor-kadro-2026-11-18",
-      "category": "squad-update",
-      "confidence": "reported",
-      "team": "Beşiktaş",
-      "competition": "Süper Lig",
-      "text": "Sözcü'nün Milliyet'e dayandırdığına göre omzundan sakat Fabio Miretti'nin Konyaspor kadrosuna girişi henüz belli değil; kendini hazır hissedip doktor onayı şart",
-      "en": {
-        "text": "According to Sözcü, citing Milliyet, it is not yet clear if injured Fabio Miretti will make the Konyaspor squad; he must feel ready and get medical approval"
-      },
-      "timestamp": "2026-11-18T09:20:00+03:00",
-      "expiresAt": "2026-11-21T09:20:00+03:00",
-      "source": {
-        "name": "Sözcü",
-        "url": "https://www.sozcu.com.tr/besiktasta-miretti-icin-iki-sart-p382363"
-      }
-    },
-    {
-      "id": "uluslar-ligi-ceyrek-finalistler-kura-2026-11-18",
+      "id": "liverpool-manchester-united-4-0-2026-11-22",
       "category": "post-match",
       "confidence": "confirmed",
-      "team": "Portekiz",
-      "teams": [
-        "İngiltere",
-        "İspanya",
-        "Fransa",
-        "Portekiz",
-        "Belçika",
-        "Almanya",
-        "Hollanda",
-        "Norveç"
-      ],
-      "competition": "UEFA Uluslar Ligi",
-      "text": "Uluslar Ligi'nde çeyrek finale İngiltere, İspanya, Fransa, Portekiz, Belçika, Almanya, Hollanda ve Norveç kaldı; kura 20 Kasım'da Nyon'da çekilecek (Sporx)",
+      "team": "Manchester United",
+      "competition": "Premier Lig",
+      "text": "Liverpool, 8. dakikada Yoro'nun kırmızı kartıyla 10 kişi kalan Manchester United'ı Szoboszlai (10), Wirtz (13), Rio Ngumoha (66) ve Víctor Muñoz'un (82) golleriyle 4-0 yendi; Pochettino'nun ilk maçında kaybeden United 8 puanla 19. sırada (Hürriyet)",
       "en": {
-        "text": "England, Spain, France, Portugal, Belgium, Germany, the Netherlands and Norway reach the Nations League quarter-finals; the draw is on 20 November in Nyon (Sporx)"
+        "text": "Liverpool beat Manchester United, down to 10 men after Yoro's 8th-minute red card, 4-0 with goals from Szoboszlai (10), Wirtz (13), Rio Ngumoha (66) and Víctor Muñoz (82); United lost Pochettino's first game and sit 19th on 8 points (Hürriyet)"
       },
-      "timestamp": "2026-11-18T01:43:00+03:00",
-      "expiresAt": "2026-11-20T23:59:00+03:00",
+      "timestamp": "2026-11-22T21:24:00+03:00",
+      "expiresAt": "2026-11-24T21:24:00+03:00",
+      "source": {
+        "name": "Hürriyet",
+        "url": "https://www.hurriyet.com.tr/sporarena/liverpool-4-0-manchester-united-ingiltere-premier-lig-43387019"
+      }
+    },
+    {
+      "id": "inter-calhanoglu-atalanta-sakatlik-2026-11-22",
+      "category": "squad-update",
+      "confidence": "confirmed",
+      "team": "Inter",
+      "competition": "Serie A",
+      "text": "Inter'de ilk 11'de başlayan Hakan Çalhanoğlu, Atalanta deplasmanında ilk yarıda sakatlanarak oyuna devam edemedi; 33. dakikada yerine Petar Sucic girdi (Sporx)",
+      "en": {
+        "text": "Hakan Çalhanoğlu, who started for Inter at Atalanta, went off injured in the first half; Petar Sucic replaced him in the 33rd minute (Sporx)"
+      },
+      "timestamp": "2026-11-22T23:38:00+03:00",
+      "expiresAt": "2026-11-24T23:38:00+03:00",
       "source": {
         "name": "Sporx",
-        "url": "https://www.sporx.com/futbol/dunya/uefa-uluslar-ligi-nde-ceyrek-finalistler-belli-oldu-iste-son-8-takim-SXHBQ1183184SXQ"
+        "url": "https://www.sporx.com/inter-de-hakan-calhanoglu-sakatlandi-SXHBQ1183727SXQ"
+      }
+    },
+    {
+      "id": "amedspor-diagne-antrenman-aciklamasi-2026-11-22",
+      "category": "club-agenda",
+      "confidence": "confirmed",
+      "team": "Amedspor",
+      "competition": "Süper Lig",
+      "text": "Amed Sportif Faaliyetler, Mbaye Diagne'nin milli aradan sonra 13, 14, 15 ve 17 Kasım antrenmanlarına katılmadığını tutanak ve noter tespitiyle kayda aldığını açıkladı; oyuncu savunmasında sağlık raporu aldığını ve 22 Kasım'da Diyarbakır'a döneceğini bildirdi (Hürriyet/AA)",
+      "en": {
+        "text": "Amed Sportif Faaliyetler said Mbaye Diagne missed training on 13, 14, 15 and 17 November after the international break, recorded by official reports and a notary; the player said in his defence that he had a medical report and would return to Diyarbakır on 22 November (Hürriyet/AA)"
+      },
+      "timestamp": "2026-11-22T22:00:00+03:00",
+      "expiresAt": "2026-11-24T22:00:00+03:00",
+      "source": {
+        "name": "Hürriyet",
+        "url": "https://www.hurriyet.com.tr/sporarena/amed-sportif-faaliyetlerden-diagne-aciklamasi-43387374"
+      }
+    },
+    {
+      "id": "konyaspor-besiktas-2-4-2026-11-22",
+      "category": "post-match",
+      "confidence": "confirmed",
+      "team": "Beşiktaş",
+      "competition": "Süper Lig",
+      "text": "Beşiktaş, Konyaspor deplasmanında Vlahovic (10, 34), Trossard (79) ve Cerny'nin (90+3) golleriyle 4-2 kazandı; Konyaspor'un gollerini Dompe ve Enis Destan attı. Beşiktaş 25 puana yükseldi, 13. haftada lider Galatasaray'ı konuk edecek (Hürriyet)",
+      "en": {
+        "text": "Beşiktaş won 4-2 at Konyaspor with goals from Vlahovic (10, 34), Trossard (79) and Cerny (90+3); Dompe and Enis Destan scored for Konyaspor. Beşiktaş moved to 25 points and host leaders Galatasaray in week 13 (Hürriyet)"
+      },
+      "timestamp": "2026-11-22T17:00:00+03:00",
+      "expiresAt": "2026-11-24T17:00:00+03:00",
+      "source": {
+        "name": "Hürriyet",
+        "url": "https://www.hurriyet.com.tr/sporarena/konyaspor-2-4-besiktas-super-lig-maci-ozeti-43386887"
+      }
+    },
+    {
+      "id": "vlahovic-ilhan-mansiz-rekoru-2026-11-22",
+      "category": "post-match",
+      "confidence": "confirmed",
+      "team": "Beşiktaş",
+      "competition": "Süper Lig",
+      "text": "Dusan Vlahovic, Opta verilerinin bulunduğu 2000/01 sezonundan bu yana Beşiktaş formasıyla ligde 10 gole en az maçta ulaşan futbolcu oldu: 10 maçta 11 gol; önceki rekor İlhan Mansız'daydı (12 maç, 10 gol) (Hürriyet)",
+      "en": {
+        "text": "Dusan Vlahovic became the fastest Beşiktaş player to reach 10 league goals since Opta's Süper Lig data began in 2000/01: 11 goals in 10 matches, beating İlhan Mansız (10 goals in 12 matches) (Hürriyet)"
+      },
+      "timestamp": "2026-11-22T17:36:00+03:00",
+      "expiresAt": "2026-11-24T17:36:00+03:00",
+      "source": {
+        "name": "Hürriyet",
+        "url": "https://www.hurriyet.com.tr/sporarena/vlahovic-besiktas-tarihine-gecti-ilhan-mansizin-rekorunu-kirdi-43387198"
+      }
+    },
+    {
+      "id": "serdal-adali-mhk-bulandirip-bozmasinlar-2026-11-22",
+      "category": "club-agenda",
+      "confidence": "confirmed",
+      "team": "Beşiktaş",
+      "competition": "Süper Lig",
+      "text": "Beşiktaş Başkanı Serdal Adalı, Konyaspor galibiyeti sonrası MHK'ya seslendi (Hürriyet): \"Hakemlerle ilgili şikayetim yok. MHK'deki iki arkadaşa seslenmek istiyorum; bu çocukları rahat bıraksınlar. Bulandırıp bozmasınlar.\"",
+      "en": {
+        "text": "Beşiktaş president Serdal Adalı addressed the referees' committee (MHK) after the Konyaspor win (Hürriyet): \"I have no complaint about the referees. I want to call on two people at the MHK: leave these referees alone. Don't muddy and spoil things.\""
+      },
+      "timestamp": "2026-11-22T18:43:00+03:00",
+      "expiresAt": "2026-11-24T18:43:00+03:00",
+      "source": {
+        "name": "Hürriyet",
+        "url": "https://www.hurriyet.com.tr/sporarena/serdal-adalidan-mhkya-sert-tepki-bulandirip-bozmasinlar-43387246"
+      }
+    },
+    {
+      "id": "italiano-sonunda-deplasmanda-3-puan-2026-11-22",
+      "category": "manager-quote",
+      "confidence": "confirmed",
+      "team": "Beşiktaş",
+      "competition": "Süper Lig",
+      "text": "Beşiktaş Teknik Direktörü Vincenzo Italiano, Konyaspor zaferi sonrası (Fotomaç): \"Sonunda deplasmanda kendimizi iyi bir şekilde gösterebildiğimizi düşünüyorum. Sonunda, gerçekten 3 puan aldık deplasmandan.\"",
+      "en": {
+        "text": "Beşiktaş head coach Vincenzo Italiano after the win at Konyaspor (Fotomaç): \"I think we finally showed ourselves well away from home. In the end we really took 3 points away from home.\""
+      },
+      "timestamp": "2026-11-22T19:30:00+03:00",
+      "expiresAt": "2026-11-24T19:30:00+03:00",
+      "source": {
+        "name": "Fotomaç",
+        "url": "https://www.fotomac.com.tr/besiktas/2026/11/22/vincenzo-italiano-konyaspor-zaferi-sonrasi-konustu-sonunda-deplasmanda"
+      }
+    },
+    {
+      "id": "erzurumspor-goztepe-0-1-2026-11-22",
+      "category": "post-match",
+      "confidence": "confirmed",
+      "team": "Göztepe",
+      "competition": "Süper Lig",
+      "text": "Göztepe, Süper Lig'in 12. haftasında Erzurumspor FK'yi deplasmanda oyuna sonradan giren Efkan Bekiroğlu'nun 70. dakika golüyle 1-0 yendi; Sonko'nun 45+1'deki golü VAR incelemesi sonrası iptal edildi (AA)",
+      "en": {
+        "text": "Göztepe won 1-0 at Erzurumspor FK in week 12 of the Süper Lig with a 70th-minute goal from substitute Efkan Bekiroğlu; Sonko's 45+1 goal was ruled out after a VAR review (AA)"
+      },
+      "timestamp": "2026-11-22T14:35:00+03:00",
+      "expiresAt": "2026-11-24T14:35:00+03:00",
+      "source": {
+        "name": "Anadolu Ajansı",
+        "url": "https://www.aa.com.tr/tr/spor/goztepe-deplasmandan-3-puanla-ayrildi/4133530"
+      }
+    },
+    {
+      "id": "kasimpasa-alanyaspor-2-1-2026-11-22",
+      "category": "post-match",
+      "confidence": "confirmed",
+      "team": "Kasımpaşa",
+      "competition": "Süper Lig",
+      "text": "Kasımpaşa, Alanyaspor'u Benedyczak'ın penaltıdan (29) ve 90+2'de kafayla attığı gollerle 2-1 yendi; Alanyaspor'un golünü Hadergjonaj penaltıdan (45+4) kaydetti (AA)",
+      "en": {
+        "text": "Kasımpaşa beat Alanyaspor 2-1 with Benedyczak scoring a penalty (29) and a 90+2 header; Hadergjonaj scored Alanyaspor's goal from the spot (45+4) (AA)"
+      },
+      "timestamp": "2026-11-22T17:00:00+03:00",
+      "expiresAt": "2026-11-24T17:00:00+03:00",
+      "source": {
+        "name": "Anadolu Ajansı",
+        "url": "https://www.aa.com.tr/tr/spor/kasimpasa-konuk-ettigi-alanyasporu-yendi/4133622"
+      }
+    },
+    {
+      "id": "okan-buruk-sansalan-elimi-sikmadin-2026-11-22",
+      "category": "manager-quote",
+      "confidence": "confirmed",
+      "team": "Galatasaray",
+      "competition": "Süper Lig",
+      "text": "Okan Buruk, Samsunspor maçı sonundaki kırmızı kartı için kulüp kanalına (Hürriyet): \"Neden olduğunu sordum. 'Elimi sıkmadın, bu bana yapılmış bir saygısızlık' dedi. Herhangi bir saygısızlık yapmadım ben.\"",
+      "en": {
+        "text": "Okan Buruk on his red card at the end of the Samsunspor match, speaking to the club channel (Hürriyet): \"I asked why. He said 'You didn't shake my hand, that is disrespect towards me.' I did not show any disrespect.\""
+      },
+      "timestamp": "2026-11-22T16:19:00+03:00",
+      "expiresAt": "2026-11-24T16:19:00+03:00",
+      "source": {
+        "name": "Hürriyet",
+        "url": "https://www.hurriyet.com.tr/sporarena/okan-buruktan-kirmizi-kart-aciklamasi-herhangi-bir-saygisizlik-yapmadim-ben-43387117"
+      }
+    },
+    {
+      "id": "shakhtar-8-oyuncu-londraya-gidemedi-2026-11-22",
+      "category": "squad-update",
+      "confidence": "confirmed",
+      "team": "Fenerbahçe",
+      "competition": "Şampiyonlar Ligi",
+      "text": "Fenerbahçe'nin 25 Kasım'daki Şampiyonlar Ligi rakibi Shakhtar Donetsk'te 8 oyuncu, Polonya sınırında geçişlerine izin verilmeyince takımla Londra'ya gidemedi; oyuncuların bugün ayrı olarak Londra'ya ulaşması bekleniyor (AA)",
+      "en": {
+        "text": "Eight Shakhtar Donetsk players could not travel to London with the team ahead of the 25 November Champions League match against Fenerbahçe after being refused passage at the Polish border; they are expected to reach London separately today (AA)"
+      },
+      "timestamp": "2026-11-22T17:59:00+03:00",
+      "expiresAt": "2026-11-24T17:59:00+03:00",
+      "source": {
+        "name": "Anadolu Ajansı",
+        "url": "https://www.aa.com.tr/tr/spor/shakhtar-donetskte-8-oyuncu-fenerbahce-maci-oncesi-takimla-londraya-gidemedi/4133661"
+      }
+    },
+    {
+      "id": "genclerbirligi-yeni-baskan-ali-osman-avsar-2026-11-22",
+      "category": "club-agenda",
+      "confidence": "confirmed",
+      "team": "Gençlerbirliği",
+      "competition": "Süper Lig",
+      "text": "Gençlerbirliği'nin olağanüstü seçimli genel kurulunda tek aday Ali Osman Avşar başkan seçildi: \"Ligde kalacağız. Önümüzdeki sezon ise ilk sekizi zorlayacak bir kadro kuracağımıza söz veriyorum.\" (AA)",
+      "en": {
+        "text": "Ali Osman Avşar, the sole candidate, was elected Gençlerbirliği president at the extraordinary general assembly: \"We will stay in the league. Next season I promise we will build a squad that pushes for the top eight.\" (AA)"
+      },
+      "timestamp": "2026-11-22T14:53:00+03:00",
+      "expiresAt": "2026-11-24T14:53:00+03:00",
+      "source": {
+        "name": "Anadolu Ajansı",
+        "url": "https://www.aa.com.tr/tr/spor/genclerbirligi-nin-yeni-baskani-ali-osman-avsar-oldu/4133539"
+      }
+    },
+    {
+      "id": "mahmut-uslu-11-puan-sozleri-yalanlama-2026-11-22",
+      "category": "club-agenda",
+      "confidence": "confirmed",
+      "team": "Fenerbahçe",
+      "competition": "Süper Lig",
+      "text": "Fenerbahçe yöneticisi Mahmut Uslu, Kocaelispor maçı sonrası kendisine atfedilen \"11 puanlık fark kapanmaz, çok zor. Üzgünüm.\" sözlerinin tamamen asılsız olduğunu açıkladı: \"Maç sonrası herhangi bir açıklama yapmadım, kimseyle konuşmadım.\" (Fotomaç)",
+      "en": {
+        "text": "Fenerbahçe board member Mahmut Uslu said the words attributed to him after the Kocaelispor match, \"The 11-point gap can't be closed, it's very hard. I'm sorry\", were completely false: \"I made no statement after the match and spoke to no one.\" (Fotomaç)"
+      },
+      "timestamp": "2026-11-22T19:30:00+03:00",
+      "expiresAt": "2026-11-24T19:30:00+03:00",
+      "source": {
+        "name": "Fotomaç",
+        "url": "https://www.fotomac.com.tr/fenerbahce/2026/11/22/fenerbahce-yoneticisi-mahmut-usludan-11-puan-fark-sozlerine-yalanlama"
+      }
+    },
+    {
+      "id": "barcelona-villarreal-3-2-2026-11-22",
+      "category": "post-match",
+      "confidence": "confirmed",
+      "team": "Barcelona",
+      "competition": "LaLiga",
+      "text": "Barcelona, ilk yarıyı Buchanan (5) ve Oluwaseyi'nin (7) golleriyle 2-0 geride kapattığı maçta Villarreal'i Gerard Martín (57), Fermín López (61) ve Pau Navarro'nun kendi kalesine golüyle (67) 3-2 yendi; puanını 36'ya çıkararak liderliğini sürdürdü (Hürriyet)",
+      "en": {
+        "text": "Barcelona came from 2-0 down at half-time (Buchanan 5, Oluwaseyi 7) to beat Villarreal 3-2 with goals from Gerard Martín (57), Fermín López (61) and a Pau Navarro own goal (67), staying top on 36 points (Hürriyet)"
+      },
+      "timestamp": "2026-11-22T18:12:00+03:00",
+      "expiresAt": "2026-11-24T18:12:00+03:00",
+      "source": {
+        "name": "Hürriyet",
+        "url": "https://www.hurriyet.com.tr/sporarena/barcelona-firtinasi-ikinci-yarida-esti-2-0dan-dondu-43387224"
+      }
+    },
+    {
+      "id": "psg-desire-doue-capraz-bag-2026-11-22",
+      "category": "squad-update",
+      "confidence": "confirmed",
+      "team": "PSG",
+      "competition": "Ligue 1",
+      "text": "PSG, Nice maçında sakatlanan Desire Doue'nin sağ diz ön çapraz bağında yırtık tespit edildiğini ve ay sonuna kadar ameliyat edileceğini duyurdu; 21 yaşındaki oyuncunun uzun süre sahalardan uzak kalması bekleniyor (NTV Spor)",
+      "en": {
+        "text": "PSG announced Desire Doue, injured against Nice, has a torn anterior cruciate ligament in his right knee and will have surgery by the end of the month; the 21-year-old is expected to be out for a long time (NTV Spor)"
+      },
+      "timestamp": "2026-11-22T18:55:00+03:00",
+      "expiresAt": "2026-11-24T18:55:00+03:00",
+      "source": {
+        "name": "NTV Spor",
+        "url": "https://www.ntvspor.net/futbol/galeri-psgde-desire-doue-capraz-bag-yirtigi-nedeniyle-ameliyat-edilecek-433434"
+      }
+    },
+    {
+      "id": "bruno-fernandes-sozlesme-gorusmesi-yok-2026-11-22",
+      "category": "player-quote",
+      "confidence": "confirmed",
+      "team": "Manchester United",
+      "competition": "Premier Lig",
+      "text": "Bruno Fernandes, Sky Sports'a (Hürriyet): \"Devam eden herhangi bir sözleşme görüşmesi yok. Kulüp bana 'Bruno, artık yollarımızı ayırma zamanı' dediği anda kapıdan ilk çıkan ben olacağım.\"",
+      "en": {
+        "text": "Bruno Fernandes to Sky Sports (Hürriyet): \"There are no ongoing contract talks. The moment the club tells me 'Bruno, it's time to part ways', I will be the first one out of the door.\""
+      },
+      "timestamp": "2026-11-22T12:33:00+03:00",
+      "expiresAt": "2026-11-24T12:33:00+03:00",
+      "source": {
+        "name": "Hürriyet",
+        "url": "https://www.hurriyet.com.tr/sporarena/bruno-fernandesten-sozlesme-aciklamasi-43386869"
+      }
+    },
+    {
+      "id": "aek-site-hacklendi-galatasaray-oncesi-2026-11-22",
+      "category": "club-agenda",
+      "confidence": "confirmed",
+      "team": "Galatasaray",
+      "competition": "Şampiyonlar Ligi",
+      "text": "Galatasaray'ı Şampiyonlar Ligi'nin 6. haftasında konuk edecek AEK, resmî internet sitesinin Türk hackerların saldırısına uğradığını açıkladı ve maça açık mavi formasıyla çıkma kararı aldığını duyurdu (Fanatik)",
+      "en": {
+        "text": "AEK, who host Galatasaray in week 6 of the Champions League, said their official website was attacked by Turkish hackers and announced they will wear their light blue kit for the match (Fanatik)"
+      },
+      "timestamp": "2026-11-22T12:30:00+03:00",
+      "expiresAt": "2026-11-24T12:30:00+03:00",
+      "source": {
+        "name": "Fanatik",
+        "url": "https://www.fanatik.com.tr/galatasaray/galeri-ortam-simdiden-gerildi-aeknin-sitesi-hacklendi-turk-hackerlar-yapti-aciklamasi-geldi-2645378"
+      }
+    },
+    {
+      "id": "besiktas-konyaspor-kafile-agbadou-miretti-2026-11-22",
+      "category": "squad-update",
+      "confidence": "confirmed",
+      "team": "Beşiktaş",
+      "competition": "Süper Lig",
+      "text": "Beşiktaş'ın Konyaspor deplasmanı kafilesi belli oldu: milli arada sakatlanıp tedbiren İstanbul'a dönen Agbadou ile Crystal Palace maçında sağ omzundan sakatlanan Miretti Konya kafilesinde yer aldı (Fotomaç)",
+      "en": {
+        "text": "Beşiktaş named their travelling squad for Konyaspor: Agbadou, who returned to Istanbul as a precaution after an injury during the international break, and Miretti, who hurt his right shoulder against Crystal Palace, are both in the Konya squad (Fotomaç)"
+      },
+      "timestamp": "2026-11-22T06:50:00+03:00",
+      "expiresAt": "2026-11-24T06:50:00+03:00",
+      "source": {
+        "name": "Fotomaç",
+        "url": "https://www.fotomac.com.tr/besiktas/2026/11/22/agbadou-ve-miretti-sevinci"
+      }
+    },
+    {
+      "id": "aston-villa-sunderland-0-0-galatasaray-rakibi-2026-11-21",
+      "category": "post-match",
+      "confidence": "confirmed",
+      "team": "Galatasaray",
+      "competition": "UEFA Şampiyonlar Ligi",
+      "text": "Galatasaray'ın Şampiyonlar Ligi rakibi Aston Villa, Premier Lig'de evinde Sunderland ile 0-0 berabere kaldı ve son 5 resmi maçında galibiyet alamadı; Galatasaray 24 Kasım Salı Aston Villa'yı ağırlayacak (Fanatik)",
+      "en": {
+        "text": "Galatasaray's Champions League opponents Aston Villa drew 0-0 at home to Sunderland in the Premier League, extending their winless run to five official matches; Galatasaray host Aston Villa on Tuesday 24 November (Fanatik)"
+      },
+      "timestamp": "2026-11-21T19:54:00+03:00",
+      "expiresAt": "2026-11-24T23:59:00+03:00",
+      "source": {
+        "name": "Fanatik",
+        "url": "https://www.fanatik.com.tr/galatasaray/aston-villa-evinde-kayip-ingilizler-galatasaraya-moralsiz-geliyor-2645329"
+      }
+    },
+    {
+      "id": "real-madrid-celta-vigo-2-1-2026-11-21",
+      "category": "post-match",
+      "confidence": "confirmed",
+      "team": "Real Madrid",
+      "competition": "LaLiga",
+      "text": "Real Madrid, Celta Vigo'yu Bellingham (66) ve Carlos Espi'nin (85) golleriyle 2-1 yendi; puanını 33'e çıkararak maç fazlasıyla lider Barcelona ile eşitledi (Hürriyet)",
+      "en": {
+        "text": "Real Madrid beat Celta Vigo 2-1 with goals from Bellingham (66) and Carlos Espi (85), moving to 33 points, level with leaders Barcelona, who have played a game more (Hürriyet)"
+      },
+      "timestamp": "2026-11-22T01:07:00+03:00",
+      "expiresAt": "2026-11-24T01:07:00+03:00",
+      "source": {
+        "name": "Hürriyet",
+        "url": "https://www.hurriyet.com.tr/sporarena/real-madridden-geri-donus-bernabeuda-3-puan-43386589"
+      }
+    },
+    {
+      "id": "flamengo-brezilya-sampiyonu-2026-11-21",
+      "category": "post-match",
+      "confidence": "confirmed",
+      "team": "Flamengo",
+      "competition": "Brezilya Serie A",
+      "text": "Flamengo, en yakın takipçisi Palmeiras deplasmanından 1 puanla dönerek bitime 2 hafta kala üst üste 2. kez Brezilya Serie A şampiyonluğunu ilan etti (Sporx)",
+      "en": {
+        "text": "Flamengo took a point away at closest rivals Palmeiras and clinched a second consecutive Brazilian Serie A title with two rounds to spare (Sporx)"
+      },
+      "timestamp": "2026-11-22T00:37:00+03:00",
+      "expiresAt": "2026-11-24T00:37:00+03:00",
+      "source": {
+        "name": "Sporx",
+        "url": "https://www.sporx.com/flamengo-ust-uste-ikinci-kez-brezilya-sampiyonu-SXHBQ1183605SXQ"
       }
     },
     {
