@@ -1149,6 +1149,22 @@ function todaySuperLigStrip() {
   });
 }
 
+/**
+ * MAÇ GÜNÜ OTOMATİK ÖZET KUTUSU — statik yedek.
+ *
+ * Bugünün canlı veya bitmiş, skoru olan API-Football maçlarından skor,
+ * golcü ve önemli an kutusu. Olay yoksa ilgili satır "Güncelleniyor"
+ * kalır; başlamamış maçlar ve skorsuz kayıtlar basılmaz. Boşsa boş dize
+ * döner, bölüm `data-empty-hide` ile gizlenir.
+ *
+ * İstemci aynı üreticiyi (`services/matchdaySummary.js`) /api/matches ve
+ * canlı skor akışıyla tazeler; yeni cron veya ücretli uç nokta yok.
+ */
+function matchdaySummaryState() {
+  const { renderSection } = require("../services/matchdaySummary.js");
+  return renderSection(programMatchPool(), { today: istanbulToday(), base: "./", limit: 12 });
+}
+
 function matchProgramState(variant) {
   const cards = calendarProgramCards(MATCH_LIST_INITIAL);
   return cards || emptyMatchState(variant);
@@ -2048,7 +2064,7 @@ function writePage(file, slots, freshness, staticSlots = {}) {
   // etkili olur (bkz. yukarıdaki docblock) — MAÇ verisi tazeliği, `freshness`
   // parametresinden bağımsız olarak her zaman matchesFreshness'tan gelir.
   html = updateSourceStripFreshness(html, freshness);
-  html = html.replace(/(<[^>]+data-api-target="(?:featured-match|today-matches|today-superlig-matches|matches-page|live-score|daily-headlines)"[^>]*?)(?: data-matches-day="[^"]*")?>/g,
+  html = html.replace(/(<[^>]+data-api-target="(?:featured-match|today-matches|today-superlig-matches|matches-page|live-score|daily-headlines|matchday-summary)"[^>]*?)(?: data-matches-day="[^"]*")?>/g,
     (tag) => tag.replace(/ data-matches-day="[^"]*"/g, "").replace(/>$/, ` data-matches-day="${istanbulDay(new Date().toISOString())}">`));
   html = updateRobotsDirective(html, file);
   if (file === "puan-durumu.html") html = applyStandingsDocumentMeta(html);
@@ -2121,6 +2137,7 @@ writePage("index.html", {
   "home-trend-teams": trendTeamCards(),
   "today-superlig-matches": todaySuperLigStrip(),
   "today-matches": matchProgramState("today"),
+  "matchday-summary": matchdaySummaryState(),
   "league-directory": leagueDirectoryHtml(),
   "radar-signals": signalCards(),
   "team-radar": topTeams.slice(0, 4).map(staticTeamCard).join(""),
@@ -2307,7 +2324,8 @@ const matchProgramFaqEntries = matchProgramFaq(matchProgramPage.dayMatches, {
 });
 
 writePage("bugunun-maclari.html", {
-  "matches-page": matchProgramPage.html || emptyMatchState("today")
+  "matches-page": matchProgramPage.html || emptyMatchState("today"),
+  "matchday-summary": matchdaySummaryState()
 }, fixtureFreshness, {
   "today-faq": faqSectionHtml(
     matchProgramFaqEntries,

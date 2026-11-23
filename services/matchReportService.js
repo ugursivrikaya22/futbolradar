@@ -188,6 +188,23 @@ function isType(event, ...needles) {
   });
 }
 
+/**
+ * SKORU DEĞİŞTİREN GOL MÜ?
+ *
+ * API-Football kaçan penaltıyı `type: "Goal", detail: "Missed Penalty"`
+ * olarak gönderir. `isType(..., "gol")` tür alanındaki "Goal" yüzünden
+ * bunları da gol sayıyordu; maç sonu rapor özeti kaçan penaltıyı golcü
+ * listesine yazıyordu (ör. Göztepe–Gaziantep, 31' Novatus Miroshi).
+ * Kaçan penaltı gol değildir; ayrı etiketlenir.
+ */
+function isMissedPenalty(event) {
+  return isType(event, "missed penalty", "penalty missed", "kaçan penaltı");
+}
+
+function isScoringGoal(event) {
+  return isType(event, "gol") && !isType(event, "iptal") && !isMissedPenalty(event);
+}
+
 /** Kırılma anları listesinde gösterilecek Türkçe etiket. */
 const EVENT_LABELS = [
   [["red card"], "Kırmızı kart"],
@@ -211,7 +228,7 @@ function eventLabel(event) {
 }
 
 function goalEvents(match) {
-  return (match.events || []).filter((event) => isType(event, "gol") && !isType(event, "iptal"));
+  return (match.events || []).filter((event) => isScoringGoal(event));
 }
 
 /**
@@ -429,7 +446,7 @@ function buildStandoutPlayers(match) {
     const minute = minuteOf(event);
     const stamp = minute ? `${minute}'` : "";
 
-    if (isType(event, "gol")) add(player, team, 5, `${stamp} gol`.trim());
+    if (isScoringGoal(event)) add(player, team, 5, `${stamp} gol`.trim());
     else if (isType(event, "asist")) add(player, team, 3, `${stamp} asist`.trim());
     // "Kurtarış" olayında olay takımı hücum eden taraf, metinde önce anılan
     // isim de şutu çeken oyuncudur; kurtaran kaleci ikinci sırada geçer.
@@ -778,7 +795,7 @@ function buildTurningPoints(match) {
     let weight = 1;
     if (isType(event, "kırmızı")) weight = 10;
     else if (isType(event, "penaltı")) weight = 8;
-    else if (isType(event, "gol")) weight = 7;
+    else if (isScoringGoal(event)) weight = 7;
     else if (isType(event, "direk")) weight = 4;
     else if (isType(event, "kurtarış")) weight = 3;
     else if (isType(event, "sarı")) weight = 2;
@@ -841,7 +858,7 @@ function buildMatchEvents(match) {
       minute: minuteOf(event),
       team: eventTeamName(event),
       type: eventLabel(event),
-      isGoal: isType(event, "gol") && !isType(event, "iptal"),
+      isGoal: isScoringGoal(event),
       detail: eventDetailText(event)
     }))
     .sort((left, right) => left.sortKey - right.sortKey)
@@ -915,7 +932,7 @@ function buildHalfAnalysis(match, half) {
   }
 
   const notes = [];
-  const goals = events.filter((event) => isType(event, "gol") && !isType(event, "iptal"));
+  const goals = events.filter((event) => isScoringGoal(event));
   const cards = events.filter((event) => isType(event, "kart"));
   const subs = events.filter(isSubstitution);
 
@@ -1171,7 +1188,7 @@ function buildLateGame(match) {
     };
   }
 
-  const lateGoals = late.filter((event) => isType(event, "gol") && !isType(event, "iptal"));
+  const lateGoals = late.filter((event) => isScoringGoal(event));
   const homeLateGoals = lateGoals.filter((event) => normalizeText(eventTeamName(event)) === normalizeText(match.homeTeam)).length;
   const awayLateGoals = lateGoals.length - homeLateGoals;
 
@@ -1508,6 +1525,8 @@ module.exports = {
   // kaynak tek tutuluyor.
   eventTeamName,
   isType,
+  isMissedPenalty,
+  isScoringGoal,
   minuteOf,
   playerFromEvent,
   statPair,
