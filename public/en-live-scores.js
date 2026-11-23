@@ -17,6 +17,7 @@
 (function () {
   "use strict";
 
+  // en-live-core:start
   var POLL_MS = 20000;
   var BOARD_LIMIT = 36;
   var LIVE_URL = "/api/matches?live=all";
@@ -125,6 +126,50 @@
     return "/en/match-detail.html?fixtureId=" + encodeURIComponent(String(id));
   }
 
+  /* ── HABER BANDINDA CANLI SKOR (Headlines) ────────────────────────────
+   * İngilizce ana sayfanın kayan haber bandına ("Headlines") oynanan maçlar
+   * aynı `news-ticker-item` biçiminde eklenir. Kurallar:
+   *  - Veri yalnızca mevcut `?live=all` yanıtından gelir (ek istek yok; aynı
+   *    `__frLiveAll` önbelleği). Yanıt API-Football'dan gelmediyse satır
+   *    basılmaz — "Data: API-Football" atfı hiçbir zaman yanlış olmasın.
+   *  - Skoru iki tarafta da sayı olmayan maç basılmaz (uydurma skor yok).
+   *  - Canlı maç yoksa bant yalnızca haber satırlarıyla devam eder.
+   *  - Haber satırları silinmez/sayılmaz: 44 haber sınırı aynen kalır,
+   *    canlı satırların kendi sınırı vardır (NEWS_LIVE_LIMIT).
+   */
+  var NEWS_LIVE_LIMIT = 8;
+  var NEWS_LIVE_CREDIT = { en: "Data: API-Football", tr: "Veri: API-Football" };
+  var NEWS_LIVE_TAG = { en: "LIVE", tr: "CANLI" };
+
+  function fromApiFootball(payload) {
+    if (!payload || payload.ok === false) return false;
+    var meta = payload.meta || {};
+    return /^api[-_ ]?football$/i.test(String(payload.source || "")) || /^api[-_ ]?football$/i.test(String(meta.provider || ""));
+  }
+
+  function newsLiveRows(payload, now) {
+    if (!fromApiFootball(payload)) return [];
+    var rows = Array.isArray(payload.data) ? payload.data : [];
+    var at = Number.isFinite(now) ? now : Date.now();
+    return rows.filter(function (row) {
+      return row && isLiveStatus(statusOf(row)) && hasScore(row) && teamName(row.homeTeam) && teamName(row.awayTeam) && withinWindow(row, at);
+    }).slice(0, NEWS_LIVE_LIMIT).map(function (row) {
+      var score = row.score;
+      var home = teamName(row.homeTeam);
+      var away = teamName(row.awayTeam);
+      var minute = minuteOrStatus(row);
+      var league = String(row.league || "").trim();
+      var text = home + " " + String(Number(score.home)) + "-" + String(Number(score.away)) + " " + away + " · " + minute + (league ? " · " + league : "");
+      return {
+        id: String((row.providerIds && row.providerIds.apiFootball) || row.id || ""),
+        href: hrefFor(row),
+        text: text,
+        aria: copy().live + ": " + text + " — " + NEWS_LIVE_CREDIT[localeOf()]
+      };
+    });
+  }
+  // en-live-core:end
+
   function scoreText(value) {
     return isNumber(value) ? String(value) : "–";
   }
@@ -199,6 +244,93 @@
     return link;
   }
 
+  function paintNewsTicker(band, payload) {
+    var groups = band.querySelectorAll(".news-ticker-group");
+    if (!groups.length) return;
+    var items = newsLiveRows(payload);
+    var signature = JSON.stringify(items);
+    if (band.getAttribute("data-live-signature") === signature) return;
+    band.setAttribute("data-live-signature", signature);
+    var track = band.querySelector(".news-ticker-track");
+    if (track && !track.hasAttribute("data-base-duration")) {
+      var base = parseFloat(String(track.style.getPropertyValue("--ticker-duration") || ""));
+      track.setAttribute("data-base-duration", isFinite(base) && base > 0 ? String(base) : "");
+    }
+    Array.prototype.forEach.call(groups, function (group) {
+      Array.prototype.forEach.call(group.querySelectorAll("[data-live-ticker]"), function (node) {
+        node.parentNode.removeChild(node);
+      });
+    });
+    var baseDuration = track ? parseFloat(track.getAttribute("data-base-duration") || "") : NaN;
+    if (track && isFinite(baseDuration) && baseDuration > 0) {
+      // Haber bandının hızı aynı kalsın: öğe başına ~10 sn (layout.mjs ile aynı).
+      track.style.setProperty("--ticker-duration", (baseDuration + items.length * 10) + "s");
+    }
+    if (!items.length) {
+      band.removeAttribute("data-live-count");
+      return;
+    }
+    band.setAttribute("data-live-count", String(items.length));
+    var locale = localeOf();
+    Array.prototype.forEach.call(groups, function (group) {
+      var duplicate = group.getAttribute("aria-hidden") === "true";
+      var fragment = document.createDocumentFragment();
+      // İlk haber başlığı yerinde kalır (ana sayfa "now-football" özeti onu
+      // okuyor); canlı satırlar hemen arkasından gelir.
+      var lead = group.querySelector(".news-ticker-item:not([data-live-ticker])");
+      items.forEach(function (item, index) {
+        if (lead || index) fragment.appendChild(newsSep());
+        fragment.appendChild(newsLiveItem(item, duplicate, locale));
+      });
+      fragment.appendChild(newsSep());
+      var credit = el("span", "news-ticker-item news-ticker-live-credit", NEWS_LIVE_CREDIT[locale]);
+      credit.setAttribute("data-live-ticker", "credit");
+      fragment.appendChild(credit);
+      if (lead) group.insertBefore(fragment, lead.nextSibling);
+      else group.insertBefore(fragment, group.firstChild);
+    });
+  }
+
+  function newsSep() {
+    var sep = el("span", "news-ticker-sep");
+    sep.setAttribute("aria-hidden", "true");
+    sep.setAttribute("data-live-ticker", "sep");
+    return sep;
+  }
+
+  function newsLiveItem(item, duplicate, locale) {
+    var link = el("a", "news-ticker-item news-ticker-item--live");
+    link.href = item.href;
+    link.setAttribute("data-live-ticker", "match");
+    if (item.id) link.setAttribute("data-live-fixture", item.id);
+    link.setAttribute("aria-label", item.aria);
+    link.setAttribute("title", NEWS_LIVE_CREDIT[locale]);
+    if (duplicate) link.tabIndex = -1;
+    var tag = el("span", "news-ticker-tag is-live");
+    // page.css'e dokunmadan (binlerce sayfanın sürüm damgası değişmesin)
+    // canlı etiketi haber etiketinden ayrılır: kırmızı "LIVE" + nabız.
+    tag.style.display = "inline-flex";
+    tag.style.alignItems = "center";
+    tag.style.gap = "5px";
+    tag.style.color = "var(--live)";
+    tag.style.background = "rgba(200, 30, 45, 0.096)";
+    var pulse = el("i", "live-pulse");
+    pulse.setAttribute("aria-hidden", "true");
+    pulse.style.display = "inline-block";
+    pulse.style.background = "var(--live)";
+    tag.appendChild(pulse);
+    tag.appendChild(document.createTextNode(NEWS_LIVE_TAG[locale]));
+    link.appendChild(tag);
+    link.appendChild(el("span", "", item.text));
+    return link;
+  }
+
+  /* Yalnızca sunucuda basılmış TAM (kayan) bant; iç sayfaların istemcide
+     dolan kompakt bandına site.js yazıyor, oraya karışılmaz. */
+  function newsTickers() {
+    return document.querySelectorAll('.news-ticker[data-shared-layout="ticker"]:not(.news-ticker-compact)');
+  }
+
   function paintBoard(target, rows) {
     var items = liveRows(rows);
     var text = copy();
@@ -268,23 +400,35 @@
     return promise;
   }
 
-  function paint(rows) {
+  function paint(rows, payload) {
     Array.prototype.forEach.call(document.querySelectorAll('[data-component="LiveScoresTicker"]'), function (target) {
       paintTicker(target, rows);
+    });
+    Array.prototype.forEach.call(newsTickers(), function (band) {
+      paintNewsTicker(band, payload);
     });
     Array.prototype.forEach.call(document.querySelectorAll('[data-api-target="live-score"]'), function (target) {
       paintBoard(target, rows);
     });
   }
 
+  var lastLiveOk = 0;
+  var STALE_NEWS_LIVE_MS = 60000;
+
   function refresh() {
     if (window.location.protocol === "file:") return Promise.resolve();
     return fetchLiveAll().then(function (payload) {
       var rows = payload && Array.isArray(payload.data) ? payload.data : [];
       if (payload && payload.ok === false) throw new Error("unavailable");
-      paint(rows);
+      lastLiveOk = Date.now();
+      paint(rows, payload);
     }).catch(function () {
-      /* Ağ yoksa derlemede basılan yedek durur. Skor uydurulmaz. */
+      /* Ağ yoksa derlemede basılan yedek durur. Skor uydurulmaz.
+         Haber bandındaki canlı satırlar ise 60 sn'den uzun kesintide
+         kaldırılır: eski skor "LIVE" etiketiyle akmaya devam etmesin. */
+      if (Date.now() - lastLiveOk > STALE_NEWS_LIVE_MS) {
+        Array.prototype.forEach.call(newsTickers(), function (band) { paintNewsTicker(band, null); });
+      }
     });
   }
 
@@ -292,7 +436,7 @@
     if (localeOf() !== "en") return;
     var tickers = document.querySelectorAll('[data-component="LiveScoresTicker"]');
     var boards = document.querySelectorAll('[data-api-target="live-score"]');
-    if (!tickers.length && !boards.length) return;
+    if (!tickers.length && !boards.length && !newsTickers().length) return;
     clearStaleBoards();
     refresh();
     window.setInterval(function () {
