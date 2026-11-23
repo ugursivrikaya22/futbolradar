@@ -65,6 +65,8 @@ check("kanonik, robots, Türkçe og/twitter etiketleri", () => {
   assert.equal(meta("property", "og:title"), SHARE_TITLE);
   assert.match(meta("property", "og:description"), /son 5 resmî maç/);
   assert.equal(meta("property", "og:locale"), "tr_TR");
+  assert.ok(PAGE_DESCRIPTION.length <= 155, "açıklama son işlemde kesilmemeli");
+  assert.equal(meta("property", "og:description").replaceAll("&#039;", "'"), PAGE_DESCRIPTION);
   assert.equal(meta("name", "twitter:card"), "summary_large_image");
   assert.equal(meta("name", "twitter:title"), SHARE_TITLE);
   assert.match(meta("name", "robots"), /^index/);

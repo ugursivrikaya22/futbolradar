@@ -38,7 +38,8 @@ export const PAGE_FILE = "hangi-takim-formda.html";
 export const PAGE_URL = `${DOMAIN}/${PAGE_FILE}`;
 export const PAGE_TITLE = "Hangi Takım Şu An Formda? Süper Lig Son 5 Maç Form Sıralaması | FutbolRadar";
 export const SHARE_TITLE = "Hangi takım şu an formda? Süper Lig son 5 maç form sıralaması";
-export const PAGE_DESCRIPTION = "Süper Lig'de hangi takım formda? Takımlar son 5 resmî maçtaki gerçek sonuçlara göre sıralandı: G/B/M serisi, puan, atılan ve yenilen goller. Veri: API-Football.";
+// ≤155 karakter: son işlem uzun açıklamayı cümle sınırında kesiyordu (canlıda "… goller. Veri.").
+export const PAGE_DESCRIPTION = "Süper Lig'de hangi takım formda? Takımlar son 5 resmî maçtaki gerçek sonuçlara göre sıralandı: G/B/M serisi, puan, atılan ve yenilen goller.";
 const MIN_COMPLETE_TEAMS = 12;
 const MAX_AGE_DAYS = 21;
 
