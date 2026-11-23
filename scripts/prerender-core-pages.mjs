@@ -1595,7 +1595,21 @@ function leagueLeaderTableHtml(rows, metric, metricLabel) {
   return `<div class="evergreen-table-wrap"><table class="evergreen-table">
           <thead><tr><th scope="col">Sıra</th><th scope="col">Oyuncu</th><th scope="col">Takım</th><th scope="col">${escapeHtml(metricLabel)}</th><th scope="col">Maç</th></tr></thead>
           <tbody>${body}</tbody>
-        </table></div>`;
+        </table></div>${leagueLeaderSourceNoteHtml(metric)}`;
+}
+
+/**
+ * Kaynak künyesi — tablo API-Football `/players/topscorers` ve
+ * `/players/topassists` uçlarından (data/league-leaders.json) gelir; okur
+ * sayıların nereden geldiğini ve en son ne zaman çekildiğini görsün.
+ */
+function leagueLeaderSourceNoteHtml(metric) {
+  const endpoint = metric === "assists" ? "/players/topassists" : "/players/topscorers";
+  const stamp = Date.parse(leagueLeaders.updatedAt || leagueLeaders.generatedAt || "");
+  const updated = Number.isFinite(stamp)
+    ? ` · Son güncelleme: ${escapeHtml(new Date(stamp).toLocaleDateString("tr-TR", { day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Istanbul" }))}`
+    : "";
+  return `<p class="evergreen-note"><a href="https://www.api-football.com/" rel="nofollow noopener noreferrer" target="_blank">Veri: API-Football</a> (${escapeHtml(endpoint)})${updated}</p>`;
 }
 
 function homeLeadersFormSlot(limit) {
