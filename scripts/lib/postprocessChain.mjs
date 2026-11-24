@@ -104,6 +104,8 @@ export const POSTPROCESS_CHAIN = [
   { id: "standings-simulator-page", script: "generate-standings-simulator-page.mjs", args: [], timeoutMinutes: 2 },
   // /uefa-ulke-puani-siralamasi: UEFA ülke tablosu data/uefa-country-coefficients.json'dan; API çağrısı yok.
   { id: "uefa-country-table", script: "inject-uefa-country-table.mjs", args: [], timeoutMinutes: 2 },
+  // Aynı sayfadaki FIFA erkek dünya sıralaması. Yalnızca data/fifa-men-world-ranking.json; UEFA bloğuna dokunmaz.
+  { id: "fifa-men-ranking", script: "inject-fifa-men-ranking.mjs", args: [], timeoutMinutes: 2 },
   // /tarihte-bugun + /en/on-this-day: tarihe bağlı, her koşuda yeniden üretilir (yalnız yerel arşiv verisi).
   { id: "on-this-day-pages", script: "generate-on-this-day-pages.mjs", args: [], timeoutMinutes: 2 },
   // API-Football snapshots only; also refresh contextual links and sitemap on scheduled builds.
