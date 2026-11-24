@@ -32,6 +32,7 @@ assert.deepEqual(ids(sched), [
   "fransa-turkiye-2026-11-15-bu-aksam",
   "galatasaray-samsunspor-2026-11-21-yarin",
   "galatasaray-samsunspor-2026-11-21-bugun",
+  "galatasaray-aston-villa-2026-11-24-bu-aksam",
 ]);
 
 const html = renderHomeMatchBanner(sched, { base: "./", now: at(yarin) });
@@ -92,6 +93,22 @@ for (const h of [gsLiveHtml, frHtml]) {
 }
 assert.doesNotMatch(frHtml, /data-lsw-fixture="/, "fikstür kimliği olmayan öğe canlı yuva basmaz");
 
-assert.equal(renderHomeMatchBanner(selectHomeMatchBannerSchedule(data, at(gsAfter)), { now: at(gsAfter) }), "");
+assert.doesNotMatch(renderHomeMatchBanner(selectHomeMatchBannerSchedule(data, at(gsAfter)), { now: at(gsAfter) }), /Samsunspor/);
+assert.deepEqual(ids(selectHomeMatchBannerItems(data, at(gsAfter))), []);
 
 console.log("home-match-banner: Yarın/Bu akşam pencereleri, TFF kaynağı, z-index yok, istemci geçiş verisi passed");
+
+// Galatasaray–Aston Villa (24 Kasım 2026, 20.45 TSİ, RAMS Park, hakem Daniel Siebert; Galatasaray.org "Maça Doğru")
+const gavDay = "2026-11-24T09:00:00+03:00";
+const gavBefore = "2026-11-23T23:00:00+03:00";
+const gavAfter = "2026-11-25T00:00:00+03:00";
+assert.ok(!ids(selectHomeMatchBannerItems(data, at(gavBefore))).includes("galatasaray-aston-villa-2026-11-24-bu-aksam"));
+assert.deepEqual(ids(selectHomeMatchBannerItems(data, at(gavDay))), ["galatasaray-aston-villa-2026-11-24-bu-aksam"]);
+assert.deepEqual(ids(selectHomeMatchBannerItems(data, at(gavAfter))), []);
+assert.equal(renderHomeMatchBanner(selectHomeMatchBannerSchedule(data, at(gavAfter)), { now: at(gavAfter) }), "");
+const gavHtml = renderHomeMatchBanner(selectHomeMatchBannerSchedule(data, at(gavDay)), { base: "./", now: at(gavDay) });
+assert.match(gavHtml, /Bu akşam Galatasaray – Aston Villa/);
+assert.match(gavHtml, /href="\.\/galatasaray-aston-villa\.html"/);
+assert.match(gavHtml, /20\.45 TSİ · RAMS Park, İstanbul · Hakem: Daniel Siebert/);
+assert.match(gavHtml, /href="https:\/\/www\.galatasaray\.org\/haber\/futbol\/maca-dogru-galatasaray-aston-villa\/61449"[^>]*rel="nofollow noopener noreferrer"/);
+console.log("test-home-match-banner: Galatasaray–Aston Villa penceresi doğrulandı.");
