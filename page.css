@@ -24611,3 +24611,14 @@ a.home-featured-column__note-link:focus-visible { outline: none; box-shadow: var
   .live-compact-score { font-size: 0.76rem; }
   .live-compact-status { font-size: 0.56rem; min-width: 26px; }
 }
+
+/* Transfer radarı: tek sütun, mobilde kartlar üst üste. */
+.transfer-radar-jump { margin: 0 0 8px; }
+.transfer-radar-list { display: grid; gap: 12px; }
+.transfer-radar-card h3 { margin: 8px 0; font-size: 1.05rem; line-height: 1.35; }
+.transfer-radar-card p { margin: 0 0 10px; line-height: 1.6; }
+.transfer-radar-card a { font-weight: 750; }
+.transfer-radar-meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 8px; color: var(--muted, #64748b); font-size: .82rem; }
+.transfer-radar-badge { display: inline-flex; align-items: center; min-height: 28px; padding: 0 10px; border-radius: 999px; font-weight: 800; letter-spacing: .02em; }
+.transfer-radar-badge.is-claim { background: color-mix(in srgb, #b7791f 22%, var(--surface, #fff)); }
+.transfer-radar-badge.is-reported { background: color-mix(in srgb, #138a5b 18%, var(--surface, #fff)); }

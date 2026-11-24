@@ -113,8 +113,26 @@ const pages = [
       ...commonLinks.slice(0, 1)
     ]
   },
-  // super-lig-transferleri-2026-2027.html artık Transfer Radarı: ayrı üretici
-  // scripts/generate-transfer-radar-page.mjs (derlemede bu scriptin hemen ardından).
+  {
+    file: "super-lig-transferleri-2026-2027.html",
+    title: "2026-2027 Süper Lig Transferleri: Gelenler ve Gidenler | FutbolRadar",
+    description: "2026-2027 Süper Lig transferlerini takım, oyuncu, bonservis, geliş ve ayrılık yönüyle FutbolRadar transfer ekranında inceleyin.",
+    h1: "2026-2027 Süper Lig Transferleri",
+    lead: "Takım bazlı gelen ve giden oyuncuları; güncel takım, transfer tipi, açıklanan bedel ve oyuncu profili bağlantılarıyla takip et.",
+    facts: [
+      { label: "Takip edilen kayıt", value: String(transfers.filter((item) => item.status === "confirmed").length), note: "Doğrulanmış transfer hareketi." },
+      { label: "Yaz dönemi sonu", value: "4 Eylül 2026", note: "TFF tescil takvimindeki kapanış tarihi." },
+      { label: "Veri yaklaşımı", value: "Doğrulama odaklı", note: "Açıklanmayan bedeller tahmin edilmez." }
+    ],
+    body: () => section("Son transfer hareketleri", "Kayıtlar en yeni tarih önde olacak şekilde listelenir.", `<div class="trend-transfer-grid">${transferCards(transfers.filter((item) => item.status === "confirmed").sort((a, b) => String(b.date).localeCompare(String(a.date))).slice(0, 12))}</div>`, "Süper Lig transferleri"),
+    links: [
+      { href: "./transfer-radari.html", kicker: "Gündem", title: "Transfer radarı", text: "Süper Lig ve beş büyük ligdeki kaynaklı transfer haberleri." },
+      { href: "./transfer-sezonu-ne-zaman-bitiyor.html", kicker: "Takvim", title: "Transfer sezonu ne zaman bitiyor?", text: "Yaz ve ara transfer tarihlerini incele." },
+      { href: "./galatasaray-oyuncu-radari.html", kicker: "Takım", title: "Galatasaray Oyuncu Radarı", text: "Galatasaray kadrosunu oyuncu bazında incele." },
+      { href: "./fenerbahce-oyuncu-radari.html", kicker: "Takım", title: "Fenerbahçe Oyuncu Radarı", text: "Fenerbahçe kadrosunu oyuncu bazında incele." },
+      ...commonLinks.slice(0, 1)
+    ]
+  },
   {
     file: "gornik-zabrze-fenerbahce-rovans-ne-zaman.html",
     title: "Górnik Zabrze Fenerbahçe Rövanş Maçı Ne Zaman? | FutbolRadar",

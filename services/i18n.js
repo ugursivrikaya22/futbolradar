@@ -234,6 +234,16 @@ const ROUTES = Object.freeze([
     en: "en/turkey-national-team.html",
     changefreq: "daily",
     priority: "0.8"
+  },
+  // Kalıcı transfer radarı. Dosya adı ASCII: `transfer-radari.html`.
+  // İngilizce eş aynı slug: `en/transfer-radari.html`. Menü preferredHref
+  // dosya diskteyse bu çifte bağlanır.
+  {
+    key: "transferRadar",
+    tr: "transfer-radari.html",
+    en: "en/transfer-radari.html",
+    changefreq: "daily",
+    priority: "0.8"
   }
 ]);
 
@@ -419,6 +429,16 @@ const ROUTE_META = Object.freeze({
       description: "Verified Turkish football news, each story published with the source it was confirmed against."
     }
   },
+  transferRadar: {
+    tr: {
+      title: "Günün transfer radarı | FutbolRadar",
+      description: "24 Kasım 2026 transfer radarı: Süper Lig, Premier Lig, La Liga, Serie A, Bundesliga ve Ligue 1 için kaynaklı haber ve iddialar."
+    },
+    en: {
+      title: "Transfer radar | six leagues | FutbolRadar",
+      description: "Sourced transfer news for the Süper Lig, Premier League, La Liga, Serie A, Bundesliga and Ligue 1. Rumours stay labelled as claims."
+    }
+  },
   nationalTeam: {
     tr: {
       title: "Türkiye A Millî Takım: Maç Programı, Canlı Skor ve Kadro | FutbolRadar",
@@ -460,11 +480,10 @@ const NAV_KEYS = Object.freeze({
       { route: null, href: "kose-yazilari.html", key: "nav.columns" },
       { route: null, href: "puan-durumu.html", key: "nav.standings" },
       { route: null, href: "istatistik-merkezi.html", key: "nav.stats" },
-      // TRANSFER RADAR: SEO botunun üreteceği asıl hedef `transfer-radar.html`.
-      // Derleme anında o dosya varsa menü ona bağlanır (`preferredHref`);
-      // yoksa yayında olan en yakın transfer merkezi (`href`) kullanılır.
-      // Böylece menü hiçbir zaman var olmayan bir adrese gitmez.
-      { route: null, href: "super-lig-transferleri-2026-2027.html", preferredHref: "transfer-radar.html", key: "nav.transferRadar" },
+      // TRANSFER RADAR: kalıcı sayfa `transfer-radari.html` (ASCII). Derleme
+      // anında dosya varsa menü ona bağlanır (`preferredHref`); yoksa yayında
+      // olan Süper Lig transfer merkezine düşer.
+      { route: null, href: "super-lig-transferleri-2026-2027.html", preferredHref: "transfer-radari.html", key: "nav.transferRadar" },
       { route: null, href: "arsiv.html", key: "nav.archive" }
     ],
     secondary: [
@@ -501,8 +520,8 @@ const NAV_KEYS = Object.freeze({
       { href: "en/stats-hub.html", key: "nav.stats" },
       // İngilizce transfer sayfası henüz yok ve Türkçe transfer sayfasına
       // sessizce göndermek dil kuralını bozar: `href: null` → öğe yalnızca
-      // `en/transfer-radar.html` derleme anında varsa çizilir.
-      { href: null, preferredHref: "en/transfer-radar.html", key: "nav.transferRadar" },
+      // `en/transfer-radari.html` derleme anında varsa çizilir.
+      { href: null, preferredHref: "en/transfer-radari.html", key: "nav.transferRadar" },
       { href: "en/archive.html", key: "nav.archive" }
     ],
     secondary: [
