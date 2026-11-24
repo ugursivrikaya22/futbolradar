@@ -175,11 +175,10 @@ function isThinLeague({ upcoming, results, standingsEntry }) {
   return !upcoming.length && !results.length && !standingsEntry;
 }
 
-// Transfer Radarı (super-lig-transferleri-2026-2027.html) sekmesi olan ligler:
-// lig sayfası ilgili sekmeye iç bağlantı verir.
+// Kalıcı sayfa transfer-radari.html. Lig sayfası o ligin bölümüne gider.
 const TRANSFER_RADAR_TABS = Object.freeze({
   "super-lig": "super-lig",
-  "premier-league": "premier-lig",
+  "premier-league": "premier-league",
   "la-liga": "la-liga",
   "serie-a": "serie-a",
   bundesliga: "bundesliga",
@@ -189,7 +188,7 @@ const TRANSFER_RADAR_TABS = Object.freeze({
 function transferRadarLinkHtml(competition) {
   const tab = TRANSFER_RADAR_TABS[competition.id];
   if (!tab) return "";
-  return `<p><a class="section-link" href="../super-lig-transferleri-2026-2027.html#lig-${tab}">${escapeHtml(competition.name)} transferleri: Transfer Radarı</a></p>`;
+  return `<p><a class="section-link" href="../transfer-radari.html#${tab}">${escapeHtml(competition.name)} transferleri: Transfer Radarı</a></p>`;
 }
 
 function leaguePageHtml(competition, { upcoming, results, standingsEntry }) {
