@@ -1,8 +1,17 @@
 name: Interaction checks
 on:
+  # YALNIZCA PR (24.11.2026). Her koşu ~48 dakika; aynı ağaç PR'da zaten
+  # denetlendiği için birleştirme sonrası `main` push'unda tekrar koşmak
+  # aylık 2.000 dakikalık Actions kotasını ikiye katlıyordu. `main` için
+  # gerekirse elle (workflow_dispatch) çalıştırılabilir.
+  #
+  # paths-ignore yalnızca belge değişikliklerini dışarıda bırakır. Haber,
+  # köşe yazısı ve site haritası PR'ları BİLEREK denetimde kaldı: #818 ve
+  # #820'deki site haritası hatalarını bu işin testleri yakaladı.
   pull_request:
-  push:
-    branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
   workflow_dispatch:
 permissions:
   contents: read

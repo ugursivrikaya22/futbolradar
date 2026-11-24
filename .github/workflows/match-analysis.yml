@@ -14,8 +14,11 @@ on:
     # Gündüz (TSİ 07:00–00:59 = UTC 04–21) saatlik kalıyor: maçlar, skorlar ve
     # haber akışı o saatlerde değişiyor.
     - cron: "7 4-21 * * *"
-    # Worldwide fixtures also run overnight; all 24 hours are covered.
-    - cron: "7 0-1,3,22-23 * * *"
+    # Gece (UTC 22–03) İKİ SAATTE BİR: 22, 00, (02 tam koşu), sonra 04'te
+    # gündüz başlıyor. Önceki ifade `0-1,3,22-23` yorumda "iki saatte bir"
+    # diye anılıyordu ama aslında 02 dışında saatlikti; 24.11.2026'da Actions
+    # kotası bittiği için gerçekten iki saate indirildi (günde 3 koşu daha az).
+    - cron: "7 0,22 * * *"
   workflow_dispatch:
     inputs:
       update_type:

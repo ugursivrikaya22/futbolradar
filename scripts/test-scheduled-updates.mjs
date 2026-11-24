@@ -407,8 +407,8 @@ assert.match(workflow, /cron: "0 2 \* \* \*"/);
 // altı saatinde neredeyse hiçbir şey değişmezken saatlik tazeleme doğrudan
 // faturaya yazılıyordu. Kapsam daralmadı: gündüzün tamamı hâlâ saatlik.
 assert.match(workflow, /cron: "7 4-21 \* \* \*"/);
-assert.match(workflow, /cron: "7 0-1,3,22-23 \* \* \*"/);
-// İki kısa ifade de 02:00 UTC'yi DIŞARIDA bırakıyor (4-21 ve 0,3,22): orası
+assert.match(workflow, /cron: "7 0,22 \* \* \*"/);
+// İki kısa ifade de 02:00 UTC'yi DIŞARIDA bırakıyor (4-21 ve 0,22): orası
 // tam tazelemenin saati, iki iş aynı dosyalara yazmak için sıraya giremez.
 // Saatleri tek tek çözüp doğruluyoruz ki ilerideki bir düzenleme 2'yi sessizce
 // geri sokamasın.
@@ -418,7 +418,7 @@ assert.match(workflow, /cron: "7 0-1,3,22-23 \* \* \*"/);
       const [from, to] = part.split("-").map(Number);
       return Number.isInteger(to) ? Array.from({ length: to - from + 1 }, (_, i) => from + i) : [from];
     });
-  const shortRunHours = [...hoursOf("4-21"), ...hoursOf("0-1,3,22-23")];
+  const shortRunHours = [...hoursOf("4-21"), ...hoursOf("0,22")];
   assert.ok(!shortRunHours.includes(2), "kısa koşu 02:00 UTC'ye girmemeli — tam tazeleme orada");
   assert.equal(new Set(shortRunHours).size, shortRunHours.length, "aynı saat iki kez tetiklenmemeli");
 }
