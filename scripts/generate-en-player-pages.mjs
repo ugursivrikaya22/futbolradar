@@ -29,9 +29,11 @@ import { sectionHead } from "./lib/matchCards.mjs";
 import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
 import {
   player360Description,
+  player360FaqPage,
   player360Person,
   player360Title,
-  renderPlayer360
+  renderPlayer360,
+  renderPlayer360Kimdir
 } from "./lib/player360.mjs";
 
 import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
@@ -282,7 +284,7 @@ function pageHtml(player) {
         itemListElement: [
           { "@type": "ListItem", position: 1, name: label("breadcrumb.home"), item: absoluteUrl("en/index.html") },
           { "@type": "ListItem", position: 2, name: label("nav.teams"), item: absoluteUrl("en/teams.html") },
-          { "@type": "ListItem", position: 3, name: player.name, item: canonical }
+          { "@type": "ListItem", position: 3, name: model.identity.name, item: canonical }
         ]
       },
       {
@@ -294,7 +296,10 @@ function pageHtml(player) {
         mainEntity: { "@id": `${canonical}#person` },
         isPartOf: { "@type": "WebSite", name: "FutbolRadar", url: "https://www.futbolradar.com/" },
         inLanguage: "en"
-      }
+      },
+      ...(player360FaqPage(model, canonical, { locale: LOCALE })
+        ? [player360FaqPage(model, canonical, { locale: LOCALE })]
+        : [])
     ]
   };
 
@@ -331,7 +336,7 @@ function pageHtml(player) {
   <body class="subpage player-profile-page">
     ${siteHeader({ base: BASE, locale: LOCALE, altHref: null })}
     <main class="container">
-      <nav class="breadcrumb" aria-label="Breadcrumb"><a href="${BASE}en/index.html">${escapeHtml(label("breadcrumb.home"))}</a><span>/</span><a href="${BASE}en/teams.html">${escapeHtml(label("nav.teams"))}</a><span>/</span><span>${escapeHtml(player.name)}</span></nav>
+      <nav class="breadcrumb" aria-label="Breadcrumb"><a href="${BASE}en/index.html">${escapeHtml(label("breadcrumb.home"))}</a><span>/</span><a href="${BASE}en/teams.html">${escapeHtml(label("nav.teams"))}</a><span>/</span><span>${escapeHtml(model.identity.name)}</span></nav>
       <section class="hero profile-hero">
         <div class="hero-row">
           <div class="profile-hero-identity">
@@ -345,6 +350,7 @@ function pageHtml(player) {
           ${rating ? `<span class="hero-meta">Rating <b>${escapeHtml(rating)}</b></span>` : ""}
         </div>
       </section>
+      ${renderPlayer360Kimdir(model, { locale: LOCALE })}
       ${renderPlayer360(model, { locale: LOCALE })}
       ${marketValue ? `<section class="container section" aria-label="Market value"><p class="muted-copy">Estimated market value: <b>${escapeHtml(marketValue)}</b></p></section>` : ""}
       <section class="container section" aria-label="Explore more">

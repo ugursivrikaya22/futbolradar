@@ -4,10 +4,13 @@ import { createRequire } from "node:module";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
 import {
   player360Description,
+  player360FaqPage,
   player360Graph,
+  player360H1,
   player360Person,
   player360Title,
-  renderPlayer360
+  renderPlayer360,
+  renderPlayer360Kimdir
 } from "./lib/player360.mjs";
 import { turkishPlayer360 } from "./lib/player360English.mjs";
 import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
@@ -475,17 +478,24 @@ function pageHtml(player) {
   // o hafta arama "Osimhen Galatasaray transferi" biçiminde geliyor ve
   // kulüp adını taşıyan başlık o niyetin birebir karşılığı. İstisna dar
   // tutuluyor (46 kayıt), çünkü genel kalıp daha geniş bir niyeti kapsıyor.
+  const displayName = model.identity.name;
   const title = recentTransfer
-    ? `${player.name} ${recentTransfer.toTeam} Transferi ve İstatistikleri | FutbolRadar`
+    ? (function transferTitle() {
+        const brand = " | FutbolRadar";
+        const team = recentTransfer.toTeam;
+        const variants = [
+          `${displayName} Kimdir? ${team} Transferi${brand}`,
+          `${displayName} Kimdir? ${team}${brand}`,
+          `${displayName} Kimdir?${brand}`,
+          `${displayName} Kimdir?`
+        ];
+        return variants.find((row) => row.length <= 60) || variants[variants.length - 1];
+      }())
     : player360Title(model, { locale: "tr" });
-  const description = recentTransfer
-    ? transferHeroDescription(player, recentTransfer)
-    : player360Description(model, { locale: "tr" });
-  const lead = recentTransfer
-    ? description
-    : view.verified
-      ? (playerNeedsTransferReview(player) ? description : player.summary || description)
-      : description;
+  // Meta her zaman kimdir niyetine uygun üretilir; cümle ortadan kesilmez.
+  // Transfer kartı görünür kahraman bölümünde kalır, açıklamayı bölmez.
+  const description = player360Description(model, { locale: "tr" });
+  const lead = description;
   const canonical = playerUrls.playerCanonicalUrl(player.id);
   // İNDEKS KARARI: doğrulanmış oyuncu, kesinleşmiş transferi olan oyuncu ya da
   // en az bir KAYNAKLI içerik bölümü (sezon, maçlar, kariyer, transfer, haber,
@@ -539,7 +549,7 @@ function pageHtml(player) {
           [
             { "@type": "ListItem", position: 1, name: "Ana Sayfa", item: "https://www.futbolradar.com/" },
             { "@type": "ListItem", position: 2, name: "Oyuncu Radarı", item: "https://www.futbolradar.com/oyuncu-radari.html" },
-            { "@type": "ListItem", position: 3, name: player.name, item: canonical }
+            { "@type": "ListItem", position: 3, name: model.identity.name, item: canonical }
           ]
         ),
         "@graph": [
@@ -552,7 +562,7 @@ function pageHtml(player) {
             itemListElement: [
               { "@type": "ListItem", position: 1, name: "Ana Sayfa", item: "https://www.futbolradar.com/" },
               { "@type": "ListItem", position: 2, name: "Oyuncu Radarı", item: "https://www.futbolradar.com/oyuncu-radari.html" },
-              { "@type": "ListItem", position: 3, name: player.name, item: canonical }
+              { "@type": "ListItem", position: 3, name: model.identity.name, item: canonical }
             ]
           },
           {
@@ -564,7 +574,10 @@ function pageHtml(player) {
             mainEntity: { "@id": `${canonical}#person` },
             isPartOf: { "@type": "WebSite", name: "FutbolRadar", url: "https://www.futbolradar.com/" },
             inLanguage: "tr-TR"
-          }
+          },
+          ...(player360FaqPage(model, canonical, { locale: "tr" })
+            ? [player360FaqPage(model, canonical, { locale: "tr" })]
+            : [])
         ]
       }, null, 8)}
     </script>
@@ -588,7 +601,7 @@ function pageHtml(player) {
           ${profileAvatarHtml(player)}
           <div>
             <span class="eyebrow">${escapeHtml(recentTransfer ? `Yeni Transfer · ${recentTransfer.toTeam}` : view.verified ? playerTeamEyebrow(player) : "Oyuncu profili")}</span>
-            <h1>${escapeHtml(model.identity.name)}</h1>
+            <h1>${escapeHtml(player360H1(model, { locale: "tr" }))}</h1>
             <p class="lead">${escapeHtml(lead)}</p>
           </div>
           ${view.verified
@@ -598,6 +611,7 @@ function pageHtml(player) {
             : `<span class="hero-meta">${escapeHtml(player.position || "Mevki bekleniyor")} · ${escapeHtml(age)}</span>`}
         </div>
       </section>
+      ${renderPlayer360Kimdir(model, { locale: "tr" })}
       ${recentTransfer ? transferHeroHtml(player, recentTransfer, age) : ""}
       ${ratingSectionHtml(player)}
       ${renderPlayer360(model, { locale: "tr" })}
