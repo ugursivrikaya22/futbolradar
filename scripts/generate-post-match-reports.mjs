@@ -202,16 +202,6 @@ const publicPath = path.join(root, "public", "data", "post-match-reports.json");
 fs.mkdirSync(path.dirname(publicPath), { recursive: true });
 fs.writeFileSync(publicPath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
 
-const motmIndex = {
-  records: records.map((record) => ({
-    matchId: record && record.matchId,
-    homeTeam: record && record.homeTeam,
-    awayTeam: record && record.awayTeam,
-    kickoff: (record && (record.kickoff || record.kickoffUtc || record.date)) || null
-  })).filter((record) => record.matchId)
-};
-fs.writeFileSync(path.join(root, "data", "motm-report-index.json"), `${JSON.stringify(motmIndex)}\n`, "utf8");
-
 console.log(`[post-match-reports] yazıldı: data/post-match-reports.json (${records.length} kayıt)`);
 
 // Analiz edilemeyen bitmiş maç kalmadığından emin ol: bu script'in varlık
