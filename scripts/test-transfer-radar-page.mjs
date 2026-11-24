@@ -12,8 +12,8 @@ const require = createRequire(import.meta.url);
 const { hostOf, isAllowedSourceHost } = require("../services/sourceLinks.js");
 const { absoluteUrl } = require("../services/i18n.js");
 const root = process.cwd();
-const TR = "transfer-radarı.html";
-const EN = "en/transfer-radar.html";
+const TR = "transfer-radari.html";
+const EN = "en/transfer-radari.html";
 
 const data = readData(path.join(root, "data", "transfer-radar.json"));
 const html = fs.readFileSync(path.join(root, TR), "utf8");
@@ -70,7 +70,7 @@ const en = fs.readFileSync(path.join(root, EN), "utf8");
 {
   assert.equal(en.match(/<title>([^<]*)<\/title>/)[1], "Transfer radar | six leagues | FutbolRadar");
   assert.ok(en.includes(`<link rel="canonical" href="${absoluteUrl(EN)}" />`));
-  assert.ok(en.includes('class="lang-switch" href="../transfer-radarı.html"'), "dil kutusu");
+  assert.ok(en.includes('class="lang-switch" href="../transfer-radari.html"'), "dil kutusu");
   assert.ok(!en.includes(">İddia<"), "EN rozet Türkçe olmamalı");
 }
 
@@ -78,13 +78,14 @@ const en = fs.readFileSync(path.join(root, EN), "utf8");
   const season = fs.readFileSync(path.join(root, "super-lig-transferleri-2026-2027.html"), "utf8");
   assert.ok(season.includes("<title>2026-2027 Süper Lig Transferleri: Gelenler ve Gidenler | FutbolRadar</title>"));
   assert.ok(season.includes("<h1>2026-2027 Süper Lig Transferleri</h1>"));
-  assert.ok(season.includes('<a href="./transfer-radarı.html"><span>Gündem</span><strong>Transfer radarı</strong>'), "içerikte tek yeni link");
+  assert.ok(season.includes('<a href="./transfer-radari.html"><span>Gündem</span><strong>Transfer radarı</strong>'), "içerikte tek yeni link");
 }
 
 {
   const vercel = JSON.parse(fs.readFileSync(path.join(root, "vercel.json"), "utf8"));
-  assert.ok(vercel.rewrites.some((row) => row.source === "/en/transfer-radar" && row.destination === "/en/transfer-radar.html"));
-  assert.ok(!vercel.redirects.some((row) => row.source === "/en/transfer-radar" || row.source === "/en/transfer-radar.html"));
+  assert.ok(vercel.rewrites.some((row) => row.source === "/transfer-radari" && row.destination === "/transfer-radari.html"));
+  assert.ok(vercel.rewrites.some((row) => row.source === "/en/transfer-radari" && row.destination === "/en/transfer-radari.html"));
+  assert.ok(!vercel.redirects.some((row) => row.source === "/transfer-radari" || row.source === "/transfer-radari.html" || row.source === "/en/transfer-radari" || row.source === "/en/transfer-radari.html"));
   const sitemap = fs.readFileSync(path.join(root, "sitemap.xml"), "utf8");
   assert.ok(sitemap.includes(`<loc>${absoluteUrl(TR)}</loc>`));
   assert.ok(sitemap.includes(`<loc>${absoluteUrl(EN)}</loc>`));

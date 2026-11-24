@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * /transfer-radarı — kalıcı transfer radarı.
+ * /transfer-radari — kalıcı transfer radarı. Dosya adı ASCII.
  *
  * Süper Lig, Premier Lig, La Liga, Serie A, Bundesliga ve Ligue 1.
  * İçerik data/transfer-radar.json'dan gelir. Her öğenin kaynak adresi
@@ -8,7 +8,7 @@
  * satırlar sayfada "İddia" ve data-confidence="claim" taşır. Doğrulanmış
  * kayıt yoksa lig bölümü bunu söyler; boşluk uydurma transferle doldurulmaz.
  *
- * İngilizce eş: en/transfer-radar.html. Ortak yerleşimden önce koşar.
+ * İngilizce eş: en/transfer-radari.html. Ortak yerleşimden önce koşar.
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -22,8 +22,8 @@ const require = createRequire(import.meta.url);
 const { absoluteUrl, hreflangOf, routeMeta } = require("../services/i18n.js");
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const TR_FILE = "transfer-radarı.html";
-const EN_FILE = "en/transfer-radar.html";
+const TR_FILE = "transfer-radari.html";
+const EN_FILE = "en/transfer-radari.html";
 const DATA_FILE = path.join(root, "data", "transfer-radar.json");
 const socialImage = "https://www.futbolradar.com/assets/og-image.png";
 

@@ -235,13 +235,13 @@ const ROUTES = Object.freeze([
     changefreq: "daily",
     priority: "0.8"
   },
-  // Kalıcı transfer radarı. Dosya adı sahibi isteğiyle `transfer-radarı.html`.
-  // İngilizce eş ASCII kalır (`en/transfer-radar.html`); menü preferredHref
+  // Kalıcı transfer radarı. Dosya adı ASCII: `transfer-radari.html`.
+  // İngilizce eş aynı slug: `en/transfer-radari.html`. Menü preferredHref
   // dosya diskteyse bu çifte bağlanır.
   {
     key: "transferRadar",
-    tr: "transfer-radarı.html",
-    en: "en/transfer-radar.html",
+    tr: "transfer-radari.html",
+    en: "en/transfer-radari.html",
     changefreq: "daily",
     priority: "0.8"
   }
@@ -480,10 +480,10 @@ const NAV_KEYS = Object.freeze({
       { route: null, href: "kose-yazilari.html", key: "nav.columns" },
       { route: null, href: "puan-durumu.html", key: "nav.standings" },
       { route: null, href: "istatistik-merkezi.html", key: "nav.stats" },
-      // TRANSFER RADAR: kalıcı sayfa `transfer-radarı.html`. Derleme anında
-      // dosya varsa menü ona bağlanır (`preferredHref`); yoksa yayında olan
-      // Süper Lig transfer merkezine düşer. Menü var olmayan adrese gitmez.
-      { route: null, href: "super-lig-transferleri-2026-2027.html", preferredHref: "transfer-radarı.html", key: "nav.transferRadar" },
+      // TRANSFER RADAR: kalıcı sayfa `transfer-radari.html` (ASCII). Derleme
+      // anında dosya varsa menü ona bağlanır (`preferredHref`); yoksa yayında
+      // olan Süper Lig transfer merkezine düşer.
+      { route: null, href: "super-lig-transferleri-2026-2027.html", preferredHref: "transfer-radari.html", key: "nav.transferRadar" },
       { route: null, href: "arsiv.html", key: "nav.archive" }
     ],
     secondary: [
@@ -520,8 +520,8 @@ const NAV_KEYS = Object.freeze({
       { href: "en/stats-hub.html", key: "nav.stats" },
       // İngilizce transfer sayfası henüz yok ve Türkçe transfer sayfasına
       // sessizce göndermek dil kuralını bozar: `href: null` → öğe yalnızca
-      // `en/transfer-radar.html` derleme anında varsa çizilir.
-      { href: null, preferredHref: "en/transfer-radar.html", key: "nav.transferRadar" },
+      // `en/transfer-radari.html` derleme anında varsa çizilir.
+      { href: null, preferredHref: "en/transfer-radari.html", key: "nav.transferRadar" },
       { href: "en/archive.html", key: "nav.archive" }
     ],
     secondary: [

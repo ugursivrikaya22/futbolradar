@@ -98,7 +98,7 @@ export const POSTPROCESS_CHAIN = [
   // `shared-layout`ten ÖNCE: sayfa kendi başlığını basıyor, zincir normalleştiriyor.
   { id: "prediction-league-page", script: "generate-prediction-league-page.mjs", args: [], timeoutMinutes: 2 },
   { id: "transfer-period-page", script: "generate-transfer-period-page.mjs", args: [], timeoutMinutes: 2 },
-  // Kalıcı transfer radarı (`transfer-radarı.html` + `en/transfer-radar.html`).
+  // Kalıcı transfer radarı (`transfer-radari.html` + `en/transfer-radari.html`).
   // Ortak yerleşimden önce: sayfa kendi başlığını basar, zincir normalleştirir.
   { id: "transfer-radar-page", script: "generate-transfer-radar-page.mjs", args: [], timeoutMinutes: 2 },
   // /takip-ettiklerim (kişisel sayfa, noindex): statik kabuk; içerik tarayıcıda yerel favorilerden çizilir.

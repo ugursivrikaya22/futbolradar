@@ -126,7 +126,7 @@ const pages = [
     ],
     body: () => section("Son transfer hareketleri", "Kayıtlar en yeni tarih önde olacak şekilde listelenir.", `<div class="trend-transfer-grid">${transferCards(transfers.filter((item) => item.status === "confirmed").sort((a, b) => String(b.date).localeCompare(String(a.date))).slice(0, 12))}</div>`, "Süper Lig transferleri"),
     links: [
-      { href: "./transfer-radarı.html", kicker: "Gündem", title: "Transfer radarı", text: "Süper Lig ve beş büyük ligdeki kaynaklı transfer haberleri." },
+      { href: "./transfer-radari.html", kicker: "Gündem", title: "Transfer radarı", text: "Süper Lig ve beş büyük ligdeki kaynaklı transfer haberleri." },
       { href: "./transfer-sezonu-ne-zaman-bitiyor.html", kicker: "Takvim", title: "Transfer sezonu ne zaman bitiyor?", text: "Yaz ve ara transfer tarihlerini incele." },
       { href: "./galatasaray-oyuncu-radari.html", kicker: "Takım", title: "Galatasaray Oyuncu Radarı", text: "Galatasaray kadrosunu oyuncu bazında incele." },
       { href: "./fenerbahce-oyuncu-radari.html", kicker: "Takım", title: "Fenerbahçe Oyuncu Radarı", text: "Fenerbahçe kadrosunu oyuncu bazında incele." },
