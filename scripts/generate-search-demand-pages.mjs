@@ -15,6 +15,7 @@
  * site haritasına eklenir, panel eklenmez.
  */
 
+import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
@@ -34,6 +35,17 @@ function sourceAnchorAttrs(url) {
 }
 
 const domain = "https://www.futbolradar.com";
+
+/** inject-asset-version ile aynı damga: dosya özetinin ilk 8 karakteri. */
+function assetStamp(fileName) {
+  const filePath = path.join(root, fileName);
+  if (!fs.existsSync(filePath)) return "";
+  return crypto.createHash("sha256").update(fs.readFileSync(filePath)).digest("hex").slice(0, 8);
+}
+function assetHref(fileName) {
+  const stamp = assetStamp(fileName);
+  return `./${fileName}${stamp ? `?v=${stamp}` : ""}`;
+}
 const plan = JSON.parse(fs.readFileSync(path.join(root, "data", "search-demand", "content-plan.json"), "utf8"));
 
 function readJson(file, fallback) {
@@ -265,7 +277,7 @@ function contentPageHtml(page) {
     <script type="application/ld+json">${JSON.stringify(jsonLd(page))}</script>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="./site.webmanifest" />
-    <link rel="stylesheet" href="./page.css" />
+    <link rel="stylesheet" href="${assetHref("page.css")}" />
   </head>
   <body class="subpage">
 ${siteHeader({ base: "./" })}
@@ -289,8 +301,8 @@ ${siteHeader({ base: "./" })}
       ${relatedLinks(page)}
     </main>
 ${siteFooter({ base: "./" })}
-    <script src="./site.js" defer></script>
-    <script src="./app.js" defer></script>
+    <script src="${assetHref("site.js")}" defer></script>
+    <script src="${assetHref("app.js")}" defer></script>
   </body>
 </html>
 `;
@@ -332,7 +344,7 @@ function dashboardHtml(page) {
     <meta name="description" content="${escapeHtml(page.description)}" />
     <meta name="robots" content="noindex,nofollow" />
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="./page.css" />
+    <link rel="stylesheet" href="${assetHref("page.css")}" />
     <style>
       .demand-table-wrap { overflow-x: auto; }
       .demand-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
