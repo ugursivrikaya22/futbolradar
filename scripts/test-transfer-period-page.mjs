@@ -55,7 +55,8 @@ for (const [label, html] of [["render", renderPage(data)], ["dosya", fs.readFile
   }
   for (const id of ["tarihler", "yasaklar", "hatayspor"]) assert.ok(html.includes(`id="${id}"`), `${label}: #${id} bölümü yok`);
   assert.ok(/1 Ocak 2027/.test(html) && /5 Şubat 2027/.test(html), `${label}: ara dönem tarihleri`);
-  assert.ok(!/\/transfer-radar/.test(html), `${label}: main'de olmayan /transfer-radar'a bağlantı verilmemeli`);
+  // Kalıcı sayfa `transfer-radarı.html`. ASCII `/transfer-radar` (ı'sız) hâlâ yok.
+  assert.ok(!/\/transfer-radar(?!ı)/.test(html), `${label}: ı'sız /transfer-radar adresine bağlantı verilmemeli`);
 }
 
 // ── 3. Ana sayfa bandı ───────────────────────────────────────────────────────
