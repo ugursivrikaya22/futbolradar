@@ -148,6 +148,25 @@ for (const record of transfers.filter((item) => item.status === "confirmed")) {
   const overlong = buildTransferRadar(tmp, { now: NOW, tickerItems: [] });
   assert.ok(overlong.problems.some((p) => /72 saati/.test(p)), "72 saati aşan söylenti reddedilmeli");
   fs.rmSync(tmp, { recursive: true, force: true });
+  // Site haritası: kayıt yoksa üretici ekler (generate-static-seo-pages haritayı
+  // baştan yazıyor; QA "sitemap missing" ile derlemeyi durduruyordu).
+  {
+    const sm = fs.mkdtempSync(path.join(os.tmpdir(), "tr-radar-sm-"));
+    fs.mkdirSync(path.join(sm, "data"));
+    fs.mkdirSync(path.join(sm, "public"));
+    for (const f of ["transfer-radar.json", "transfers.json"]) fs.copyFileSync(path.join(root, "data", f), path.join(sm, "data", f));
+    fs.writeFileSync(path.join(sm, "data", "ticker.json"), JSON.stringify({ items: [] }));
+    const empty = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n</urlset>\n';
+    fs.writeFileSync(path.join(sm, "sitemap.xml"), empty);
+    fs.writeFileSync(path.join(sm, "public", "sitemap.xml"), empty);
+    generateTransferRadarPage(sm, { now: NOW });
+    generateTransferRadarPage(sm, { now: NOW });
+    for (const f of ["sitemap.xml", "public/sitemap.xml"]) {
+      const xml = fs.readFileSync(path.join(sm, f), "utf8");
+      assert.equal(xml.split("<loc>https://www.futbolradar.com/super-lig-transferleri-2026-2027.html</loc>").length - 1, 1, `${f}: sayfa haritada tam bir kez`);
+    }
+    fs.rmSync(sm, { recursive: true, force: true });
+  }
 }
 assert.ok(html.includes("Pencere tarihleri: <strong>Güncelleniyor</strong>"), "kaynaksız ocak penceresi Güncelleniyor");
 

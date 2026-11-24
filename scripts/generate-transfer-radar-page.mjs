@@ -579,13 +579,22 @@ export function renderTransferRadarPage(data) {
 `;
 }
 
-function upsertSitemapLastmod(root, lastmod) {
+/**
+ * Site haritasına sayfayı ekler/günceller. Eskiden trend üreticisi bu sayfayı
+ * haritaya ekliyordu; sayfa oradan çıkınca kayıt düşüyordu ve QA
+ * ("sitemap missing …") derlemeyi durduruyordu. Aynı biçimle upsert edilir.
+ */
+function upsertSitemapEntry(root, lastmod) {
+  const escapedLoc = PAGE_URL.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const entry = new RegExp(`(<url>\\s*<loc>${escapedLoc}<\\/loc>\\s*<lastmod>)[^<]*(<\\/lastmod>)`);
   for (const file of [path.join(root, "sitemap.xml"), path.join(root, "public", "sitemap.xml")]) {
     if (!fs.existsSync(file)) continue;
     const xml = fs.readFileSync(file, "utf8");
-    const escapedLoc = PAGE_URL.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const entry = new RegExp(`(<url>\\s*<loc>${escapedLoc}<\\/loc>\\s*<lastmod>)[^<]*(<\\/lastmod>)`);
-    if (entry.test(xml)) fs.writeFileSync(file, xml.replace(entry, `$1${lastmod}$2`), "utf8");
+    let next;
+    if (entry.test(xml)) next = xml.replace(entry, `$1${lastmod}$2`);
+    else if (xml.includes(`<loc>${PAGE_URL}</loc>`)) next = xml;
+    else next = xml.replace("</urlset>", `  <url>\n    <loc>${PAGE_URL}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.9</priority>\n  </url>\n</urlset>`);
+    if (next !== xml) fs.writeFileSync(file, next, "utf8");
   }
 }
 
@@ -597,7 +606,7 @@ export function generateTransferRadarPage(root = process.cwd(), options = {}) {
   const html = renderTransferRadarPage(data);
   fs.writeFileSync(path.join(root, PAGE_FILE), html, "utf8");
   if (fs.existsSync(path.join(root, "public"))) fs.writeFileSync(path.join(root, "public", PAGE_FILE), html, "utf8");
-  if (options.sitemap !== false) upsertSitemapLastmod(root, data.updatedAt.slice(0, 10));
+  if (options.sitemap !== false) upsertSitemapEntry(root, data.updatedAt.slice(0, 10));
   const counts = data.leagues.map((league) => `${league.name}: ${league.official.length} resmi / ${league.rumours.length} söylenti`).join(" · ");
   console.log(`[transfer-radar] ${PAGE_FILE} üretildi — ${counts}`);
   return data;
