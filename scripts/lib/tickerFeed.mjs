@@ -40,6 +40,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
+import { apiFootballScoreItems } from "./worldFootballTicker.mjs";
 
 const require = createRequire(import.meta.url);
 const {
@@ -327,9 +328,18 @@ function newsItems(now) {
  * DOĞRULAMA ZORUNLU: güveni belirtilmemiş, kaynağı gösterilmemiş ya da
  * rozetiyle çelişen bir öğe banda hiç girmez.
  */
+function isWorldEntry(entry) {
+  return Boolean(entry) && (String(entry.id || "").startsWith("world-") || entry.origin === "world-rss");
+}
+
 function curatedItems(now) {
   const payload = readJson("news-ticker.json", { items: [] });
-  const { items, rejected } = normalizeTickerItems(payload, { now, limit: MAX_CURATED_ITEMS });
+  const raw = Array.isArray(payload) ? payload : (Array.isArray(payload.items) ? payload.items : []);
+  const manualPayload = Array.isArray(payload) ? raw.filter((entry) => !isWorldEntry(entry)) : { ...payload, items: raw.filter((entry) => !isWorldEntry(entry)) };
+  const manual = normalizeTickerItems(manualPayload, { now, limit: MAX_CURATED_ITEMS });
+  const world = normalizeTickerItems({ items: raw.filter(isWorldEntry) }, { now, limit: 8 });
+  const items = [...manual.items, ...world.items];
+  const rejected = [...manual.rejected, ...world.rejected];
 
   logRejected("ticker", rejected);
 
@@ -356,8 +366,47 @@ function curatedItems(now) {
       ...item,
       href: (selfNewsHref(item.href) || {}).href || item.href,
       source: "curated",
-      priority: (item.breaking ? 0.5 : 1.5) + item.rank / 10 + item.priority / 100
+      world: String(item.id || "").startsWith("world-"),
+      priority: String(item.id || "").startsWith("world-")
+        ? 2.4 + item.rank / 10
+        : (item.breaking ? 0.5 : 1.5) + item.rank / 10 + item.priority / 100
     }));
+}
+
+function calendarMatches() {
+  const payload = readJson("fixture-calendar.json", { matches: [] });
+  if (Array.isArray(payload)) return payload;
+  return Array.isArray(payload.matches) ? payload.matches : [];
+}
+
+/**
+ * Kota hesabı. Dünya başlığı veya taze skor varken elle girilen gündem
+ * hâlâ önde kalır; otomatik başlık için ayrılan yer, tavanı aşarsa
+ * küratörlü rezervden düşülür.
+ */
+export function allocateTickerSlots({
+  manualCount = 0,
+  worldCount = 0,
+  matchCount = 0,
+  transferCount = 0,
+  maxItems = MAX_ITEMS,
+  minCurated = MIN_CURATED_SLOTS,
+  maxMatches = MAX_MATCH_ITEMS,
+  minTransfers = MIN_TRANSFER_SLOTS,
+  worldSlots = 6
+} = {}) {
+  let world = Math.min(worldCount, worldSlots);
+  let matches = Math.min(matchCount, maxMatches);
+  let transfers = Math.min(transferCount, minTransfers);
+  let manual = Math.min(manualCount, minCurated);
+  while (manual + world + matches + transfers > maxItems) {
+    if (manual > 0 && (world > 0 || matches > 0)) manual -= 1;
+    else if (transfers > 0) transfers -= 1;
+    else if (world > 0) world -= 1;
+    else if (matches > 0) matches -= 1;
+    else manual -= 1;
+  }
+  return { manual, world, matches, transfers };
 }
 
 /**
@@ -420,6 +469,7 @@ export function buildTickerFeed(options = {}) {
   // sorusunu tek cevaplı hâle getiriyor.
   const pool = dedupe([
     ...matchItems(now),
+    ...apiFootballScoreItems(calendarMatches(), { nowMs: now.getTime() }),
     ...curatedItems(now),
     ...transferItems(now),
     ...newsItems(now)
@@ -429,6 +479,8 @@ export function buildTickerFeed(options = {}) {
 
   const matches = fromSource("match");
   const curated = fromSource("curated");
+  const manual = curated.filter((item) => !item.world);
+  const world = curated.filter((item) => item.world);
   const transfers = fromSource("transfer");
 
   // Kategori kotası: maç sonuçları bandı tek başına doldurmasın, doğrulanmış
@@ -438,17 +490,19 @@ export function buildTickerFeed(options = {}) {
   // Küratörlü gündeme yer AYRILMASI şart: altı maç sonucu varken transfer
   // iddiaları ve resmî açıklamalar hiç görünmüyordu — transferler için
   // zaten yaşanmış ve çözülmüş olan sorunun aynısı.
-  const reservedForTransfers = Math.min(transfers.length, MIN_TRANSFER_SLOTS);
-  const reservedForCurated = Math.min(curated.length, MIN_CURATED_SLOTS);
-  const matchQuota = Math.min(
-    matches.length,
-    MAX_MATCH_ITEMS,
-    MAX_ITEMS - reservedForTransfers - reservedForCurated
-  );
+  const slots = allocateTickerSlots({
+    manualCount: manual.length,
+    worldCount: world.length,
+    matchCount: matches.length,
+    transferCount: transfers.length
+  });
+  const reservedForTransfers = slots.transfers;
+  const matchQuota = slots.matches;
 
   const picked = [
     ...matches.slice(0, Math.max(matchQuota, 0)),
-    ...curated.slice(0, reservedForCurated),
+    ...manual.slice(0, slots.manual),
+    ...world.slice(0, slots.world),
     ...transfers.slice(0, reservedForTransfers)
   ];
 

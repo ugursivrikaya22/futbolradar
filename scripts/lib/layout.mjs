@@ -345,6 +345,7 @@ export function tickerFeedPayload({ tr, en } = {}) {
           out.confidence = String(item.confidence || "rumour");
         }
         if (attribution) out.attribution = String(attribution);
+        if (item.textLang) out.textLang = String(item.textLang);
         return out;
       })
     };
@@ -424,8 +425,16 @@ export function newsTicker(options = {}) {
       ? ` aria-label="${escapeHtml(`${ariaText}${attribution ? ` — ${sourceWord}: ${attribution}` : ""}`)}"`
       : "";
     const title = attribution ? ` title="${escapeHtml(`${sourceTitle}: ${attribution}`)}"` : "";
+    const langCode = String(item.textLang || "").toLowerCase();
+    const pageLang = locale === "en" ? "en" : "tr";
+    const langMark = langCode && langCode !== pageLang
+      ? `<span class="news-ticker-lang">${escapeHtml(langCode.toUpperCase())}</span>`
+      : "";
+    const sourceMark = attribution
+      ? `<span class="news-ticker-source">${escapeHtml(attribution)}</span>`
+      : "";
 
-    return `<a class="news-ticker-item" href="${escapeHtml(href)}"${rel}${aria}${title}>${label}${confidence}<span>${escapeHtml(item.text)}</span></a>`;
+    return `<a class="news-ticker-item" href="${escapeHtml(href)}"${rel}${aria}${title}>${langMark}${label}${confidence}<span>${escapeHtml(item.text)}</span>${sourceMark}</a>`;
   };
 
   const track = items.map(renderItem).join('<span class="news-ticker-sep" aria-hidden="true"></span>');

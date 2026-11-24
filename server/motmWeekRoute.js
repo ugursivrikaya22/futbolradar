@@ -81,7 +81,11 @@ function loadTeams() {
 
 function loadReports() {
   try {
-    return require("../data/post-match-reports.json");
+    // Tam rapor deposu (~60 MB) bu uçta yalnızca maç kimliği, takım ve
+    // başlama saati için okunuyordu ve sunucusuz işlevi 250 MB sınırının
+    // üstüne çıkarıyordu. İndeks aynı alanları taşır; reportHrefFor başka
+    // alan okumaz. Üretim: scripts/generate-post-match-reports.mjs.
+    return require("../data/motm-report-index.json");
   } catch (error) {
     return null;
   }
