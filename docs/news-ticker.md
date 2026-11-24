@@ -198,6 +198,33 @@ başlık → kategori → tazelik), **yerleşimi** ise en yüksek öncelikli
 sürümden alır. Böylece "Beşiktaş tur atladı" başlığı hem okunur kalır hem de
 maç kotasındaki yerini korur.
 
+## 6b. Dünya futbolu akışı
+
+`scripts/sync-world-football-ticker.mjs` açık RSS başlıklarını
+`origin: "world-rss"` ile ekler. Elle girilen kayıtlar (`origin` yok) yerinde
+kalır ve bant sırasında otomatik başlığın önündedir. Kuru koşu yazmaz:
+
+```
+node scripts/sync-world-football-ticker.mjs
+node scripts/sync-world-football-ticker.mjs --apply
+```
+
+Çalışan beslemeler: BBC Sport (`https://feeds.bbci.co.uk/sport/football/rss.xml`),
+Marca (`https://www.marca.com/rss/futbol/primera-division.xml`),
+Gazzetta dello Sport (`https://www.gazzetta.it/dynamic-feed/rss/section/Calcio.xml`),
+Transfermarkt (`https://www.transfermarkt.co.uk/rss/news`).
+
+UEFA, FIFA ve Flashscore'un kamuya açık RSS'i yoktur; istenmez.
+Transfermarkt.com bot duvarına düşer; klasik Gazzetta RSS'leri güncel değildir.
+
+Türkçe çeviri `FUTBOLRADAR_TICKER_TRANSLATE_URL` ile yapılır. Uç, `POST`
+gövdesinde `{ "text", "source", "target" }` alır ve `{ "text" }` ya da
+`{ "translatedText" }` döner. Sayılar kaynak başlıkla aynı kalmalıdır.
+Değişken tanımlı değilse başlık kaynak dilinde, dil etiketiyle yayınlanır;
+uydurma Türkçe yazılmaz. Transfer iddiaları `confidence: "claim"` taşır ve
+metinde "iddia" geçer. Skorlar `data/fixture-calendar.json` içindeki
+API-Football kayıtlarından okunur; TheSportsDB satırları alınmaz.
+
 ## 7. Otomatik tazeleme
 
 ```

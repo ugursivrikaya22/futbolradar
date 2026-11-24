@@ -9,11 +9,17 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import {
+  player360Bio,
   player360Description,
+  player360Faq,
+  player360FaqPage,
   player360Graph,
+  player360H1,
   player360Person,
   player360Title,
-  renderPlayer360
+  player360ValuePresent,
+  renderPlayer360,
+  renderPlayer360Kimdir
 } from "./lib/player360.mjs";
 import { turkishPlayer360 } from "./lib/player360English.mjs";
 
@@ -103,7 +109,7 @@ function testProfileFreshnessUnlocksClub() {
 function testOsimhenSkeleton() {
   const player = byId("v-osimhen-galatasaray");
   const view = publicPlayerView(player, { now });
-  const model = buildPlayer360({ player, credibility: view, players, transfers: [], news: [], matches: [], archive: [] });
+  const model = buildPlayer360({ player, credibility: view, players, transfers: [], news: [], matches: [], archive: [], displayName: playerUrls.playerDisplayName(player) });
   turkishPlayer360(model);
 
   assert.equal(model.identity.shirtNumber, 45);
@@ -116,9 +122,11 @@ function testOsimhenSkeleton() {
   const title = player360Title(model, { locale: "tr" });
   const description = player360Description(model, { locale: "tr" });
   assert.ok(title.startsWith("Victor Osimhen") || title.startsWith(model.identity.name));
-  assert.ok(title.includes("Profili ve İstatistikleri"));
-  assert.ok(title.length <= 70, `başlık çok uzun: ${title} (${title.length})`);
+  assert.ok(/kimdir/i.test(title), `başlık kimdir içermeli: ${title}`);
+  assert.ok(title.length <= 60, `başlık çok uzun: ${title} (${title.length})`);
   assert.ok(description.length >= 50);
+  assert.ok(/kimdir/i.test(description), `açıklama kimdir niyetini taşımalı: ${description}`);
+  assert.ok(!description.includes("..."), "açıklama kesilmemeli");
   assert.ok(!/overall rating \d/i.test(description));
 
   const html = renderPlayer360(model, { locale: "tr" });
@@ -193,6 +201,140 @@ function testNoindexRuleStillInGenerator() {
   assert.ok(source.includes("ProfilePage"));
 }
 
+
+function profileModel(player) {
+  const view = publicPlayerView(player, { now });
+  const model = turkishPlayer360(buildPlayer360({
+    player,
+    credibility: view,
+    players,
+    transfers: [],
+    news: [],
+    matches: [],
+    archive: [],
+    displayName: playerUrls.playerDisplayName(player)
+  }));
+  return { view, model };
+}
+
+function testKimdirTitleH1AndBreadcrumb() {
+  const cases = [
+    ["v-osimhen-galatasaray", "Victor Osimhen"],
+    ["c-soyuncu-fenerbahce", "Çağlar Söyüncü"]
+  ];
+  for (const [id, fullName] of cases) {
+    const player = byId(id);
+    assert.ok(player, `${id} kayıtta olmalı`);
+    const { model } = profileModel(player);
+    assert.equal(model.identity.name, fullName, `${id}: görünen ad tam ad olmalı`);
+
+    const title = player360Title(model, { locale: "tr" });
+    assert.match(title, /kimdir/i, `${id}: title kimdir içermeli (${title})`);
+    assert.ok(title.startsWith(fullName), `${id}: title tam adla başlamalı (${title})`);
+    assert.ok(!title.startsWith("V. ") && !title.startsWith("Ç. "), `${id}: title kısaltmalı ad kullanmamalı`);
+    assert.ok(title.length <= 60, `${id}: title 60 karakteri aşmamalı (${title.length}) ${title}`);
+
+    const h1 = player360H1(model, { locale: "tr" });
+    assert.equal(h1, `${fullName} kimdir?`);
+
+    const description = player360Description(model, { locale: "tr" });
+    assert.match(description, /kimdir/i);
+    assert.ok(description.length >= 50);
+    assert.ok(description.length <= 160, `${id}: açıklama kesilmeden 160'a sığmalı (${description.length})`);
+    assert.ok(!description.endsWith("...") && !description.includes("…"));
+
+    const canonical = playerUrls.playerCanonicalUrl(player.id);
+    const graph = player360Graph(model, canonical, description, [
+      { "@type": "ListItem", position: 1, name: "Ana Sayfa", item: "https://www.futbolradar.com/" },
+      { "@type": "ListItem", position: 2, name: "Oyuncu Radarı", item: "https://www.futbolradar.com/oyuncu-radari.html" },
+      { "@type": "ListItem", position: 3, name: model.identity.name, item: canonical }
+    ], { locale: "tr" });
+    const crumb = graph["@graph"].find((node) => node["@type"] === "BreadcrumbList");
+    assert.equal(crumb.itemListElement[2].name, fullName, `${id}: breadcrumb 3. basamak tam ad olmalı`);
+  }
+
+  const source = fs.readFileSync(path.join(root, "scripts/generate-player-profile-pages.mjs"), "utf8");
+  assert.ok(source.includes("player360H1"));
+  assert.ok(source.includes("name: model.identity.name"));
+  assert.ok(source.includes("renderPlayer360Kimdir"));
+}
+
+function testKimdirBioAndFaqMatchSchema() {
+  const player = byId("v-osimhen-galatasaray");
+  const { model, view } = profileModel(player);
+  assert.equal(view.verified, true);
+
+  const bio = player360Bio(model, { locale: "tr" });
+  assert.ok(bio.text, "Osimhen biyografisi üretilmeli");
+  assert.ok(bio.text.includes("Victor Osimhen"));
+  assert.ok(bio.sentences.length >= 1 && bio.sentences.length <= 3);
+  assert.match(bio.text, /Nijerya|forvet|Forvet|Galatasaray/i);
+  assert.ok(bio.sources.length, "resmi forma kaynağı biyografide görünmeli");
+  assert.ok(bio.sources.every((row) => /galatasaray\.org/i.test(row.sourceName) || /galatasaray\.org/i.test(row.sourceUrl || "")));
+
+  const faq = player360Faq(model, { locale: "tr" });
+  const questions = faq.map((item) => item.question);
+  assert.ok(questions.includes("Victor Osimhen kimdir?"));
+  assert.ok(questions.includes("Victor Osimhen hangi takımda oynuyor?"));
+  assert.ok(questions.includes("Victor Osimhen kaç yaşında?"));
+  assert.ok(questions.includes("Victor Osimhen hangi mevkide oynuyor?"));
+  assert.ok(questions.includes("Victor Osimhen forma numarası kaç?"));
+  assert.ok(questions.includes("Victor Osimhen hangi ülkeli?"));
+  const who = faq.find((item) => item.question === "Victor Osimhen kimdir?");
+  assert.equal(who.answer, bio.text, "FAQ kimdir cevabı görünür biyografiyle aynı olmalı");
+
+  const html = renderPlayer360Kimdir(model, { locale: "tr" });
+  const canonical = "https://www.futbolradar.com/futbolcu/victor-osimhen";
+  const page = player360FaqPage(model, canonical, { locale: "tr" });
+  assert.equal(page["@type"], "FAQPage");
+  assert.equal(page.mainEntity.length, faq.length);
+  for (const item of faq) {
+    assert.ok(html.includes(item.question), `görünür FAQ sorusu eksik: ${item.question}`);
+    assert.ok(html.includes(item.answer), `görünür FAQ cevabı eksik: ${item.answer}`);
+    const entity = page.mainEntity.find((node) => node.name === item.question);
+    assert.ok(entity, `şemada soru yok: ${item.question}`);
+    assert.equal(entity.acceptedAnswer.text, item.answer);
+  }
+
+  const graph = player360Graph(model, canonical, player360Description(model, { locale: "tr" }), [], { locale: "tr" });
+  assert.ok(graph["@graph"].some((node) => node["@type"] === "FAQPage"));
+}
+
+function testKimdirSkipsPendingAndUnverifiedFields() {
+  const soyuncu = byId("c-soyuncu-fenerbahce");
+  const { model } = profileModel(soyuncu);
+  const faq = player360Faq(model, { locale: "tr" });
+  const questions = faq.map((item) => item.question);
+
+  assert.ok(questions.includes("Çağlar Söyüncü kimdir?"));
+  if (!player360ValuePresent(model.identity.shirtNumber) || !model.verified) {
+    assert.ok(!questions.some((question) => /forma numarası/.test(question)), "forma no yokken forma sorusu üretilmemeli");
+  }
+  assert.ok(!faq.some((item) => /güncelleniyor/i.test(item.question) || /güncelleniyor/i.test(item.answer)));
+
+  const bare = {
+    id: "test-pending-player",
+    name: "Test Oyuncu",
+    providerId: "123456",
+    sourceUrl: "https://v3.football.api-sports.io/players?id=123456",
+    lastVerifiedAt: "2026-11-18T12:00:00+03:00",
+    lastSyncedAt: "2026-11-18T12:00:00+03:00",
+    dataStatus: "provider"
+  };
+  const view = publicPlayerView(bare, { now });
+  const empty = buildPlayer360({ player: bare, credibility: view, players: [], transfers: [], news: [], matches: [], archive: [] });
+  const emptyFaq = player360Faq(empty, { locale: "tr" });
+  assert.equal(emptyFaq.length, 0, "doğrulanmış alan yoksa FAQ sorusu üretilmemeli");
+  assert.equal(renderPlayer360Kimdir(empty, { locale: "tr" }), "");
+  assert.equal(player360FaqPage(empty, "https://www.futbolradar.com/oyuncular/test.html", { locale: "tr" }), null);
+  const emptyBio = player360Bio(empty, { locale: "tr" });
+  assert.equal(emptyBio.text, "");
+  // noindex kuralı üreticide aynı kaldı
+  const source = fs.readFileSync(path.join(root, "scripts/generate-player-profile-pages.mjs"), "utf8");
+  assert.ok(source.includes("hasSubstantivePlayerContent"));
+  assert.ok(source.includes("ROBOTS_NOINDEX_FOLLOW"));
+}
+
 const tests = [
   testOfficialSourcesAreAllowed,
   testOfficialMatcherHitsKnownPlayers,
@@ -203,7 +345,10 @@ const tests = [
   testPendingFieldsUseGuncelleniyor,
   testUnverifiedShirtStaysHidden,
   testPwaFilesUntouched,
-  testNoindexRuleStillInGenerator
+  testNoindexRuleStillInGenerator,
+  testKimdirTitleH1AndBreadcrumb,
+  testKimdirBioAndFaqMatchSchema,
+  testKimdirSkipsPendingAndUnverifiedFields
 ];
 
 for (const test of tests) test();

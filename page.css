@@ -12341,6 +12341,26 @@ a.live-scores-ticker__item:focus-visible {
   font-weight: 750;
 }
 
+.news-ticker-source {
+  color: var(--text-soft);
+  font-size: 0.75em;
+  font-weight: 700;
+}
+
+.news-ticker-source::before {
+  content: "· ";
+}
+
+.news-ticker-lang {
+  border: 1px solid rgba(11, 143, 90, 0.22);
+  border-radius: 6px;
+  padding: 1px 5px;
+  color: var(--text-soft);
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
 /* ----------------------------------------------------------------------------
    RADAR YORUMU — KÖŞE YAZILARI
    Görsel dil bilerek haber kartlarından FARKLI: yorum ile haber karışmasın.
@@ -12917,7 +12937,8 @@ a.column-author:focus-visible {
 }
 
 /* Söylenti: en güçlü çekince. Kırmızıya yakın uyarı tonu. */
-.news-ticker-confidence.is-rumour {
+.news-ticker-confidence.is-rumour,
+.news-ticker-confidence.is-claim {
   border: 1px solid rgba(200, 30, 45, 0.34);
   background: rgba(200, 30, 45, 0.09);
   color: var(--live);
@@ -22488,6 +22509,41 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
 
 .p360-pending { font-weight: 600; color: var(--muted); }
 
+/* Kimdir biyografisi ve SSS: 390px'te taşmasın diye her satır kırılır. */
+.p360-bio p {
+  margin: 0;
+  font-size: var(--fs-base);
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.p360-faq-list { margin: 0; padding: 0; }
+.p360-faq-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+.p360-faq-item:last-child { border-bottom: 0; padding-bottom: 0; }
+.p360-faq-item:first-child { padding-top: 0; }
+.p360-faq-item dt {
+  margin: 0;
+  font-weight: 700;
+  font-size: var(--fs-sm);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.p360-faq-item dd {
+  margin: 0;
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+  color: var(--text-soft);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.hero h1 { overflow-wrap: anywhere; word-break: break-word; }
+
 /* 390px mobil: kimlik tek sütun (zaten 700px altında öyle), tablolar sayfayı değil kapsayıcıyı kaydırır. */
 @media (max-width: 390px) {
   .p360-stat-grid { grid-template-columns: repeat(auto-fit, minmax(88px, 1fr)); }
@@ -22495,6 +22551,8 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
   .p360-id-row dt, .p360-id-row dd { overflow-wrap: anywhere; }
   .p360-table-wrap { max-width: 100%; }
   .p360-feed-item { gap: 8px; }
+  .p360-bio, .p360-faq { padding: 12px; margin: 16px 0; }
+  .p360-faq-item { padding: 8px 0; }
 }
 
 

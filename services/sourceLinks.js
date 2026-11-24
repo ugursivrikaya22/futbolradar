@@ -56,6 +56,10 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
     "caykurrizespor.org.tr",
     "acmonza.com",
     "mancity.com",
+    // 24 Kasım 2026 Arsenal-Borussia Dortmund: saat, stat, hakem ve
+    // sakatlık notu iki kulübün kendi maç önü sayfalarından doğrulandı.
+    "arsenal.com",
+    "bvb.de",
     // Official match reports used to verify historical fixture identities.
     "liverpoolfc.com",
     "atleticobaleares.com",
@@ -186,8 +190,15 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
     // (sonuç, istatistik), Cumhuriyet (dakika dakika anlatım) ve Transfermarkt
     // (puan durumu) BİLİNÇLİ eklendi (26 Ekim 2026).
     "bbc.com",
+    // BBC Sport RSS makale adresi bbc.co.uk üzerindedir (bbc.com değil).
+    "bbc.co.uk",
     "cumhuriyet.com.tr",
     "transfermarkt.com.tr",
+    // Gazzetta dello Sport'un güncel açık RSS'i (dynamic-feed) bu alanda.
+    "gazzetta.it",
+    // Transfermarkt'ın kamuya açık haber RSS'i .co.uk üzerindedir.
+    // transfermarkt.com bot doğrulamasına düşer; HTML kazınmaz.
+    "transfermarkt.co.uk",
     // Yle: Finlandiya kamu yayıncısı; Avrupa kupası maçlarında (ör.
     // KuPS–Trabzonspor) Fin tarafının birincil maç raporu için BİLİNÇLİ
     // eklendi (19 Ekim 2026).
