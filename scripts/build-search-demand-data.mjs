@@ -1008,6 +1008,83 @@ const items = [
       SITE("bugunku-mac-tahminleri.html yayında; ilk hafta tahmin sayfası veriyle güncellenecek.")
     ],
     dims: { demand: 60, trend: 45, turkey: 100, fit: 90, comp: 35, time: 70, links: 85, evergreen: 40 }
+  }),
+  // ── Kalıcı rehberler (sahip GSC dışa aktarımı, son 3 ay, Web) ────────────
+  opportunity({
+    id: "avrupa-ligi-ilk-8",
+    query: "avrupa ligi nde ilk 8 e girince ne oluyor",
+    suggestedTitle: "Avrupa Ligi'nde ilk 8'e girince ne oluyor?",
+    contentType: "evergreen-guide",
+    classifications: ["evergreen", "informational"],
+    decision: "new",
+    plannedSlug: "avrupa-ligi-ilk-8-kurali",
+    publishWindow: "2026-11-24",
+    linkTargets: ["avrupa-ligi-eleme-sistemi-rehberi.html", "avrupa-liginden-elenince-ne-olur.html", "lig/avrupa-ligi.html"],
+    evidence: [
+      ev("search-console", "gsc-export:web:last-3-months", "Sahip GSC dışa aktarımı: 'avrupa ligi nde ilk 8 e girince ne oluyor' 323 gösterim; 'avrupa ligi üst tur atlama sistemi' 47 gösterim. Toplam 370.")
+    ],
+    dims: { demand: 85, trend: 40, turkey: 80, fit: 90, comp: 55, time: 30, links: 90, evergreen: 95 }
+  }),
+  opportunity({
+    id: "avrupa-ligi-elenince",
+    query: "avrupa liginden elenince ne olur",
+    suggestedTitle: "Avrupa Ligi'nden elenen takım ne olur?",
+    contentType: "evergreen-guide",
+    classifications: ["evergreen", "informational"],
+    decision: "new",
+    plannedSlug: "avrupa-liginden-elenince-ne-olur",
+    publishWindow: "2026-11-24",
+    linkTargets: ["avrupa-ligi-eleme-sistemi-rehberi.html", "avrupa-ligi-ilk-8-kurali.html", "lig/konferans-ligi.html"],
+    evidence: [
+      ev("search-console", "gsc-export:web:last-3-months", "Sahip GSC dışa aktarımı: elenince ve play-off elenince sorguları toplam 141 gösterim.")
+    ],
+    dims: { demand: 60, trend: 30, turkey: 75, fit: 85, comp: 60, time: 25, links: 85, evergreen: 90 }
+  }),
+  opportunity({
+    id: "avrupa-ligi-kac-eleme-turu",
+    query: "avrupa ligi kaç eleme turu var",
+    suggestedTitle: "Avrupa Ligi'nde kaç eleme turu var?",
+    contentType: "evergreen-guide",
+    classifications: ["evergreen", "informational"],
+    decision: "new",
+    plannedSlug: "avrupa-ligi-kac-eleme-turu",
+    publishWindow: "2026-11-24",
+    linkTargets: ["avrupa-ligi-eleme-sistemi-rehberi.html", "avrupa-ligi-eleme-maclari-ne-zaman.html", "avrupa-liginden-elenince-ne-olur.html"],
+    evidence: [
+      ev("search-console", "gsc-export:web:last-3-months", "Sahip GSC dışa aktarımı: kaç eleme turu ve kaç ön eleme sorguları toplam 93 gösterim.")
+    ],
+    dims: { demand: 50, trend: 25, turkey: 70, fit: 85, comp: 55, time: 20, links: 80, evergreen: 90 }
+  }),
+  opportunity({
+    id: "avrupa-ligi-eleme-ne-zaman",
+    query: "uefa avrupa ligi eleme maçları ne zaman",
+    suggestedTitle: "UEFA Avrupa Ligi eleme maçları ne zaman?",
+    contentType: "evergreen-guide",
+    classifications: ["evergreen", "informational"],
+    decision: "new",
+    plannedSlug: "avrupa-ligi-eleme-maclari-ne-zaman",
+    publishWindow: "2026-11-24",
+    linkTargets: ["avrupa-ligi-kac-eleme-turu.html", "avrupa-ligi-eleme-sistemi-rehberi.html", "lig/avrupa-ligi.html"],
+    evidence: [
+      ev("search-console", "gsc-export:web:last-3-months", "Sahip GSC dışa aktarımı: 'uefa avrupa ligi eleme maçları ne zaman' 71 gösterim."),
+      MR("https://www.uefa.com/news-media/news/02a0-1f71bdf70a9a-b6067bd647f2-1000--2026-european-football-calendar-dates-for-all-uefa-competiti/", "UEFA 2026 futbol takvimi eleme turlarının günlerini yayımlar.")
+    ],
+    dims: { demand: 45, trend: 20, turkey: 65, fit: 80, comp: 55, time: 35, links: 75, evergreen: 70 }
+  }),
+  opportunity({
+    id: "super-lig-kume-dusme-averaj",
+    query: "süper lig küme düşme ve averaj kuralları",
+    suggestedTitle: "Süper Lig'de küme düşme ve averaj nasıl işler?",
+    contentType: "evergreen-guide",
+    classifications: ["evergreen", "informational"],
+    decision: "new",
+    plannedSlug: "super-lig-kume-dusme-ve-averaj",
+    publishWindow: "2026-11-24",
+    linkTargets: ["super-lig-puan-durumu.html", "puan-durumu.html", "puan-durumu-simulator.html"],
+    evidence: [
+      MR("https://www.tff.org/Resources/TFF/Documents/STATULER/2026-2027/2026-2027-sezonu-super-lig-musabakalari-statusu.pdf", "2026-2027 Süper Lig statüsü madde 3, son üç sıranın 1. Lig'e düşeceğini yazar. Bu GSC dışa aktarımında gösterim 0.")
+    ],
+    dims: { demand: 0, trend: 0, turkey: 95, fit: 85, comp: 70, time: 15, links: 75, evergreen: 95 }
   })
 ];
 
