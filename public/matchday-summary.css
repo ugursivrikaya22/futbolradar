@@ -1,0 +1,84 @@
+/* MAÇ GÜNÜ OTOMATİK ÖZET KUTUSU — mobil-first (390px). */
+.section-matchday-summary {
+  margin-top: 8px;
+}
+
+.matchday-summary-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  min-width: 0;
+}
+
+.matchday-summary-box {
+  padding: 12px 14px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.matchday-summary-box.is-live {
+  border-color: color-mix(in srgb, #c81e1e 35%, var(--border, #ddd));
+}
+
+.matchday-summary-head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 6px;
+  min-width: 0;
+}
+
+.matchday-summary-kicker {
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted, #5c6570);
+}
+
+.matchday-summary-box.is-live .matchday-summary-kicker {
+  color: #b42318;
+  font-weight: 700;
+}
+
+.matchday-summary-title {
+  margin: 0;
+  font-size: 1.02rem;
+  line-height: 1.3;
+}
+
+.matchday-summary-title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.matchday-summary-title a:hover,
+.matchday-summary-title a:focus-visible {
+  text-decoration: underline;
+}
+
+.matchday-summary-lead {
+  margin: 0 0 8px;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.matchday-summary-box p {
+  margin: 0 0 6px;
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.matchday-summary-box p:last-child {
+  margin-bottom: 0;
+}
+
+.matchday-summary-credit {
+  margin-top: 4px;
+}
+
+@media (min-width: 720px) {
+  .matchday-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
