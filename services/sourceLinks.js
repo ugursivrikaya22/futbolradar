@@ -70,6 +70,9 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
     "realmadrid.com",
     // Atlético de Madrid resmî sitesi (en.atleticodemadrid.com alt alanı dahil).
     "atleticodemadrid.com",
+    // FC Internazionale Milano resmî sitesi (www.inter.it): tarihte-bugün
+    // kaydı (24 Kasım 2009 Barcelona 2-0 Inter) maç merkezinden doğrulandı.
+    "inter.it",
     // VfB Stuttgart resmî sitesi: Galatasaray'ın UCL rakibi Stuttgart takım
     // sayfasında kadro, kulüp künyesi/başarılar ve maç programı buradan.
     "vfb.de",
