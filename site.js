@@ -5246,12 +5246,17 @@
       a.setAttribute("target", "_blank");
       a.setAttribute("rel", "nofollow noopener noreferrer");
     }
+    var who = item.attribution || "";
+    var pageLang = document.documentElement.lang === "en" ? "en" : "tr";
+    if (item.textLang && String(item.textLang).toLowerCase() !== pageLang) {
+      a.appendChild(make("span", "news-ticker-lang", String(item.textLang).toUpperCase()));
+    }
     if (item.label) a.appendChild(make("span", "news-ticker-tag", item.label));
     if (item.confidenceBadge) {
       a.appendChild(make("span", "news-ticker-confidence is-" + String(item.confidence || "rumour").replace(/[^a-z0-9_-]/gi, ""), item.confidenceBadge));
     }
     a.appendChild(make("span", "", item.text));
-    var who = item.attribution || "";
+    if (who) a.appendChild(make("span", "news-ticker-source", who));
     var spoken = item.confidenceBadge ? item.confidenceBadge + ": " + item.text : item.text;
     if (who || item.confidenceBadge) a.setAttribute("aria-label", spoken + (who ? " — " + (document.documentElement.lang === "en" ? "source" : "kaynak") + ": " + who : ""));
     if (who) a.setAttribute("title", (document.documentElement.lang === "en" ? "Source: " : "Kaynak: ") + who);
