@@ -1,6 +1,6 @@
 {
   "_comment": "TRANSFER RADARI (super-lig-transferleri-2026-2027.html) Avrupa verisi. Tek okuyucu: scripts/generate-transfer-radar-page.mjs. Süper Lig resmi transferleri data/transfers.json'dan (status confirmed), Süper Lig söylentileri data/ticker.json'daki süresi geçmemiş 'iddia' öğelerinden gelir; burada TEKRAR YAZILMAZ. Kurallar: her satırda sourceName + sourceUrl ZORUNLU ve alan adı services/sourceLinks.js beyaz listesinde olmalı (Wikipedia, Transfermarkt, FBref, TheSportsDB, Milliyet, Haber7, ABC, x.com, taraftar hesabı YOK). 'official' yalnızca kulüp/lig resmi duyurusu ya da bu duyuruyu aktaran izinli yayın; 'rumours' her zaman söylentidir, metin kaynağı ve aracı yayını açıkça söyler, expiresAt en fazla date + 72 saat. Kaynakta duyuru günü yoksa date null kalır (sayfada 'Yaz 2026' yazılır); bedel kaynakta yoksa yazılmaz. Lig/bölüm için kaynak yoksa satır UYDURULMAZ, sayfa 'Güncelleniyor' gösterir. Elle düzenlenir.",
-  "updatedAt": "2026-11-24T14:45:00+03:00",
+  "updatedAt": "2026-11-24T15:30:00+03:00",
   "leagues": [
     { "id": "super-lig", "name": "Süper Lig", "country": "Türkiye", "leaguePage": "lig/super-lig.html" },
     { "id": "premier-lig", "name": "Premier Lig", "country": "İngiltere", "leaguePage": "lig/premier-league.html" },
@@ -60,5 +60,16 @@
     { "league": "super-lig", "opens": "2027-01-01", "closes": "2027-02-05", "sourceName": "TFF", "sourceUrl": "https://www.tff.org/default.aspx?ftxtID=50633&pageID=687" },
     { "league": "premier-lig", "opens": "2027-01-01", "closes": "2027-02-01", "closesNote": "23:00 (İngiltere saati)", "sourceName": "Sky Sports", "sourceUrl": "https://www.skysports.com/football/news/13613290/transfer-news-your-premier-league-clubs-unfinished-business-ahead-of-january-window" },
     { "league": "serie-a", "opens": "2027-01-02", "closes": "2027-02-01", "closesNote": "20:00 (İtalya saati)", "sourceName": "Lega Serie A", "sourceUrl": "https://www.legaseriea.it/serie-a/news/diretta-calciomercato-serie-a-enilive" }
-  ]
+  ],
+  "transferBans": {
+    "_comment": "FIFA kayıt (transfer) yasakları. Transfer DEĞİLDİR; resmi transfer tablosuna girmez. Metin ve lig adları kaynakta yazıldığı gibi (AA, 24 Kasım 2026). x.com bağlantısı yalnızca izinli kaynak aynı haberi verdiği için ek olarak gösterilir, tek başına kaynak değildir.",
+    "headline": "FIFA'dan 2 Türk kulübüne transfer yasağı",
+    "date": "2026-11-24",
+    "leagues": ["super-lig"],
+    "xPostUrl": "https://x.com/Futbolradarcom/status/2125205196221391085",
+    "items": [
+      { "id": "ban-genclerbirligi-2026-11-24", "club": "Gençlerbirliği", "league": "Trendyol Süper Lig", "duration": "3 dönem", "text": "FIFA'nın internet sitesinde yer alan transfer yasakları bilgilendirme tablosuna göre Gençlerbirliği'ne 3 dönem transfer yasağı verildi.", "sourceName": "Anadolu Ajansı", "sourceUrl": "https://www.aa.com.tr/tr/spor/fifadan-2-turk-kulubune-transfer-yasagi/4135681", "extraSources": [{ "sourceName": "Hürriyet", "sourceUrl": "https://www.hurriyet.com.tr/sporarena/fifadan-2-turk-kulubune-transfer-yasagi-43389385" }] },
+      { "id": "ban-pendikspor-2026-11-24", "club": "Orta Yapı Pendikspor", "league": "Trendyol 1. Lig", "duration": "Kaldırılıncaya kadar", "text": "Pendikspor'un transfer yasağının ise kaldırılıncaya kadar süreceği belirtildi.", "sourceName": "Anadolu Ajansı", "sourceUrl": "https://www.aa.com.tr/tr/spor/fifadan-2-turk-kulubune-transfer-yasagi/4135681", "extraSources": [{ "sourceName": "Hürriyet", "sourceUrl": "https://www.hurriyet.com.tr/sporarena/fifadan-2-turk-kulubune-transfer-yasagi-43389385" }] }
+    ]
+  }
 }

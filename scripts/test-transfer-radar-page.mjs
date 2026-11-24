@@ -70,7 +70,33 @@ for (const [tag, url] of external) {
   if (/futbolradar\.com/.test(url)) continue;
   assert.ok(tag.includes('rel="nofollow noopener noreferrer"'), `rel eksik: ${url}`);
   assert.ok(isAllowedSourceUrl(url.replaceAll("&amp;", "&")), `beyaz liste dışı: ${url}`);
+  // x.com yalnızca @Futbolradarcom paylaşımı olarak, FIFA yasak kutusunda EK bağlantı.
+  if (/^https:\/\/x\.com\/Futbolradarcom\/status\/\d+$/.test(url)) continue;
   assert.ok(!/wikipedia|transfermarkt|fbref|thesportsdb|milliyet|haber7|\/\/(www\.)?x\.com|twitter\.com/i.test(url), `yasaklı kaynak: ${url}`);
+}
+
+// 4b. FIFA transfer yasakları: ayrı kutu, resmi tabloda değil, izinli ana kaynak.
+{
+  const superLig = html.slice(html.indexOf('id="lig-super-lig"'), html.indexOf('id="lig-premier-league"'));
+  const bans = superLig.slice(superLig.indexOf("data-tr-bans"), superLig.indexOf('class="tr-block tr-official"'));
+  assert.ok(bans.includes("FIFA transfer yasakları"), "Süper Lig sekmesinde FIFA yasak kutusu");
+  const banItems = bans.match(/<li class="tr-ban"[\s\S]*?<\/li>/g) || [];
+  assert.equal(banItems.length, 2, "iki kulüp yasağı");
+  for (const item of banItems) assert.match(item, /Kaynak: <a class="tr-src" href="https:\/\/www\.aa\.com\.tr\//, "yasakta izinli ana kaynak (AA)");
+  assert.ok(bans.includes("Trendyol Süper Lig") && bans.includes("Trendyol 1. Lig"), "lig adları kaynaktaki gibi");
+  const xLinks = [...html.matchAll(/href="(https:\/\/x\.com\/[^"]+)"/g)].map((m) => m[1]);
+  const mainX = [...mainHtml.matchAll(/href="(https:\/\/x\.com\/[^"]+)"/g)].map((m) => m[1]);
+  for (const url of mainX) assert.ok(bans.includes(url), `x.com bağlantısı yalnızca yasak kutusunda: ${url}`);
+  assert.ok(xLinks.length >= mainX.length);
+  const table = superLig.slice(superLig.indexOf("<table"), superLig.indexOf("</table>"));
+  assert.ok(!/Pendikspor|yasağı/.test(table), "yasak resmi transfer tablosunda değil");
+  for (const otherId of ["premier-league", "la-liga", "serie-a", "bundesliga", "ligue-1"]) {
+    const start = html.indexOf(`id="lig-${otherId}"`);
+    const other = html.slice(start, html.indexOf("</section>", start));
+    assert.ok(!other.includes("data-tr-bans"), `${otherId}: yasak kutusu yok`);
+  }
+  const ld = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g) || [];
+  assert.ok(!ld.join("").includes("Pendikspor"), "JSON-LD ItemList'e yasak girmez");
 }
 assert.ok(sourceProblem({ sourceName: "Transfermarkt", sourceUrl: "https://www.transfermarkt.com.tr/x" }), "Transfermarkt reddedilmeli");
 assert.ok(sourceProblem({ sourceName: "Milliyet", sourceUrl: "https://www.milliyet.com.tr/x" }), "Milliyet reddedilmeli");
@@ -87,6 +113,17 @@ assert.equal(sourceProblem({ sourceName: "Premier League", sourceUrl: "https://w
   fs.writeFileSync(path.join(tmp, "data", "ticker.json"), JSON.stringify({ items: [] }));
   assert.throws(() => generateTransferRadarPage(tmp, { now: NOW, sitemap: false }), /yasaklı kaynak/, "yasaklı kaynaklı satır derlemeyi durdurmalı");
   assert.ok(!fs.existsSync(path.join(tmp, PAGE_FILE)), "sorunlu veriyle sayfa yazılmamalı");
+  // x.com tek başına yasak kaynağı olamaz.
+  const radar2 = JSON.parse(fs.readFileSync(path.join(root, "data", "transfer-radar.json"), "utf8"));
+  radar2.transferBans.items[0].sourceName = "X";
+  radar2.transferBans.items[0].sourceUrl = "https://x.com/nexustransfer/status/2125190318114902291";
+  fs.writeFileSync(path.join(tmp, "data", "transfer-radar.json"), JSON.stringify(radar2));
+  assert.throws(() => generateTransferRadarPage(tmp, { now: NOW, sitemap: false }), /yasaklı kaynak/, "x.com kaynaklı yasak derlemeyi durdurmalı");
+  radar2.transferBans.items[0].sourceName = "Anadolu Ajansı";
+  radar2.transferBans.items[0].sourceUrl = "https://www.aa.com.tr/tr/spor/fifadan-2-turk-kulubune-transfer-yasagi/4135681";
+  radar2.transferBans.xPostUrl = "https://x.com/nexustransfer/status/2125190318114902291";
+  fs.writeFileSync(path.join(tmp, "data", "transfer-radar.json"), JSON.stringify(radar2));
+  assert.throws(() => generateTransferRadarPage(tmp, { now: NOW, sitemap: false }), /Futbolradarcom/, "yalnızca kendi X paylaşımımız ek bağlantı olabilir");
   fs.rmSync(tmp, { recursive: true, force: true });
 }
 

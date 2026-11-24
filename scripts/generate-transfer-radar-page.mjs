@@ -43,6 +43,9 @@ const RUMOUR_MAX_AGE_MS = 72 * 60 * 60 * 1000;
 /** Kullanıcı kuralı: izinli listede olsa bile bu kaynaklar transfer satırı olamaz. */
 const FORBIDDEN_SOURCE = /(^|\.)(wikipedia\.org|transfermarkt\.[a-z.]+|fbref\.com|thesportsdb\.com|milliyet\.com\.tr|haber7\.com|abc\.[a-z.]+|x\.com|twitter\.com)$/i;
 
+/** x.com yalnızca kendi hesabımızın paylaşımı olarak, izinli kaynağın YANINDA. */
+const FUTBOLRADAR_X_POST = /^https:\/\/x\.com\/Futbolradarcom\/status\/\d+$/;
+
 function hostOf(url) {
   try { return new URL(url).hostname.replace(/^www\./, "").toLowerCase(); } catch { return ""; }
 }
@@ -206,6 +209,36 @@ export function buildTransferRadar(root = process.cwd(), options = {}) {
     if (league) league.january = window;
   }
 
+  // 5) FIFA transfer (kayıt) yasakları — transfer değil, ayrı kutu. Ana kaynak
+  //    izinli listede olmalı; x.com yalnızca @Futbolradarcom paylaşımı olarak EK.
+  const bansData = radar.transferBans || null;
+  let transferBans = null;
+  if (bansData && Array.isArray(bansData.items) && bansData.items.length) {
+    const items = [];
+    for (const ban of bansData.items) {
+      const problem = sourceProblem(ban);
+      if (problem) { problems.push(`${ban.id}: ${problem}`); continue; }
+      if (!ban.club || !ban.league || !ban.duration || !ban.text) { problems.push(`${ban.id}: zorunlu alan eksik`); continue; }
+      const extras = [];
+      for (const extra of ban.extraSources || []) {
+        const extraProblem = sourceProblem(extra);
+        if (extraProblem) { problems.push(`${ban.id} ek kaynak: ${extraProblem}`); continue; }
+        extras.push(extra);
+      }
+      items.push({ ...ban, extraSources: extras });
+    }
+    const xPostUrl = String(bansData.xPostUrl || "");
+    if (xPostUrl && !FUTBOLRADAR_X_POST.test(xPostUrl)) problems.push(`transferBans.xPostUrl: yalnızca x.com/Futbolradarcom/status bağlantısı ek olarak gösterilebilir`);
+    if (!dayDate(bansData.date)) problems.push("transferBans: tarih geçersiz");
+    if (items.length) {
+      transferBans = { headline: bansData.headline || "", date: bansData.date, items, xPostUrl: FUTBOLRADAR_X_POST.test(xPostUrl) ? xPostUrl : "" };
+      for (const leagueId of bansData.leagues || ["super-lig"]) {
+        const league = byId.get(leagueId);
+        if (league) league.transferBans = transferBans;
+      }
+    }
+  }
+
   for (const league of leagues) {
     league.official.sort((a, b) => String(b.date || b.sourceDate || "").localeCompare(String(a.date || a.sourceDate || "")) || a.playerName.localeCompare(b.playerName, "tr"));
     league.rumours.sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
@@ -216,7 +249,7 @@ export function buildTransferRadar(root = process.cwd(), options = {}) {
   const updatedMs = Math.max(...stamps.filter(Number.isFinite));
   const updatedAt = new Date(Math.min(updatedMs, nowMs)).toISOString();
 
-  return { leagues, updatedAt, problems };
+  return { leagues, updatedAt, problems, transferBans };
 }
 
 function sourceLink(row) {
@@ -278,6 +311,30 @@ function januaryBlock(league) {
       ${januaryRumours.length ? `<h4>Ocak dönemine dönük söylentiler</h4>${rumourList(januaryRumours, "")}` : ""}`;
 }
 
+function transferBansBlock(bans) {
+  if (!bans) return "";
+  const rows = bans.items.map((ban) => {
+    const extras = ban.extraSources.map((extra) => ` · ${sourceLink(extra)}`).join("");
+    return `<li class="tr-ban" id="${escapeHtml(ban.id)}">
+          <p class="tr-ban-head"><strong>${escapeHtml(ban.club)}</strong> <small>${escapeHtml(ban.league)}</small> <span class="tr-ban-dur">${escapeHtml(ban.duration)}</span></p>
+          <p>“${escapeHtml(ban.text)}”</p>
+          <small>Kaynak: ${sourceLink(ban)}${extras}</small>
+        </li>`;
+  }).join("\n        ");
+  const xLink = bans.xPostUrl
+    ? `<p class="tr-note">FutbolRadar X paylaşımı (ek bağlantı, kaynak değildir): <a href="${escapeHtml(bans.xPostUrl)}" target="_blank" rel="${SOURCE_LINK_REL}">@Futbolradarcom</a></p>`
+    : "";
+  return `<div class="tr-block tr-bans" data-tr-bans>
+      <h3><span class="tr-tag tr-tag--ban">FIFA</span> FIFA transfer yasakları</h3>
+      <p class="tr-note">Bu bir transfer değildir; FIFA'nın kayıt (transfer) yasağı listesine ilişkin haberdir. ${escapeHtml(bans.headline)} — <time datetime="${escapeHtml(bans.date)}">${escapeHtml(formatDay(bans.date))}</time>.</p>
+      <ul class="tr-ban-list">
+        ${rows}
+      </ul>
+      ${xLink}
+      <p class="tr-note"><a href="./transfer-donemi-2026-27.html">Transfer dönemi 2026-27: tarihler ve FIFA yasakları</a></p>
+    </div>`;
+}
+
 function leagueSection(league, index) {
   const id = `lig-${league.id}`;
   return `<section class="tr-league" id="${id}" data-tr-league="${escapeHtml(league.id)}" role="tabpanel" aria-labelledby="tab-${id}" tabindex="-1">
@@ -285,6 +342,7 @@ function leagueSection(league, index) {
       <h2>${escapeHtml(league.name)} transferleri</h2>
       <a class="tr-league-link" href="./${escapeHtml(league.leaguePage)}">${escapeHtml(league.name)} sayfası</a>
     </header>
+    ${transferBansBlock(league.transferBans)}
     <div class="tr-block tr-official">
       <h3><span class="tr-tag tr-tag--ok">Resmi</span> Resmi transferler <small>(${league.official.length})</small></h3>
       ${officialTable(league)}
@@ -341,6 +399,18 @@ const INLINE_CSS = `
 .tr-rumour small{color:var(--muted,#55606e)}
 .tr-window{margin:0 0 6px}
 .tr-src{overflow-wrap:anywhere}
+.tr-bans{border-color:#e7b4b4;background:#fff7f7}
+.tr-tag--ban{background:#fde2e2;color:#9b1c1c}
+.tr-ban-list{list-style:none;margin:0 0 8px;padding:0;display:grid;gap:8px}
+.tr-ban{padding:10px;border-left:4px solid #c53030;border-radius:8px;background:var(--card,#fff)}
+.tr-ban p{margin:0 0 4px;overflow-wrap:anywhere}
+.tr-ban-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px}
+.tr-ban-head small{color:var(--muted,#55606e)}
+.tr-ban-dur{font-size:.8125rem;font-weight:800;color:#9b1c1c}
+.tr-ban small{color:var(--muted,#55606e)}
+[data-theme="dark"] .tr-bans{background:rgba(197,48,48,.08)}
+[data-theme="dark"] .tr-ban{background:transparent}
+[data-theme="dark"] .tr-tag--ban,[data-theme="dark"] .tr-ban-dur{color:#ffb4b4}
 [data-theme="dark"] .tr-rumour{background:rgba(240,160,32,.08)}
 [data-theme="dark"] .tr-tag{background:rgba(240,160,32,.2);color:#ffd28a}
 @media (max-width:720px){
