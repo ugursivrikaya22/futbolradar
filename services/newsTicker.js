@@ -137,6 +137,14 @@ const CONFIDENCE = Object.freeze({
     label: "Söylenti",
     note: "Kesinleşmemiş iddia. Doğrulanmadı.",
     requiresBadge: true
+  },
+  // Otomatik akışın transfer iddiası. Rozet ve çekince kuralı söylentiyle
+  // aynıdır; cümlede "iddia" geçmek zorundadır.
+  claim: {
+    badge: "İDDİA",
+    label: "İddia",
+    note: "Kesinleşmemiş transfer iddiası. Kaynak böyle aktardı, kulüp doğrulamadı.",
+    requiresBadge: true
   }
 });
 
@@ -772,6 +780,7 @@ function normalizeTickerItems(payload, options = {}) {
       // üzerinden gidiyor olabilir; okuyucunun gördüğü atıf bu alandan
       // gelir, bağlantının hedefinden değil.
       publisher: text(entry.source.publisher),
+      textLang: text(entry.textLang).toLowerCase(),
       team: text(entry.team),
       competition: text(entry.competition),
       breaking: shelf.breaking,

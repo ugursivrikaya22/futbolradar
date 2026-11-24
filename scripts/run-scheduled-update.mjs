@@ -473,6 +473,9 @@ function sourceSteps(type, providerReady, match = "", backfill = "") {
     ...(full ? [nodeStep("competition-leaders", "sync-competition-leaders.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 8 * 60 * 1000, skip: noProvider })] : []),
     nodeStep("injuries-suspensions", "sync-squad-statuses.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 4 * 60 * 1000, skip: noProvider }),
     nodeStep("football-news", "sync-football-news.mjs", ["--apply"], { kind: "source", source: "rss", attempts: 2, timeoutMs: 4 * 60 * 1000 }),
+    // Dünya futbolu başlıkları. Yalnızca açık RSS; API-Football kotasına dokunmaz.
+    // Skorlar ayrıca fixture-calendar önbelleğinden okunur, TheSportsDB kullanılmaz.
+    nodeStep("world-football-ticker", "sync-world-football-ticker.mjs", ["--apply"], { kind: "source", source: "rss", attempts: 2, timeoutMs: 3 * 60 * 1000 }),
     // İNGİLİZCE AKIŞ AYRI ADIMDIR. Türkçe akışla aynı sıklıkta tazelenir
     // ama ayrı beslemelerden ayrı dosyaya yazar; biri düşerse diğeri
     // çalışmaya devam eder. Gün boyu güncel kalması için saatlik koşuda.
