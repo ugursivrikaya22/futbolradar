@@ -6,11 +6,10 @@
  * bölüm listesi, iki ayrı gerçek demektir. Dil farkı yalnızca sözlükten
  * (locales/*.json → `player360.*`) gelir.
  *
- * H2 BAŞLIKLARI SÖZLEŞMEDİR. Sayfanın H1'i yalnızca oyuncunun adıdır; her
- * bölüm başlığı "<Oyuncu> <konu>" kalıbını izler. Bu, uzun kuyruklu aramanın
- * ("Osimhen son maçları", "Osimhen sakatlık durumu") sayfada birebir
- * karşılığını bulması için; başlıkların sırası ve kalıbı bu yüzden
- * scripts/test-player-360.mjs tarafından denetleniyor.
+ * H1, Türkçe sayfada oyuncunun tam adıyla "X kimdir?" kalıbını kullanır;
+ * kısaltmalı kayıt adı (`V. Osimhen`) başlığa girmez. H2 başlıkları
+ * "<Oyuncu> <konu>" kalıbını izler. Uzun kuyruklu aramanın sayfada birebir
+ * karşılığı bu yüzden testlerle denetlenir.
  *
  * SIFIR BAĞIMLILIK, SIFIR İSTEMCİ JS'İ. Form grafiği satır içi SVG olarak
  * basılır: grafik kütüphanesi yok, ek istek yok, düzen kayması yok.
@@ -28,6 +27,7 @@ const require = createRequire(import.meta.url);
 const { competitionLabel, t } = require("../../services/i18n.js");
 // Veride Türkçe hazır metin olarak duran künye satırları.
 const { sourceNoteLabel } = require("../../services/displayLabels.js");
+const { isAllowedSourceUrl, hostOf } = require("../../services/sourceLinks.js");
 
 export function escapeHtml(value) {
   return String(value ?? "")
@@ -585,6 +585,305 @@ export function renderPlayer360(model, options = {}) {
   ].filter(Boolean).join("\n      ");
 }
 
+// ── Kimdir (TR SEO) ─────────────────────────────────────────────────────────
+
+const TITLE_LIMIT = 60;
+const DESCRIPTION_LIMIT = 160;
+
+const KIMDIR_BLOCKED_HOST = /(?:^|\.)(wikipedia\.org|transfermarkt\.(?:com|com\.tr|co\.uk|us)|topscorersfootball\.com|fbref\.com|thesportsdb\.com)$/i;
+
+const PLACEHOLDER_LABELS = new Set([
+  "güncelleniyor", "guncelleniyor", "updating", "n/a", "na", "bilinmiyor",
+  "unknown", "null", "undefined", "-", "—", "–", "?", "yakında", "bekleniyor"
+]);
+
+/** Değer yayınlanabilir mi? "Güncelleniyor" ve boş alan cümleye girmez. */
+export function player360ValuePresent(value) {
+  if (value === null || value === undefined) return false;
+  const text = String(value).trim();
+  if (!text) return false;
+  return !PLACEHOLDER_LABELS.has(text.toLocaleLowerCase("tr-TR"));
+}
+
+function isAllowedKimdirSourceUrl(url) {
+  if (!url) return false;
+  if (!isAllowedSourceUrl(url)) return false;
+  const host = hostOf(url);
+  return Boolean(host) && !KIMDIR_BLOCKED_HOST.test(host);
+}
+
+/**
+ * Kimlik kartında görünen, izinli resmi kaynaklar.
+ * Wikipedia, Transfermarkt, topscorersfootball ve izinli listede olmayan
+ * adresler etikete girmez.
+ */
+export function player360KimdirSources(model) {
+  const source = model && model.identity && model.identity.shirtNumberSource;
+  if (!source || source.kind !== "official-club") return [];
+  if (!player360ValuePresent(source.sourceName)) return [];
+  if (source.sourceUrl && !isAllowedKimdirSourceUrl(source.sourceUrl)) return [];
+  return [source];
+}
+
+function foldClubName(value) {
+  return String(value || "")
+    .trim()
+    .toLocaleLowerCase("tr-TR")
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
+    .replace(/[^a-z0-9]+/g, "");
+}
+
+function uniqueClubs(stints, exceptName) {
+  const seen = new Set();
+  const clubs = [];
+  const skip = exceptName ? foldClubName(exceptName) : "";
+  for (const stint of Array.isArray(stints) ? stints : []) {
+    if (!stint || !player360ValuePresent(stint.club)) continue;
+    const key = foldClubName(stint.club);
+    if (!key || (skip && key === skip)) continue;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    clubs.push(String(stint.club).trim());
+  }
+  return clubs;
+}
+
+function formatDateLong(value, locale) {
+  if (!value) return null;
+  const raw = String(value);
+  const parsed = new Date(raw.length <= 10 ? `${raw}T12:00:00+03:00` : raw);
+  if (Number.isNaN(parsed.getTime())) return null;
+  const tag = locale === "en" ? "en-GB" : "tr-TR";
+  return new Intl.DateTimeFormat(tag, { day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Istanbul" }).format(parsed);
+}
+
+function midSentence(value) {
+  const text = String(value || "").trim();
+  if (!text) return text;
+  return text.charAt(0).toLocaleLowerCase("tr-TR") + text.slice(1);
+}
+
+/**
+ * "X kimdir?" cevabı — yalnızca modelde duran, doğrulanmış alanlardan
+ * 1-3 cümle. Kulüp, lig ve forma no yalnız kayıt doğrulanmışsa girer.
+ * Doğum yeri gibi modelde olmayan bir alan yazılmaz.
+ */
+export function player360Bio(model, options = {}) {
+  const locale = options.locale === "en" ? "en" : "tr";
+  const identity = (model && model.identity) || {};
+  const name = identity.name;
+  const sentences = [];
+  const birth = formatDateLong(identity.birthDate, locale);
+  const age = player360ValuePresent(identity.age) ? String(identity.age).trim() : null;
+  const nationality = player360ValuePresent(identity.nationality) ? String(identity.nationality).trim() : null;
+  const position = player360ValuePresent(identity.position) ? String(identity.position).trim() : null;
+  const team = model && model.verified && player360ValuePresent(identity.team) ? String(identity.team).trim() : null;
+  const league = team && player360ValuePresent(identity.league) ? String(identity.league).trim() : null;
+  const shirt = team && player360ValuePresent(identity.shirtNumber) ? String(identity.shirtNumber).trim() : null;
+
+  if (locale === "tr") {
+    const who = [];
+    if (birth && age) who.push(`${birth} doğumlu (${age})`);
+    else if (birth) who.push(`${birth} doğumlu`);
+    else if (age) who.push(`${age} yaşında`);
+    if (nationality) who.push(`${nationality} uyruklu`);
+    if (position && who.length) sentences.push(`${name}, ${who.join(", ")} bir ${midSentence(position)} oyuncusudur.`);
+    else if (position) sentences.push(`${name} bir ${midSentence(position)} oyuncusudur.`);
+    else if (who.length) sentences.push(`${name}, ${who.join(", ")} bir futbolcudur.`);
+
+    if (team) {
+      const bits = [`${name}, ${team} formasıyla oynamaktadır`];
+      const extras = [];
+      if (league) extras.push(league);
+      if (shirt) extras.push(`forma numarası ${shirt}`);
+      sentences.push(extras.length ? `${name}, ${team} formasıyla oynamaktadır (${extras.join(", ")}).` : `${bits[0]}.`);
+    }
+
+    const clubs = uniqueClubs(model && model.career && model.career.stints, team);
+    if (clubs.length) {
+      sentences.push(clubs.length === 1
+        ? `Daha önce ${clubs[0]} forması giydi.`
+        : `Daha önce ${clubs.join(", ")} kulüplerinde forma giydi.`);
+    }
+  } else {
+    const who = [];
+    if (birth && age) who.push(`born ${birth} (age ${age})`);
+    else if (birth) who.push(`born ${birth}`);
+    else if (age) who.push(`${age} years old`);
+    if (nationality) who.push(`${nationality} nationality`);
+    if (position && who.length) sentences.push(`${name} is a ${position} (${who.join(", ")}).`);
+    else if (position) sentences.push(`${name} is a ${position}.`);
+    else if (who.length) sentences.push(`${name} is a footballer (${who.join(", ")}).`);
+
+    if (team) {
+      const extras = [];
+      if (league) extras.push(league);
+      if (shirt) extras.push(`shirt number ${shirt}`);
+      sentences.push(extras.length
+        ? `${name} plays for ${team} (${extras.join(", ")}).`
+        : `${name} plays for ${team}.`);
+    }
+
+    const clubs = uniqueClubs(model && model.career && model.career.stints, team);
+    if (clubs.length) {
+      sentences.push(clubs.length === 1
+        ? `Previous club: ${clubs[0]}.`
+        : `Previous clubs: ${clubs.join(", ")}.`);
+    }
+  }
+
+  return {
+    text: sentences.slice(0, 3).join(" "),
+    sentences: sentences.slice(0, 3),
+    sources: player360KimdirSources(model)
+  };
+}
+
+/** H1: tam ad + "kimdir?" (TR). İngilizcede ad olduğu gibi kalır. */
+export function player360H1(model, options = {}) {
+  const locale = options.locale === "en" ? "en" : "tr";
+  const name = model.identity.name;
+  return locale === "en" ? name : `${name} kimdir?`;
+}
+
+function joinDescription(parts, tail, limit) {
+  let used = [];
+  let result = `${parts[0]} — ${tail}`;
+  for (const part of parts) {
+    const candidate = `${[...used, part].join(" ")} — ${tail}`;
+    if (used.length && candidate.length > limit) break;
+    used.push(part);
+    result = candidate;
+  }
+  return result;
+}
+
+/**
+ * Sık sorulan sorular. Yalnızca değeri duran, "Güncelleniyor" olmayan
+ * alanlar için soru üretilir. Görünür metin ile FAQPage şeması aynı dizgeleri kullanır.
+ */
+export function player360Faq(model, options = {}) {
+  const locale = options.locale === "en" ? "en" : "tr";
+  const identity = (model && model.identity) || {};
+  const name = identity.name;
+  const bio = player360Bio(model, { locale });
+  const items = [];
+  const team = model && model.verified && player360ValuePresent(identity.team) ? String(identity.team).trim() : null;
+  const league = team && player360ValuePresent(identity.league) ? String(identity.league).trim() : null;
+  const shirt = team && player360ValuePresent(identity.shirtNumber) ? String(identity.shirtNumber).trim() : null;
+  const age = player360ValuePresent(identity.age) ? String(identity.age).trim() : null;
+  const birth = formatDateLong(identity.birthDate, locale);
+  const position = player360ValuePresent(identity.position) ? String(identity.position).trim() : null;
+  const nationality = player360ValuePresent(identity.nationality) ? String(identity.nationality).trim() : null;
+
+  if (bio.text) {
+    items.push({
+      question: locale === "en" ? `Who is ${name}?` : `${name} kimdir?`,
+      answer: bio.text
+    });
+  }
+  if (team) {
+    items.push({
+      question: locale === "en" ? `Which club does ${name} play for?` : `${name} hangi takımda oynuyor?`,
+      answer: locale === "en"
+        ? (league ? `${name} plays for ${team} (${league}).` : `${name} plays for ${team}.`)
+        : (league ? `${name}, ${team} formasıyla oynamaktadır (${league}).` : `${name}, ${team} formasıyla oynamaktadır.`)
+    });
+  }
+  if (age || birth) {
+    let answer;
+    if (locale === "en") {
+      answer = age && birth ? `${name} is ${age} years old (born ${birth}).`
+        : age ? `${name} is ${age} years old.`
+        : `${name} was born on ${birth}.`;
+    } else {
+      answer = age && birth ? `${name}, ${birth} doğumlu olup ${age} yaşındadır.`
+        : age ? `${name}, ${age} yaşındadır.`
+        : `${name}, ${birth} doğumludur.`;
+    }
+    items.push({
+      question: locale === "en" ? `How old is ${name}?` : `${name} kaç yaşında?`,
+      answer
+    });
+  }
+  if (position) {
+    items.push({
+      question: locale === "en" ? `What position does ${name} play?` : `${name} hangi mevkide oynuyor?`,
+      answer: locale === "en"
+        ? `${name} plays as a ${position}.`
+        : `${name}, ${position} mevkiinde oynamaktadır.`
+    });
+  }
+  if (shirt) {
+    items.push({
+      question: locale === "en" ? `What shirt number does ${name} wear?` : `${name} forma numarası kaç?`,
+      answer: locale === "en"
+        ? `${name} wears shirt number ${shirt}.`
+        : `${name} şu anda ${shirt} numarayı giymektedir.`
+    });
+  }
+  if (nationality) {
+    items.push({
+      question: locale === "en" ? `Which country is ${name} from?` : `${name} hangi ülkeli?`,
+      answer: locale === "en"
+        ? `${name} is ${nationality}.`
+        : `${name}, ${nationality} uyrukludur.`
+    });
+  }
+  return items;
+}
+
+export function player360FaqPage(model, canonical, options = {}) {
+  const items = player360Faq(model, options);
+  if (!items.length) return null;
+  return {
+    "@type": "FAQPage",
+    "@id": `${canonical}#faq`,
+    mainEntity: items.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer }
+    }))
+  };
+}
+
+export function renderPlayer360Bio(model, options = {}) {
+  const locale = options.locale === "en" ? "en" : "tr";
+  const bio = player360Bio(model, { locale });
+  if (!bio.text) return "";
+  const sources = bio.sources.map((source) => {
+    const host = source.sourceUrl ? source.sourceUrl.replace(/^https?:\/\/(www\.)?/, "").split("/")[0] : "";
+    const link = source.sourceUrl
+      ? ` · <a href="${escapeHtml(source.sourceUrl)}" rel="nofollow noopener noreferrer" target="_blank">${escapeHtml(host)}</a>`
+      : "";
+    return `<p class="p360-source">${escapeHtml(text("player360.season.sourceNote", locale, source.sourceName))}${link}</p>`;
+  }).join("");
+  return `<section class="p360 p360-bio" data-p360-section="bio" aria-label="${escapeHtml(player360H1(model, { locale }))}">
+        <p>${escapeHtml(bio.text)}</p>
+        ${sources}
+      </section>`;
+}
+
+export function renderPlayer360Faq(model, options = {}) {
+  const locale = options.locale === "en" ? "en" : "tr";
+  const items = player360Faq(model, { locale });
+  if (!items.length) return "";
+  const name = model.identity.name;
+  const heading = locale === "en" ? `Frequently asked questions about ${name}` : `${name} hakkında sık sorulan sorular`;
+  const rows = items.map((item) => `<div class="p360-faq-item"><dt>${escapeHtml(item.question)}</dt><dd>${escapeHtml(item.answer)}</dd></div>`).join("");
+  return `<section class="p360 p360-faq" data-p360-section="faq" aria-labelledby="p360-faq-title">
+        <div class="p360-head"><h2 id="p360-faq-title">${escapeHtml(heading)}</h2></div>
+        <dl class="p360-faq-list">${rows}</dl>
+      </section>`;
+}
+
+/** Hero altındaki kimdir bloğu: biyografi + FAQ, aynı metin şemaya da gider. */
+export function renderPlayer360Kimdir(model, options = {}) {
+  return [renderPlayer360Bio(model, options), renderPlayer360Faq(model, options)].filter(Boolean).join("\n      ");
+}
+
+
 /**
  * META AÇIKLAMASI — SAYFADA GERÇEKTEN OLAN ŞEYİ ANLATIR.
  *
@@ -596,20 +895,73 @@ export function renderPlayer360(model, options = {}) {
  * PUAN CÜMLEYE GİRMEZ. services/cardCredibility.js'in kapısı meta
  * açıklamasında da geçerli — denetimde en kalıcı yanlışlar oradan sızmıştı.
  */
+
+function player360CompactDescription(model, locale) {
+  const identity = (model && model.identity) || {};
+  const name = identity.name;
+  const birth = formatDateLong(identity.birthDate, locale);
+  const age = player360ValuePresent(identity.age) ? String(identity.age).trim() : null;
+  const nationality = player360ValuePresent(identity.nationality) ? String(identity.nationality).trim() : null;
+  const position = player360ValuePresent(identity.position) ? midSentence(identity.position) : null;
+  const team = model && model.verified && player360ValuePresent(identity.team) ? String(identity.team).trim() : null;
+  const league = team && player360ValuePresent(identity.league) ? String(identity.league).trim() : null;
+  const shirt = team && player360ValuePresent(identity.shirtNumber) ? String(identity.shirtNumber).trim() : null;
+
+  const who = [];
+  if (birth && age) who.push(`${birth} doğumlu (${age})`);
+  else if (birth) who.push(`${birth} doğumlu`);
+  else if (age) who.push(`${age} yaşında`);
+  if (nationality) who.push(`${nationality} uyruklu`);
+
+  const parts = [];
+  if (who.length && position) parts.push(`${name} kimdir? ${who.join(", ")} ${position}.`);
+  else if (position) parts.push(`${name} kimdir? ${position}.`);
+  else if (who.length) parts.push(`${name} kimdir? ${who.join(", ")}.`);
+  else parts.push(`${name} kimdir?`);
+
+  if (team) {
+    const extras = [league, shirt ? `${shirt} numara` : null].filter(Boolean);
+    parts.push(extras.length
+      ? `${team} formasıyla oynuyor (${extras.join(", ")}).`
+      : `${team} formasıyla oynuyor.`);
+  }
+  return parts;
+}
+
 export function player360Description(model, options = {}) {
   const locale = options.locale === "en" ? "en" : "tr";
   const name = model.identity.name;
+  const tail = locale === "en" ? "on FutbolRadar." : "FutbolRadar'da.";
+
+  // TR: "X kimdir?" niyeti. Cümleler bütün olarak eklenir, ortadan kesilmez.
+  if (locale === "tr") {
+    const bio = player360Bio(model, { locale });
+    if (bio.sentences.length) {
+      const full = `${name} kimdir? ${bio.text} — ${tail}`;
+      if (full.length <= DESCRIPTION_LIMIT) return full;
+    }
+    const compact = player360CompactDescription(model, locale);
+    if (compact && compact.length) {
+      const compactFull = `${compact.join(" ")} — ${tail}`;
+      if (compactFull.length <= DESCRIPTION_LIMIT) return compactFull;
+      const compactFitted = joinDescription(compact, tail, DESCRIPTION_LIMIT);
+      if (compactFitted.length <= DESCRIPTION_LIMIT) return compactFitted;
+    }
+    if (bio.sentences.length) {
+      return joinDescription([`${name} kimdir? ${bio.sentences[0]}`], tail, DESCRIPTION_LIMIT);
+    }
+    return joinDescription([
+      `${name} kimdir? Kulüp, sezon istatistikleri ve piyasa verileri doğrulanmış sağlayıcı kaydıyla eşleştiğinde yayımlanır; tahmini değer gösterilmez`
+    ], tail, DESCRIPTION_LIMIT);
+  }
+
   const parts = [];
 
   const position = model.identity.position;
   if (model.identity.team) {
-    parts.push(locale === "en"
-      ? `${name} plays for ${model.identity.team}${position ? ` as a ${position}` : ""}`
-      : `${name}, ${model.identity.team} formasıyla oynuyor${position ? `, mevki ${position}` : ""}`);
+    parts.push(`${name} plays for ${model.identity.team}${position ? ` as a ${position}` : ""}`);
   } else {
-    parts.push(locale === "en"
-      ? `${name} player profile${position ? `, ${position}` : ""}`
-      : `${name} oyuncu profili${position ? `, mevki ${position}` : ""}`);
+    parts.push(`${name} player profile${position ? `, ${position}` : ""}`);
   }
 
   const stats = new Map(model.seasonStats.core.map((row) => [row.key, row.value]));
@@ -618,72 +970,66 @@ export function player360Description(model, options = {}) {
     const assists = stats.get("assists");
     const matches = stats.get("appearances");
     const measured = [
-      matches !== undefined ? `${matches} ${locale === "en" ? "apps" : "maç"}` : null,
-      goals !== undefined ? `${goals} ${locale === "en" ? "goals" : "gol"}` : null,
-      assists !== undefined ? `${assists} ${locale === "en" ? "assists" : "asist"}` : null
+      matches !== undefined ? `${matches} apps` : null,
+      goals !== undefined ? `${goals} goals` : null,
+      assists !== undefined ? `${assists} assists` : null
     ].filter(Boolean);
-    parts.push(`${model.season} ${locale === "en" ? "season" : "sezonu"}: ${measured.join(", ")}`);
+    parts.push(`${model.season} season: ${measured.join(", ")}`);
   }
 
   if (model.profileEvidence?.matches.length) {
-    parts.push(locale === "en"
-      ? `sourced statistics from ${model.profileEvidence.matches.length} recorded matches, not season totals`
-      : `${model.profileEvidence.matches.length} kayıtlı maçın kaynaklı istatistikleri, sezon toplamı değil`);
+    parts.push(`sourced statistics from ${model.profileEvidence.matches.length} recorded matches, not season totals`);
   }
 
   if (model.matchLog.available) {
-    parts.push(locale === "en"
-      ? `recent matches with minutes, goals and cards`
-      : `son maçları, dakikaları ve kartları`);
+    parts.push(`recent matches with minutes, goals and cards`);
   }
 
   if (model.availability.available) {
     const status = t(`player360.availability.${model.availability.status}`, locale);
-    parts.push(locale === "en" ? `current status: ${status}` : `güncel durum: ${status}`);
+    parts.push(`current status: ${status}`);
   }
 
   if (model.news.general.length || model.news.transfer.length) {
-    parts.push(locale === "en" ? "transfer and news updates" : "transfer ve haber güncellemeleri");
+    parts.push("transfer and news updates");
   }
 
   if (model.career.available && model.career.stints.length > 1) {
     const clubs = model.career.stints.slice(0, 3).map((stint) => stint.club).join(", ");
-    parts.push(locale === "en" ? `career clubs: ${clubs}` : `kariyer kulüpleri: ${clubs}`);
+    parts.push(`career clubs: ${clubs}`);
   }
 
-  // HİÇBİR BÖLÜMÜ OLMAYAN KAYIT. Açıklama, sayfada ne olmadığını ve NEDEN
-  // olmadığını söyler. "A. Ablak oyuncu profili." gibi üç kelimelik bir
-  // açıklama arama sonucunda hiçbir soruyu yanıtlamıyor; boş vaat vermeden
-  // de sayfanın ne olduğunu anlatmak mümkün.
   if (parts.length === 1) {
-    parts.push(locale === "en"
-      ? "club, season statistics and market data are published once they match a verified provider record — estimates are never shown"
-      : "kulüp, sezon istatistikleri ve piyasa verileri doğrulanmış sağlayıcı kaydıyla eşleştiğinde yayımlanır; tahmini değer gösterilmez");
+    parts.push("club, season statistics and market data are published once they match a verified provider record — estimates are never shown");
   }
 
-  const tail = locale === "en" ? "on FutbolRadar." : "FutbolRadar'da.";
-  // Arama snippet'i ~150-160 karakter. Bölümleri sırayla ekler; sınırı
-  // aşacak cümle düşer, böylece vaat edilen bölüm sayfada kalanlarla sınırlı kalır.
   let used = [];
   let result = `${parts[0]} — ${tail}`;
   for (const part of parts) {
     const candidate = `${[...used, part].join(", ")} — ${tail}`;
-    if (used.length && candidate.length > 160) break;
+    if (used.length && candidate.length > DESCRIPTION_LIMIT) break;
     used.push(part);
     result = candidate;
   }
   return result;
 }
 
-/** SEO başlığı. */
+/** SEO başlığı. TR'de "kimdir" kalıbı, ~60 karakter; uzun adlarda kuyruk kısalır. */
 export function player360Title(model, options = {}) {
   const locale = options.locale === "en" ? "en" : "tr";
   const name = model.identity.name;
-  // ~60 karakterlik görünür başlık. Uzun adlarda normalize-meta.mjs
-  // 68'i aşınca " | FutbolRadar" ekini zaten düşürür.
-  return locale === "en"
-    ? `${name} Stats and Profile | FutbolRadar`
-    : `${name} Profili ve İstatistikleri | FutbolRadar`;
+  if (locale === "en") {
+    return `${name} Stats and Profile | FutbolRadar`;
+  }
+  const brand = " | FutbolRadar";
+  const variants = [
+    `${name} Kimdir? Kulübü, Mevkii, İstatistikleri${brand}`,
+    `${name} Kimdir? Kulübü ve İstatistikleri${brand}`,
+    `${name} Kimdir? İstatistikleri${brand}`,
+    `${name} Kimdir?${brand}`,
+    `${name} Kimdir?`
+  ];
+  return variants.find((title) => title.length <= TITLE_LIMIT) || variants[variants.length - 1];
 }
 
 /**
@@ -736,8 +1082,9 @@ export function player360Person(model, canonical, description) {
  * Profil sayfasının şema grafiği: Person + BreadcrumbList + ProfilePage.
  * ProfilePage, WebPage'in alt türüdür; ayrı bir WebPage düğümü tekrardır.
  */
-export function player360Graph(model, canonical, description, breadcrumbs) {
+export function player360Graph(model, canonical, description, breadcrumbs, options = {}) {
   const person = player360Person(model, canonical, description);
+  const faqPage = player360FaqPage(model, canonical, options);
   return {
     "@context": "https://schema.org",
     "@graph": [
@@ -758,7 +1105,8 @@ export function player360Graph(model, canonical, description, breadcrumbs) {
           name: "FutbolRadar",
           url: "https://www.futbolradar.com/"
         }
-      }
+      },
+      ...(faqPage ? [faqPage] : [])
     ]
   };
 }

@@ -239,14 +239,16 @@ check("her kanonik profil 360 yığınını taşır", () => {
   assert.equal(missing, 0, `${missing} profilde 360 yığını yok`);
 });
 
-check("H1 yalnızca oyuncunun adı", () => {
+check("H1 oyuncunun tam adıyla başlar", () => {
   for (const file of generated.slice(0, 120)) {
     const html = readProfile(file);
     const headings = [...html.matchAll(/<h1[^>]*>([\s\S]*?)<\/h1>/g)].map((match) => match[1].trim());
     assert.equal(headings.length, 1, `${file}: tam olarak bir H1 olmalı`);
 
     const player = playerOfPage(file);
-    assert.equal(headings[0], displayNameOf(player), `${file}: H1 yalnızca ad olmalı`);
+    const name = displayNameOf(player);
+    assert.ok(headings[0] === name || headings[0] === `${name} kimdir?`,
+      `${file}: H1 tam ad veya "tam ad kimdir?" olmalı (${headings[0]})`);
   }
 });
 

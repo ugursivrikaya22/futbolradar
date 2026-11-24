@@ -15,6 +15,7 @@
  * site haritasına eklenir, panel eklenmez.
  */
 
+import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
@@ -34,6 +35,17 @@ function sourceAnchorAttrs(url) {
 }
 
 const domain = "https://www.futbolradar.com";
+
+/** inject-asset-version ile aynı damga: dosya özetinin ilk 8 karakteri. */
+function assetStamp(fileName) {
+  const filePath = path.join(root, fileName);
+  if (!fs.existsSync(filePath)) return "";
+  return crypto.createHash("sha256").update(fs.readFileSync(filePath)).digest("hex").slice(0, 8);
+}
+function assetHref(fileName) {
+  const stamp = assetStamp(fileName);
+  return `./${fileName}${stamp ? `?v=${stamp}` : ""}`;
+}
 const plan = JSON.parse(fs.readFileSync(path.join(root, "data", "search-demand", "content-plan.json"), "utf8"));
 
 function readJson(file, fallback) {
@@ -157,11 +169,38 @@ function claimsTable(page) {
       </section>`;
 }
 
+/**
+ * Düz metin, iç bağlantı için [metin](href) işaretini çözer. İşaret yoksa
+ * çıktı escapeHtml ile aynıdır; eski sayfalar bu yüzden yeniden üretilmeden
+ * kalır. Dış adres kaynak künyesi kurallarına girer.
+ */
+function renderRichText(value) {
+  const source = String(value || "");
+  const pattern = /\[([^\]\n]+)\]\(([^)\s]+)\)/g;
+  let html = "";
+  let cursor = 0;
+  for (const match of source.matchAll(pattern)) {
+    html += escapeHtml(source.slice(cursor, match.index));
+    const label = match[1];
+    const href = match[2];
+    if (/^https?:\/\//i.test(href)) {
+      html += `<a href="${escapeHtml(href)}"${sourceAnchorAttrs(href)}>${escapeHtml(label)}</a>`;
+    } else if (href.startsWith("./") || href.startsWith("../") || href.startsWith("/") || /^[a-z0-9./_-]+$/i.test(href)) {
+      html += `<a href="${escapeHtml(href)}">${escapeHtml(label)}</a>`;
+    } else {
+      html += escapeHtml(match[0]);
+    }
+    cursor = match.index + match[0].length;
+  }
+  html += escapeHtml(source.slice(cursor));
+  return html;
+}
+
 function faqSection(page) {
   if (!Array.isArray(page.faq) || !page.faq.length) return "";
   return `<section class="demand-faq" aria-labelledby="faq-title">
         <h2 id="faq-title">Sık sorulanlar</h2>
-        ${page.faq.map((item) => `<details class="card"><summary><b>${escapeHtml(item.q)}</b></summary><p>${escapeHtml(item.a)}</p></details>`).join("\n        ")}
+        ${page.faq.map((item) => `<details class="card"><summary><b>${escapeHtml(item.q)}</b></summary><p>${renderRichText(item.a)}</p></details>`).join("\n        ")}
       </section>`;
 }
 
@@ -209,7 +248,7 @@ function contentPageHtml(page) {
   const showUpdated = page.updatedAt && page.updatedAt !== page.publishedAt;
   const sections = (page.sections || []).map((section) => `<section>
           <h2>${escapeHtml(section.heading)}</h2>
-          ${(section.paragraphs || []).map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join("\n          ")}
+          ${(section.paragraphs || []).map((paragraph) => `<p>${renderRichText(paragraph)}</p>`).join("\n          ")}
         </section>`).join("\n        ");
   const updateNote = page.updateNote
     ? `<aside class="article-update-note" role="note"><strong>Güncellenecek</strong><p>${escapeHtml(page.updateNote)}</p></aside>`
@@ -238,7 +277,7 @@ function contentPageHtml(page) {
     <script type="application/ld+json">${JSON.stringify(jsonLd(page))}</script>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="./site.webmanifest" />
-    <link rel="stylesheet" href="./page.css" />
+    <link rel="stylesheet" href="${assetHref("page.css")}" />
   </head>
   <body class="subpage">
 ${siteHeader({ base: "./" })}
@@ -248,7 +287,7 @@ ${siteHeader({ base: "./" })}
         <header class="column-article-head">
           <div class="column-article-meta"><span>${escapeHtml(page.type === "transfer-hub" ? "Transfer Merkezi" : page.type === "match-guide" ? "Maç Rehberi" : "Rehber")}</span><time datetime="${escapeHtml(page.publishedAt)}">Yayın: ${escapeHtml(published)}</time>${showUpdated ? `<time datetime="${escapeHtml(page.updatedAt)}">Güncelleme: ${escapeHtml(updated)}</time>` : ""}</div>
           <h1>${escapeHtml(page.h1)}</h1>
-          <p class="lead">${escapeHtml(page.directAnswer)}</p>
+          <p class="lead">${renderRichText(page.directAnswer)}</p>
         </header>
         ${updateNote}
         ${matchCard(page.match)}
@@ -262,8 +301,8 @@ ${siteHeader({ base: "./" })}
       ${relatedLinks(page)}
     </main>
 ${siteFooter({ base: "./" })}
-    <script src="./site.js" defer></script>
-    <script src="./app.js" defer></script>
+    <script src="${assetHref("site.js")}" defer></script>
+    <script src="${assetHref("app.js")}" defer></script>
   </body>
 </html>
 `;
@@ -305,7 +344,7 @@ function dashboardHtml(page) {
     <meta name="description" content="${escapeHtml(page.description)}" />
     <meta name="robots" content="noindex,nofollow" />
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="./page.css" />
+    <link rel="stylesheet" href="${assetHref("page.css")}" />
     <style>
       .demand-table-wrap { overflow-x: auto; }
       .demand-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
@@ -379,7 +418,12 @@ ${siteFooter({ base: "./" })}
 }
 
 function upsertSitemap(pages) {
-  for (const sitemapPath of [path.join(root, "sitemap.xml"), path.join(root, "public", "sitemap.xml")]) {
+  for (const sitemapPath of [
+    path.join(root, "sitemap.xml"),
+    path.join(root, "public", "sitemap.xml"),
+    path.join(root, "sitemaps", "sitemap-core.xml"),
+    path.join(root, "public", "sitemaps", "sitemap-core.xml")
+  ]) {
     if (!fs.existsSync(sitemapPath)) continue;
     let xml = fs.readFileSync(sitemapPath, "utf8");
     for (const page of pages) {
@@ -416,6 +460,73 @@ function injectGuideStrip(pages) {
   }
 }
 
+/**
+ * Yayımlanmış Avrupa Ligi rehberinin ilk 8 paragrafının HEMEN ardına tek
+ * bağlantı ekler. Sayfanın başlığı, adresi ve diğer paragrafları yeniden
+ * yazılmaz: üretici tüm dosyayı bastığında paylaşılan yerleşim değiştiği
+ * için bu sayfa yerinde yamalanır.
+ */
+function patchExistingTop8Link(page) {
+  if (!page) return;
+  const source = (page.sections || [])
+    .flatMap((section) => section.paragraphs || [])
+    .find((paragraph) => String(paragraph).includes("avrupa-ligi-ilk-8-kurali.html"));
+  if (!source) {
+    console.warn("[search-demand] ilk 8 bağlantı paragrafı planda yok");
+    return;
+  }
+  const paragraph = `<p>${renderRichText(source)}</p>`;
+  const anchor = "Lig aşamasını ilk 8 sırada bitiren takımlar doğrudan son 16 turuna gider.";
+  for (const rel of ["avrupa-ligi-eleme-sistemi-rehberi.html", "public/avrupa-ligi-eleme-sistemi-rehberi.html"]) {
+    const file = path.join(root, rel);
+    if (!fs.existsSync(file)) continue;
+    let html = fs.readFileSync(file, "utf8");
+    if (html.includes("avrupa-ligi-ilk-8-kurali.html")) continue;
+    const idx = html.indexOf(anchor);
+    const close = idx >= 0 ? html.indexOf("</p>", idx) : -1;
+    if (close < 0) {
+      console.warn(`[search-demand] ilk 8 paragrafı bulunamadı: ${rel}`);
+      continue;
+    }
+    html = `${html.slice(0, close + 4)}\n          ${paragraph}${html.slice(close + 4)}`;
+    fs.writeFileSync(file, html, "utf8");
+    console.log(`[search-demand] tek iç bağlantı eklendi: ${rel}`);
+  }
+}
+
+/** İlgili haber ve köşe sayfalarına, gövdeye dokunmadan rehber şeridi basar. */
+function injectPlacements(pages) {
+  const byFile = new Map();
+  for (const page of pages) {
+    for (const rel of Array.isArray(page.placeOn) ? page.placeOn : []) {
+      if (!byFile.has(rel)) byFile.set(rel, []);
+      byFile.get(rel).push(page);
+    }
+  }
+  for (const [rel, linked] of byFile) {
+    const prefix = rel.includes("/") ? "../" : "./";
+    const links = linked.map((page) => `<div><span>Rehber</span><b><a href="${prefix}${escapeHtml(page.slug)}.html">${escapeHtml(page.h1)}</a></b></div>`).join("");
+    const block = `<!-- evergreen-guides:start --><section class="source-strip" aria-label="Kalıcı rehberler">${links}</section><!-- evergreen-guides:end -->`;
+    for (const fileRel of [rel, path.join("public", rel)]) {
+      const file = path.join(root, fileRel);
+      if (!fs.existsSync(file)) {
+        console.warn(`[search-demand] yerleşim dosyası yok: ${fileRel}`);
+        continue;
+      }
+      let html = fs.readFileSync(file, "utf8");
+      if (html.includes("<!-- evergreen-guides:start -->")) {
+        html = html.replace(/<!-- evergreen-guides:start -->[\s\S]*?<!-- evergreen-guides:end -->/, block);
+      } else if (html.includes("</main>")) {
+        html = html.replace(/([ \t]*)<\/main>/, `${block}\n$1</main>`);
+      } else {
+        console.warn(`[search-demand] </main> yok, şerit atlandı: ${fileRel}`);
+        continue;
+      }
+      fs.writeFileSync(file, html, "utf8");
+    }
+  }
+}
+
 const pages = Array.isArray(plan.pages) ? plan.pages : [];
 const failures = [];
 for (const page of pages) {
@@ -429,14 +540,28 @@ if (failures.length) {
   process.exit(1);
 }
 
-for (const page of pages) {
+const alreadyPublished = new Set(
+  pages
+    .filter((page) => fs.existsSync(path.join(root, `${page.slug}.html`)))
+    .map((page) => page.slug)
+);
+
+function writePage(page) {
   const html = page.type === "dashboard" ? dashboardHtml(page) : contentPageHtml(page);
   const file = `${page.slug}.html`;
   fs.writeFileSync(path.join(root, file), html, "utf8");
   fs.mkdirSync(path.join(root, "public"), { recursive: true });
   fs.writeFileSync(path.join(root, "public", file), html, "utf8");
 }
+
+const freshPages = pages.filter((page) => !alreadyPublished.has(page.slug));
+// İlk geçiş dosyaları oluşturur; ikinci geçiş kardeş rehberler diskte
+// durduğu için iç bağlantıları düşürmez. Yayımlanmış sayfalar baştan basılmaz.
+for (const page of freshPages) writePage(page);
+for (const page of freshPages) writePage(page);
+patchExistingTop8Link(pages.find((page) => page.slug === "avrupa-ligi-eleme-sistemi-rehberi"));
 upsertSitemap(pages);
 injectGuideStrip(pages);
+injectPlacements(pages);
 
 console.log(`Generated ${pages.length} search-demand pages (${pages.filter((page) => page.type !== "dashboard").length} indexlenebilir + panel).`);
