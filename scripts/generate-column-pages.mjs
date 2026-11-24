@@ -23,6 +23,9 @@ import { createRequire } from "node:module";
 import { pathToFileURL } from "node:url";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
 import { ROBOTS_INDEX } from "./lib/robots.mjs";
+import {
+  COVER_HEIGHT, COVER_WIDTH, coverExists, coverRelPath, coverUrl, isGenericImage
+} from "./lib/coverImages.mjs";
 import { columnTeams, matchPageFor, teamStandingsLink } from "./lib/clusterLinks.mjs";
 
 const root = process.cwd();
@@ -304,14 +307,14 @@ const PAGE_STRINGS = {
     lang: "tr", ogLocale: "tr_TR", inLanguage: "tr-TR",
     breadcrumbLabel: "Sayfa yolu", home: "Ana Sayfa",
     indexPath: "kose-yazilari.html", backAll: "Tüm Köşe Yazıları",
-    updateLabel: "Güncelleme", sources: "Kaynaklar",
+    updateLabel: "Güncelleme", publishedLabel: "Yayın", sources: "Kaynaklar",
     byline: (author, title) => `${author} yazdı: ${title}`
   },
   en: {
     lang: "en", ogLocale: "en_GB", inLanguage: "en-GB",
     breadcrumbLabel: "Breadcrumb", home: "Home",
     indexPath: "en/columns.html", backAll: "All columns",
-    updateLabel: "Update", sources: "Sources",
+    updateLabel: "Update", publishedLabel: "Published", sources: "Sources",
     byline: (author, title) => `${author} wrote: ${title}`
   }
 };
@@ -457,9 +460,21 @@ export function columnPageHtml(column, locale = "tr") {
   // `scripts/generate-og-images.mjs` ile aynı SVG'den rasterlenip depoya
   // işleniyor; `scripts/test-og-image.mjs` ikisinin de yerinde olduğunu
   // ve 1200×630 bildirimine uyduğunu denetliyor.
-  const shareImage = column.featuredImage
-    ? publicAssetUrl(column.featuredImage.replace(/\.svg$/i, ".png"))
-    : SHARE_IMAGE;
+  // SAYFAYA ÖZEL KAPAK. Kendi görseli olmayan (ortak marka görseli ya da
+  // görselsiz) Türkçe yazıda `scripts/generate-cover-images.mjs` kapağı
+  // varsa hem sayfa içi görsel hem paylaşım görseli odur (1200×630 JPEG).
+  // Kendi görseli olan yazıya dokunulmaz. Kural: scripts/lib/coverImages.mjs.
+  const coverRel = locale !== "en" && isGenericImage(column.featuredImage)
+    ? coverRelPath("kose", path.basename(column.path, ".html"))
+    : "";
+  const cover = coverRel && coverExists(coverRel) ? coverRel : "";
+  const heroImage = cover || column.featuredImage;
+  const shareImage = cover
+    ? coverUrl(cover)
+    : column.featuredImage
+      ? publicAssetUrl(column.featuredImage.replace(/\.svg$/i, ".png"))
+      : SHARE_IMAGE;
+  const modifiedAt = column.updates.length ? column.updates[0].date : column.date;
   const badge = column.contentType || column.badge;
   const updatesHtml = column.updates.length
     ? `<aside class="article-update-note column-updates" role="note">${column.updates.map((row) => `<strong>${escapeHtml(copy.updateLabel)} · <time datetime="${escapeHtml(row.date)}">${escapeHtml(formatDateTime(row.date, column.locale))}</time></strong><p>${inlineText(row.text, base)}</p>`).join("")}</aside>`
@@ -495,7 +510,7 @@ export function columnPageHtml(column, locale = "tr") {
     // değişiklik tarihi yayım tarihidir; uydurulmuş bir "bugün" damgası
     // tazelik sinyalini yalanlar. Tarihli bir güncelleme notu varsa
     // değişiklik tarihi en yeni notun tarihidir.
-    dateModified: column.updates.length ? column.updates[0].date : column.date,
+    dateModified: modifiedAt,
     author: { "@type": schemaAuthorType(column.author), name: column.author, url: `${DOMAIN}/${column.authorPath}` },
     publisher: {
       "@type": "Organization",
@@ -506,7 +521,9 @@ export function columnPageHtml(column, locale = "tr") {
     articleSection: column.categoryLabel,
     keywords: (column.keywords && column.keywords.length ? column.keywords : column.tags).join(", "),
     mainEntityOfPage: url,
-    image: shareImage,
+    image: cover
+      ? { "@type": "ImageObject", url: shareImage, width: COVER_WIDTH, height: COVER_HEIGHT }
+      : shareImage,
     inLanguage: copy.inLanguage
   };
 
@@ -575,11 +592,12 @@ export function columnPageHtml(column, locale = "tr") {
           <h1>${escapeHtml(column.title)}</h1>
           <div class="column-article-meta">
             <a class="column-author" href="${base}${escapeHtml(column.authorPath)}">${escapeHtml(column.author)}</a>
-            <time datetime="${escapeHtml(column.date)}">${escapeHtml(formatDate(column.date, column.locale))}</time>
+            <time datetime="${escapeHtml(column.date)}">${escapeHtml(copy.publishedLabel)}: ${escapeHtml(formatDate(column.date, column.locale))}</time>
+            <time datetime="${escapeHtml(modifiedAt)}">${escapeHtml(copy.updateLabel)}: ${escapeHtml(formatDate(modifiedAt, column.locale))}</time>
           </div>
         </header>
 
-        ${column.featuredImage ? `<figure class="column-featured-image"><img src="${escapeHtml(relativeAssetUrl(column.featuredImage, base))}" alt="${escapeHtml(column.featuredImageAlt || column.title)}" loading="eager" decoding="async" /></figure>` : ""}
+        ${heroImage ? `<figure class="column-featured-image"><img src="${escapeHtml(relativeAssetUrl(heroImage, base))}"${cover ? ` width="${COVER_WIDTH}" height="${COVER_HEIGHT}"` : ""} alt="${escapeHtml(column.featuredImageAlt || column.title)}" loading="eager"${cover ? ' fetchpriority="high"' : ""} decoding="async" /></figure>` : ""}
         ${standfirst ? `<p class="column-standfirst">${escapeHtml(standfirst)}</p>` : ""}${showcaseHtml}
         <p class="column-disclaimer">${escapeHtml(column.disclaimer)}</p>
         ${updatesHtml}
