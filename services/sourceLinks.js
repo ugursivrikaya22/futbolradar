@@ -56,6 +56,10 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
     "caykurrizespor.org.tr",
     "acmonza.com",
     "mancity.com",
+    // 24 Kasım 2026 Arsenal-Borussia Dortmund: saat, stat, hakem ve
+    // sakatlık notu iki kulübün kendi maç önü sayfalarından doğrulandı.
+    "arsenal.com",
+    "bvb.de",
     // Official match reports used to verify historical fixture identities.
     "liverpoolfc.com",
     "atleticobaleares.com",
