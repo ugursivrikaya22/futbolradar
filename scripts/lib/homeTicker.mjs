@@ -34,9 +34,16 @@ function internalHref(url, base) {
   return value.replace(/^https?:\/\/(?:www\.)?futbolradar\.com\//i, base);
 }
 
+/** Transfer Radarı sayfası (adres sabit). TR bandındaki transfer/söylenti
+ *  öğeleri ve "Tümü" bağlantısı buraya gider. */
+export const TRANSFER_RADAR_HREF = "super-lig-transferleri-2026-2027.html";
+const TRANSFER_CATEGORIES = new Set(["transfer", "iddia"]);
+
 const COPY = Object.freeze({
   tr: {
     title: "Transfer Radarı",
+    all: "Tümü",
+    allAria: "Tüm transferler ve söylentiler: Transfer Radarı sayfası",
     pause: "Durdur",
     pauseAria: "Kayan yazıyı durdur",
     breaking: "Son dakika",
@@ -74,7 +81,10 @@ function categoryLabel(item, locale) {
 function itemHtml(item, { base, hidden, locale }) {
   const words = copyFor(locale);
   const tab = hidden ? ' tabindex="-1"' : "";
-  const href = internalHref(item.url, base);
+  // Bağlantısız transfer/söylenti öğesi Transfer Radarı sayfasına gider
+  // (TR). Haber sayfası olan öğe kendi haberine gitmeye devam eder.
+  const fallback = locale !== "en" && TRANSFER_CATEGORIES.has(item.category) ? `${base}${TRANSFER_RADAR_HREF}` : "";
+  const href = internalHref(item.url, base) || fallback;
   const breaking = item.breaking === true;
   const label = categoryLabel(item, locale);
   // Item body stays in the source language. English pages use English chrome
@@ -109,12 +119,13 @@ export function renderHomeTicker(items, options = {}) {
   const localeAttr = locale === "en" ? ' data-home-ticker-locale="en"' : "";
   return `<link rel="stylesheet" href="${base}home-ticker.css" />
 <section class="home-ticker home-ticker--top" data-home-ticker${localeAttr} aria-labelledby="home-ticker-title">
-  <div class="container-wide home-ticker__inner">
+  <div class="container-wide home-ticker__inner${words.all ? " home-ticker__inner--with-all" : ""}">
     <h2 class="home-ticker__label" id="home-ticker-title">${escapeHtml(words.title)}</h2>
     <div class="home-ticker__viewport">
       <div class="home-ticker__track" style="--home-ticker-duration:${tickerDurationSeconds(list)}s">${group(false)}${group(true)}</div>
     </div>
-    <button type="button" class="home-ticker__toggle" data-home-ticker-toggle aria-pressed="false" aria-label="${escapeHtml(words.pauseAria)}">${escapeHtml(words.pause)}</button>
+    <button type="button" class="home-ticker__toggle" data-home-ticker-toggle aria-pressed="false" aria-label="${escapeHtml(words.pauseAria)}">${escapeHtml(words.pause)}</button>${words.all ? `
+    <a class="home-ticker__all" href="${escapeHtml(`${base}${TRANSFER_RADAR_HREF}`)}" aria-label="${escapeHtml(words.allAria)}">${escapeHtml(words.all)}</a>` : ""}
   </div>
 </section>
 <script src="${base}home-ticker.js" defer></script>`;
