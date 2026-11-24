@@ -22,6 +22,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
+import { apiFootballScoreItems } from "./worldFootballTicker.mjs";
 
 const require = createRequire(import.meta.url);
 const { canonicalStatus, istanbulDay } = require("../../services/matchStatus.js");
@@ -48,7 +49,8 @@ const EN_LABEL = Object.freeze({
 /** Güven rozeti şablonda olduğu gibi basılır; İngilizce sayfada Türkçe rozet olmaz. */
 const EN_CONFIDENCE_BADGE = Object.freeze({
   reported: "REPORTED",
-  rumour: "RUMOUR"
+  rumour: "RUMOUR",
+  claim: "CLAIM"
 });
 
 /**
@@ -68,6 +70,7 @@ function curatedEnglishItems() {
   const { items } = normalizeTickerItems(payload, { now: new Date() });
   const out = [];
   for (const item of items) {
+    if (String(item.id || "").startsWith("world-")) continue;
     const text = englishById.get(item.id);
     if (!text) continue;
     out.push({
@@ -81,6 +84,25 @@ function curatedEnglishItems() {
     });
   }
   return out;
+}
+
+function worldEnglishItems() {
+  const payload = readJson("news-ticker.json", { items: [] });
+  const raw = (Array.isArray(payload.items) ? payload.items : [])
+    .filter((row) => String(row && row.id || "").startsWith("world-") && row.en && String(row.en.text || "").trim());
+  if (!raw.length) return [];
+  const byId = new Map(raw.map((row) => [String(row.id), String(row.en.text).trim()]));
+  const { items } = normalizeTickerItems({ items: raw }, { now: new Date(), limit: 8 });
+  return items.map((item) => ({
+    world: true,
+    label: EN_LABEL[item.category] || "News",
+    text: byId.get(item.id) || "",
+    href: item.href || null,
+    sourceName: item.sourceName || "",
+    publisher: item.sourceName || "",
+    confidence: item.confidence || "",
+    confidenceBadge: EN_CONFIDENCE_BADGE[item.confidence] || ""
+  })).filter((item) => item.text);
 }
 
 /** Türkçe transfer türü → İngilizce karşılık. Bilinmeyen tür yazılmaz. */
@@ -180,5 +202,10 @@ export function buildEnTickerItems() {
     });
   }
 
-  return items.slice(0, MAX_ITEMS);
+  const world = worldEnglishItems();
+  const scores = apiFootballScoreItems(calendar.matches || [], { nowMs: Date.now(), locale: "en" });
+  const combined = world.length || scores.length
+    ? [...items.slice(0, 4), ...scores.slice(0, 2), ...world.slice(0, 2), ...items.slice(4)]
+    : items;
+  return combined.slice(0, MAX_ITEMS);
 }
