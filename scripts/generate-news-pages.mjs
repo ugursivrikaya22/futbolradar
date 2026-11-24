@@ -16,6 +16,7 @@ import { siteHeader, siteFooter, escapeLayoutHtml as escapeHtml } from "./lib/la
 import { findTurkish } from "./lib/turkish-detector.mjs";
 import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
 import { buildNewsSitemap, columnNewsItems } from "./lib/newsSitemap.mjs";
+import { COVER_HEIGHT, COVER_WIDTH, coverExists, coverRelPath, coverUrl } from "./lib/coverImages.mjs";
 // Otomatik keşif kaynaklı, şablon metinli ince haberler indekslenmez (bkz. servis).
 const { isThinAutomatedNews } = createRequire(import.meta.url)("../services/newsIndexPolicy.js");
 const { publishedColumns } = createRequire(import.meta.url)("../services/columnService.js");
@@ -74,7 +75,7 @@ const PAGE_COPY = {
     breadcrumbLabel: "Sayfa yolu", home: "Ana Sayfa",
     indexLabel: "Haberler", indexPath: "haberler.html",
     sources: "Kaynaklar", internalLinks: "İlgili bağlantılar",
-    updateNote: "Güncellenecek", updatedPrefix: "Güncelleme",
+    updateNote: "Güncellenecek", updatedPrefix: "Güncelleme", publishedPrefix: "Yayın",
     defaultCategory: "Futbol Gündemi", noDate: "Tarih bekleniyor",
     stripAgenda: "Gündem", stripAll: "Tüm haberler",
     stripTeam: "Takım", stripTeamFallback: "Takım sayfası",
@@ -86,7 +87,7 @@ const PAGE_COPY = {
     breadcrumbLabel: "Breadcrumb", home: "Home",
     indexLabel: "News", indexPath: "en/news.html",
     sources: "Sources", internalLinks: "Related pages",
-    updateNote: "To be updated", updatedPrefix: "Updated",
+    updateNote: "To be updated", updatedPrefix: "Updated", publishedPrefix: "Published",
     defaultCategory: "Football Agenda", noDate: "Date to be confirmed",
     stripAgenda: "Agenda", stripAll: "All news",
     stripTeam: "Team", stripTeamFallback: "Team page",
@@ -207,7 +208,20 @@ function publishableArticles() {
   return publishableNews(news);
 }
 
+/**
+ * SAYFANIN KAPAĞI. Yalnızca indekslenebilir Türkçe haberde ve dosya depoda
+ * varsa sayfaya özel kapak (1200×630); aksi hâlde ortak paylaşım görseli.
+ * Kural ve gerekçe: scripts/lib/coverImages.mjs.
+ */
+function coverFor(article, locale) {
+  const rel = locale === "tr" && !isThinAutomatedNews(article)
+    ? coverRelPath("haber", articleSlug(article))
+    : "";
+  return rel && coverExists(rel) ? rel : "";
+}
+
 function jsonLd(article, locale = "tr") {
+  const cover = coverFor(article, locale);
   const copy = copyFor(locale);
   const sources = articleSources(article);
   const newsArticle = {
@@ -220,7 +234,9 @@ function jsonLd(article, locale = "tr") {
     // sonucunda bu alanlar basılır. Dil etiketi metnin diliyle uyuşmalı.
     inLanguage: copy.inLanguage,
     mainEntityOfPage: articleUrl(article, locale),
-    image: `${domain}/assets/og-image.png`,
+    image: cover
+      ? { "@type": "ImageObject", url: coverUrl(cover), width: COVER_WIDTH, height: COVER_HEIGHT }
+      : `${domain}/assets/og-image.png`,
     author: { "@type": "Organization", name: "FutbolRadar" },
     publisher: {
       "@type": "Organization",
@@ -306,8 +322,18 @@ function pageHtml(article, locale = "tr") {
   const title = String(seo.metaTitle || `${article.title} | FutbolRadar`).trim();
   const description = String(seo.metaDescription || article.spot || article.summary || article.title).trim();
   const dateLabel = formatDate(article.publishedAt, locale);
-  const updatedLabel = article.updatedAt && article.updatedAt !== article.publishedAt
-    ? formatDate(article.updatedAt, locale)
+  // Son güncelleme HER ZAMAN görünür: kayıt ayrı bir güncelleme zamanı
+  // taşımıyorsa değişiklik zamanı yayın zamanıdır (yapısal verideki
+  // `dateModified` ile aynı kural), uydurulmuş bir "bugün" damgası değil.
+  const modifiedAt = article.updatedAt || article.publishedAt || "";
+  const updatedLabel = formatDate(modifiedAt, locale);
+  const cover = coverFor(article, locale);
+  const shareImage = cover ? coverUrl(cover) : `${domain}/assets/og-image.png`;
+  const coverHtml = cover
+    ? `<figure class="column-featured-image"><img src="${base}${cover}" width="${COVER_WIDTH}" height="${COVER_HEIGHT}" alt="${escapeHtml(article.title)}" loading="eager" fetchpriority="high" decoding="async" /></figure>`
+    : "";
+  const shareImageMeta = cover
+    ? `\n    <meta property="og:image:width" content="${COVER_WIDTH}" />\n    <meta property="og:image:height" content="${COVER_HEIGHT}" />\n    <meta property="og:image:alt" content="${escapeHtml(article.title)}" />`
     : "";
   const tags = Array.isArray(article.tags) ? article.tags.filter(Boolean) : [];
   const sources = articleSources(article);
@@ -362,11 +388,11 @@ function pageHtml(article, locale = "tr") {
     <meta property="og:url" content="${escapeHtml(url)}" />
     <meta property="og:title" content="${escapeHtml(title)}" />
     <meta property="og:description" content="${escapeHtml(description)}" />
-    <meta property="og:image" content="${domain}/assets/og-image.png" />
+    <meta property="og:image" content="${shareImage}" />${shareImageMeta}
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${escapeHtml(title)}" />
     <meta name="twitter:description" content="${escapeHtml(description)}" />
-    <meta name="twitter:image" content="${domain}/assets/og-image.png" />
+    <meta name="twitter:image" content="${shareImage}" />
     <script type="application/ld+json">${JSON.stringify(jsonLd(article, locale))}</script>
     <link rel="icon" href="${base}favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="${base}site.webmanifest" />
@@ -378,11 +404,12 @@ ${siteHeader({ base, locale })}
       <nav class="breadcrumb" aria-label="${escapeHtml(copy.breadcrumbLabel)}"><a href="${base}${locale === "en" ? "en/index.html" : "index.html"}">${escapeHtml(copy.home)}</a><span>/</span><a href="${base}${copy.indexPath}">${escapeHtml(copy.indexLabel)}</a><span>${escapeHtml(article.title)}</span></nav>
       <article class="column-article">
         <header class="column-article-head">
-          <div class="column-article-meta">${statusBadges(article, locale)}<span>${escapeHtml(article.category || copy.defaultCategory)}</span><time datetime="${escapeHtml(article.publishedAt || "")}">${escapeHtml(dateLabel)}</time>${updatedLabel ? `<time datetime="${escapeHtml(article.updatedAt || "")}">${escapeHtml(copy.updatedPrefix)}: ${escapeHtml(updatedLabel)}</time>` : ""}<span>${escapeHtml(article.sourceName || "FutbolRadar")}</span></div>
+          <div class="column-article-meta">${statusBadges(article, locale)}<span>${escapeHtml(article.category || copy.defaultCategory)}</span><time datetime="${escapeHtml(article.publishedAt || "")}">${escapeHtml(copy.publishedPrefix)}: ${escapeHtml(dateLabel)}</time><time datetime="${escapeHtml(modifiedAt)}">${escapeHtml(copy.updatedPrefix)}: ${escapeHtml(updatedLabel)}</time><span>${escapeHtml(article.sourceName || "FutbolRadar")}</span></div>
           <h1>${escapeHtml(article.title)}</h1>
           <p class="lead">${escapeHtml(article.spot || article.summary || description)}</p>
           ${tagHtml}
         </header>
+        ${coverHtml}
         ${updateNoteHtml}
         <div class="column-body">
         ${body}
