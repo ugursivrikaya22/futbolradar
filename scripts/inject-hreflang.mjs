@@ -98,7 +98,7 @@ for (const route of ROUTES) {
 // referans veren tr-TR + x-default bloğu yazılır; böylece Google dil/bölge
 // hedefini net okur ve sayfa hreflang denetiminde "eksik" görünmez.
 const TR_ONLY_PAGES = Object.freeze([
-  "bugunun-maclari-hangi-kanalda.html",
+  "bugun-hangi-mac-hangi-kanalda.html",
   "yarinki-maclar-hangi-kanalda.html",
   "iddaa-sonuclari.html",
   "bahis-sonuclari.html",

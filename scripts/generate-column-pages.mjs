@@ -42,6 +42,8 @@ const {
 // Dış kaynak künyesi `nofollow` taşır; kural services/sourceLinks.js.
 const { SOURCE_LINK_REL } = require("../services/sourceLinks.js");
 const { columnShareHtml } = require("../services/columnShare.js");
+// Yayıncı düğümü (logo dahil) haber sayfalarıyla aynı tek tanımdan gelir.
+const { publisherNode } = require("../services/newsArticleSchema.js");
 
 const STORE = path.join(root, "data", "columns.json");
 const OUT_DIR = path.join(root, "kose-yazilari");
@@ -512,12 +514,7 @@ export function columnPageHtml(column, locale = "tr") {
     // değişiklik tarihi en yeni notun tarihidir.
     dateModified: modifiedAt,
     author: { "@type": schemaAuthorType(column.author), name: column.author, url: `${DOMAIN}/${column.authorPath}` },
-    publisher: {
-      "@type": "Organization",
-      name: "FutbolRadar",
-      url: `${DOMAIN}/`,
-      logo: `${DOMAIN}/favicon-512x512.png`
-    },
+    publisher: publisherNode(),
     articleSection: column.categoryLabel,
     keywords: (column.keywords && column.keywords.length ? column.keywords : column.tags).join(", "),
     mainEntityOfPage: url,

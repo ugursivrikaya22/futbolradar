@@ -1,26 +1,33 @@
 #!/usr/bin/env node
 /**
- * TRANSFER RADARI — super-lig-transferleri-2026-2027.html
+ * TRANSFER RADARI — iki sayfa, tek veri
  * ----------------------------------------------------------------------------
- * Adres DEĞİŞMEZ (menüdeki "Transfer Radar" ve kayan yazılar bu sayfaya
- * bağlanır). Sayfa altı lige ayrılmış bir transfer merkezidir: Süper Lig,
- * Premier Lig, La Liga, Serie A, Bundesliga, Ligue 1. Her ligde üç bölüm:
+ *   1. transfer-radari.html — ASIL Transfer Radarı (menüdeki "Transfer Radar"
+ *      buraya gider). Altı lig, her lig ayrı bölüm/sekme: Süper Lig, Premier
+ *      Lig, La Liga, Serie A, Bundesliga, Ligue 1.
+ *   2. super-lig-transferleri-2026-2027.html — Süper Lig transferleri. Adres
+ *      DEĞİŞMEZ ve sayfa SİLİNMEZ: kayan yazılar `#transfer-<oyuncu>` çapasıyla
+ *      buraya bağlanır, dış bağlantılar ve dizin kaydı bu adrestedir. Yalnızca
+ *      Süper Lig bölümünü taşır (yinelenen içerik olmasın diye); iki sayfa
+ *      birbirine bağlantı verir, her biri kendi adresini canonical gösterir.
+ *
+ * Her ligde üç bölüm:
  *   1. Resmi transferler (tablo) — yalnızca doğrulanmış kayıt.
  *   2. Güçlü söylentiler — "Söylenti" etiketi + kaynak adı, en fazla 72 saat.
  *   3. Ocak 2027 ara transfer dönemi — tarih yalnızca resmî/izinli kaynakta
  *      varsa; yoksa "Güncelleniyor".
  *
  * Veri:
- *   - data/transfers.json  (Süper Lig, status "confirmed") — sayfadaki
- *     `#transfer-<oyuncu>` çapaları kayan yazı (scripts/lib/tickerFeed.mjs)
- *     tarafından kullanılır; HER kayıt basılır, çapa kırılmaz.
+ *   - data/transfers.json  (Süper Lig, status "confirmed") — `#transfer-<oyuncu>`
+ *     çapaları kayan yazı (scripts/lib/tickerFeed.mjs) tarafından kullanılır;
+ *     HER kayıt İKİ sayfada da basılır, çapa kırılmaz.
  *   - data/ticker.json     (Süper Lig söylentileri: süresi geçmemiş "iddia")
  *   - data/transfer-radar.json (beş Avrupa ligi + ocak pencereleri)
  * Kaynaksız, beyaz liste dışı ya da yasaklı alan adlı satır DERLEMEYİ DURDURUR
  * (sessizce düşürmek yerine) — uydurma/eksik kayıt yayına çıkamaz.
  *
- * Bu sayfa eskiden scripts/generate-trend-seo-pages.mjs içindeydi; oradan
- * çıkarıldı ve derlemede hemen onun ardından çalışır.
+ * Renkler yalnızca page.css tasarım belirteçlerinden (var(--…)) gelir; koyu
+ * tema belirteçlerle kendiliğinden çalışır.
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -33,11 +40,19 @@ const require = createRequire(import.meta.url);
 const { SOURCE_LINK_REL, isAllowedSourceUrl } = require("../services/sourceLinks.js");
 const { readTickerFile, selectHomeTickerItems } = require("../services/homeTicker.js");
 
-export const PAGE_FILE = "super-lig-transferleri-2026-2027.html";
 const DOMAIN = "https://www.futbolradar.com";
+
+/** Asıl Transfer Radarı (altı lig). */
+export const PAGE_FILE = "transfer-radari.html";
 const PAGE_URL = `${DOMAIN}/${PAGE_FILE}`;
 export const PAGE_TITLE = "Transfer Radarı 2026-2027 | Süper Lig ve Avrupa'nın Büyük Ligleri Transferleri | FutbolRadar";
-export const PAGE_DESCRIPTION = "Süper Lig, Premier Lig, La Liga, Serie A, Bundesliga ve Ligue 1 transferlerini kapsayan, her gün güncellenen transfer merkezi: resmi transferler ve söylentiler.";
+export const PAGE_DESCRIPTION = "Transfer Radarı: Süper Lig, Premier Lig, La Liga, Serie A, Bundesliga ve Ligue 1 transferleri tek sayfada; resmi transferler ve kaynaklı söylentiler.";
+
+/** Eski adres: Süper Lig transferleri (adres değişmez, sayfa kalır). */
+export const SUPER_LIG_PAGE_FILE = "super-lig-transferleri-2026-2027.html";
+const SUPER_LIG_PAGE_URL = `${DOMAIN}/${SUPER_LIG_PAGE_FILE}`;
+export const SUPER_LIG_PAGE_TITLE = "Süper Lig Transferleri 2026-2027: Resmi Transferler ve Söylentiler | FutbolRadar";
+export const SUPER_LIG_PAGE_DESCRIPTION = "Süper Lig transferleri 2026-2027: doğrulanmış resmi transferler, kaynaklı söylentiler, FIFA transfer yasakları ve Ocak 2027 ara transfer dönemi.";
 const RUMOUR_MAX_AGE_MS = 72 * 60 * 60 * 1000;
 
 /** Kullanıcı kuralı: izinli listede olsa bile bu kaynaklar transfer satırı olamaz. */
@@ -331,16 +346,23 @@ function transferBansBlock(bans) {
         ${rows}
       </ul>
       ${xLink}
-      <p class="tr-note"><a href="./transfer-donemi-2026-27.html">Transfer dönemi 2026-27: tarihler ve FIFA yasakları</a></p>
+      <p class="tr-note"><a href="./transfer-donemi-2026-27">Transfer dönemi 2026-27: tarihler ve FIFA yasakları</a></p>
     </div>`;
 }
 
-function leagueSection(league, index) {
+/**
+ * Bir lig bölümü. `tabbed`: Transfer Radarı'nda sekme paneli; Süper Lig
+ * sayfasında tek bölüm (sekme yok). `crossLink`: başlık yanındaki ek bağlantı.
+ */
+function leagueSection(league, { tabbed = true, crossLink = null } = {}) {
   const id = `lig-${league.id}`;
-  return `<section class="tr-league" id="${id}" data-tr-league="${escapeHtml(league.id)}" role="tabpanel" aria-labelledby="tab-${id}" tabindex="-1">
+  const tabAttrs = tabbed ? ` role="tabpanel" aria-labelledby="tab-${id}" tabindex="-1"` : "";
+  const links = [`<a class="tr-league-link" href="./${escapeHtml(league.leaguePage)}">${escapeHtml(league.name)} sayfası</a>`];
+  if (crossLink) links.unshift(`<a class="tr-league-link" href="./${escapeHtml(crossLink.href)}">${escapeHtml(crossLink.label)}</a>`);
+  return `<section class="tr-league" id="${id}" data-tr-league="${escapeHtml(league.id)}"${tabAttrs}>
     <header class="tr-league-head">
       <h2>${escapeHtml(league.name)} transferleri</h2>
-      <a class="tr-league-link" href="./${escapeHtml(league.leaguePage)}">${escapeHtml(league.name)} sayfası</a>
+      <span class="tr-league-links">${links.join("")}</span>
     </header>
     ${transferBansBlock(league.transferBans)}
     <div class="tr-block tr-official">
@@ -359,67 +381,66 @@ function leagueSection(league, index) {
   </section>`;
 }
 
+// Yalnızca page.css belirteçleri: sabit renk yok, koyu tema kendiliğinden.
 const INLINE_CSS = `
-.tr-page .tr-hero{padding:16px 0 8px}
-.tr-page .tr-hero h1{margin:4px 0 8px;font-size:clamp(1.6rem,5vw,2.4rem)}
-.tr-page .tr-hero p{margin:0 0 8px;max-width:70ch}
-.tr-updated{display:inline-block;margin:0 0 12px;padding:4px 10px;border-radius:999px;background:rgba(11,143,90,.1);color:var(--green-deep,#086a43);font-weight:700;font-size:.875rem}
-.tr-legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin:0 0 12px;font-size:.8125rem;color:var(--muted,#55606e)}
-.tr-tabs{position:sticky;top:0;z-index:5;display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:8px 0;margin:0 0 8px;background:var(--bg,#fff)}
+.tr-page .tr-hero{padding:var(--sp-4) 0 var(--sp-2)}
+.tr-page .tr-hero h1{margin:var(--sp-1) 0 var(--sp-2);font-size:clamp(1.6rem,5vw,2.4rem)}
+.tr-page .tr-hero p{margin:0 0 var(--sp-2);max-width:70ch}
+.tr-updated{display:inline-block;margin:0 0 var(--sp-3);padding:var(--sp-1) 10px;border-radius:var(--radius-pill);background:var(--green-tint);color:var(--green-text);font-weight:700;font-size:var(--fs-sm)}
+.tr-legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin:0 0 var(--sp-3);font-size:var(--fs-xs);color:var(--muted)}
+.tr-crosslink{margin:0 0 var(--sp-4);padding:var(--sp-3);border:1px solid var(--line-strong);border-radius:var(--radius-lg);background:var(--surface-tint);font-size:var(--fs-sm)}
+.tr-crosslink a{font-weight:700;color:var(--green-text)}
+.tr-tabs{position:sticky;top:0;z-index:5;display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:var(--sp-2) 0;margin:0 0 var(--sp-2);background:var(--bg)}
 .tr-tabs::-webkit-scrollbar{display:none}
-.tr-tab{flex:0 0 auto;min-height:40px;padding:6px 14px;border:1px solid var(--line,#d7dde4);border-radius:999px;background:var(--card,#fff);color:inherit;font:inherit;font-weight:700;font-size:.875rem;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
-.tr-tab[aria-selected="true"]{background:var(--green-deep,#086a43);border-color:var(--green-deep,#086a43);color:#fff}
-.tr-tools{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
-.tr-tools input,.tr-tools select{min-height:40px;padding:6px 10px;border:1px solid var(--line,#d7dde4);border-radius:10px;font:inherit;font-size:16px;background:var(--card,#fff);color:inherit;min-width:0}
+.tr-tab{flex:0 0 auto;min-height:var(--tap);padding:6px 14px;border:1px solid var(--line-strong);border-radius:var(--radius-pill);background:var(--surface);color:inherit;font:inherit;font-weight:700;font-size:var(--fs-sm);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+.tr-tab[aria-selected="true"]{background:var(--green-fill);border-color:var(--green-fill);color:var(--bg)}
+.tr-tools{display:flex;flex-wrap:wrap;gap:var(--sp-2);margin:0 0 var(--sp-3)}
+.tr-tools input,.tr-tools select{min-height:var(--tap);padding:6px 10px;border:1px solid var(--line-strong);border-radius:var(--radius-md);font:inherit;font-size:16px;background:var(--surface);color:inherit;min-width:0}
 .tr-tools input{flex:1 1 180px}
 .tr-tools select{flex:0 1 160px}
-.tr-league{margin:0 0 28px;scroll-margin-top:64px}
-.tr-league-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 12px}
-.tr-league-head h2{margin:8px 0}
-.tr-league-link{font-size:.875rem;font-weight:700}
-.tr-block{margin:0 0 18px;padding:12px;border:1px solid var(--line,#d7dde4);border-radius:14px;background:var(--card,#fff)}
-.tr-block h3{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:0 0 10px;font-size:1.05rem}
-.tr-block h3 small{font-weight:600;color:var(--muted,#55606e)}
-.tr-block h4{margin:12px 0 6px;font-size:.95rem}
-.tr-tag{display:inline-block;padding:2px 8px;border-radius:999px;background:#fff1d6;color:#8a4b00;font-size:.75rem;font-weight:800;letter-spacing:.03em;text-transform:uppercase}
-.tr-tag--ok{background:rgba(11,143,90,.12);color:var(--green-deep,#086a43)}
-.tr-note{margin:0 0 8px;font-size:.8125rem;color:var(--muted,#55606e)}
-.tr-empty{margin:0;padding:10px;border-radius:10px;background:var(--soft,#f4f6f8);font-size:.9rem}
+.tr-league{margin:0 0 28px;scroll-margin-top:var(--header-h)}
+.tr-league-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:var(--sp-1) var(--sp-3)}
+.tr-league-head h2{margin:var(--sp-2) 0}
+.tr-league-links{display:flex;flex-wrap:wrap;gap:var(--sp-1) var(--sp-3)}
+.tr-league-link{font-size:var(--fs-sm);font-weight:700;color:var(--green-text)}
+.tr-block{margin:0 0 18px;padding:var(--sp-3);border:1px solid var(--line-strong);border-radius:var(--radius-lg);background:var(--surface)}
+.tr-block h3{display:flex;align-items:center;flex-wrap:wrap;gap:var(--sp-2);margin:0 0 10px;font-size:var(--fs-md)}
+.tr-block h3 small{font-weight:600;color:var(--muted)}
+.tr-block h4{margin:var(--sp-3) 0 6px;font-size:var(--fs-base)}
+.tr-tag{display:inline-block;padding:2px var(--sp-2);border-radius:var(--radius-pill);background:color-mix(in srgb,var(--warn) 16%,transparent);color:var(--warn);font-size:.75rem;font-weight:800;letter-spacing:.03em;text-transform:uppercase}
+.tr-tag--ok{background:var(--green-tint);color:var(--green-text)}
+.tr-note{margin:0 0 var(--sp-2);font-size:var(--fs-xs);color:var(--muted)}
+.tr-empty{margin:0;padding:10px;border-radius:var(--radius-md);background:var(--surface-sunken);font-size:var(--fs-sm)}
 .tr-table-wrap{width:100%}
-.tr-table{width:100%;border-collapse:collapse;font-size:.9rem}
-.tr-table th,.tr-table td{padding:8px 6px;border-bottom:1px solid var(--line,#e3e7ec);text-align:left;vertical-align:top}
-.tr-table thead th{font-size:.75rem;text-transform:uppercase;letter-spacing:.03em;color:var(--muted,#55606e)}
-.tr-table td small{display:block;color:var(--muted,#55606e);font-size:.75rem}
-.tr-table tr:target{background:rgba(11,143,90,.08)}
+.tr-table{width:100%;border-collapse:collapse;font-size:var(--fs-sm)}
+.tr-table th,.tr-table td{padding:var(--sp-2) 6px;border-bottom:1px solid var(--line-strong);text-align:left;vertical-align:top}
+.tr-table thead th{font-size:.75rem;text-transform:uppercase;letter-spacing:.03em;color:var(--muted)}
+.tr-table td small{display:block;color:var(--muted);font-size:.75rem}
+.tr-table tr:target{background:var(--green-tint)}
 .tr-type{font-weight:700}
 .tr-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-.tr-rumours{list-style:none;margin:0;padding:0;display:grid;gap:8px}
-.tr-rumour{padding:10px;border-left:4px solid #f0a020;border-radius:8px;background:#fffaf0}
-.tr-rumour p{margin:6px 0 4px;overflow-wrap:anywhere}
-.tr-rumour small{color:var(--muted,#55606e)}
+.tr-rumours{list-style:none;margin:0;padding:0;display:grid;gap:var(--sp-2)}
+.tr-rumour{padding:10px;border-left:4px solid var(--warn);border-radius:var(--radius);background:color-mix(in srgb,var(--warn) 7%,var(--surface))}
+.tr-rumour p{margin:6px 0 var(--sp-1);overflow-wrap:anywhere}
+.tr-rumour small{color:var(--muted)}
 .tr-window{margin:0 0 6px}
 .tr-src{overflow-wrap:anywhere}
-.tr-bans{border-color:#e7b4b4;background:#fff7f7}
-.tr-tag--ban{background:#fde2e2;color:#9b1c1c}
-.tr-ban-list{list-style:none;margin:0 0 8px;padding:0;display:grid;gap:8px}
-.tr-ban{padding:10px;border-left:4px solid #c53030;border-radius:8px;background:var(--card,#fff)}
-.tr-ban p{margin:0 0 4px;overflow-wrap:anywhere}
-.tr-ban-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px}
-.tr-ban-head small{color:var(--muted,#55606e)}
-.tr-ban-dur{font-size:.8125rem;font-weight:800;color:#9b1c1c}
-.tr-ban small{color:var(--muted,#55606e)}
-[data-theme="dark"] .tr-bans{background:rgba(197,48,48,.08)}
-[data-theme="dark"] .tr-ban{background:transparent}
-[data-theme="dark"] .tr-tag--ban,[data-theme="dark"] .tr-ban-dur{color:#ffb4b4}
-[data-theme="dark"] .tr-rumour{background:rgba(240,160,32,.08)}
-[data-theme="dark"] .tr-tag{background:rgba(240,160,32,.2);color:#ffd28a}
+.tr-bans{border-color:color-mix(in srgb,var(--live) 35%,transparent);background:color-mix(in srgb,var(--live) 5%,var(--surface))}
+.tr-tag--ban{background:color-mix(in srgb,var(--live) 14%,transparent);color:var(--live)}
+.tr-ban-list{list-style:none;margin:0 0 var(--sp-2);padding:0;display:grid;gap:var(--sp-2)}
+.tr-ban{padding:10px;border-left:4px solid var(--live);border-radius:var(--radius);background:var(--surface)}
+.tr-ban p{margin:0 0 var(--sp-1);overflow-wrap:anywhere}
+.tr-ban-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--sp-1) var(--sp-2)}
+.tr-ban-head small{color:var(--muted)}
+.tr-ban-dur{font-size:var(--fs-xs);font-weight:800;color:var(--live)}
+.tr-ban small{color:var(--muted)}
 @media (max-width:720px){
   .tr-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
   .tr-table,.tr-table tbody,.tr-table tr,.tr-table th,.tr-table td{display:block;width:100%}
-  .tr-table tr{padding:8px 0;border-bottom:1px solid var(--line,#e3e7ec)}
-  .tr-table th,.tr-table td{border:0;padding:2px 0;display:grid;grid-template-columns:92px minmax(0,1fr);gap:8px}
-  .tr-table th[scope="row"]{font-size:1rem}
-  .tr-table th::before,.tr-table td::before{content:attr(data-label);font-size:.75rem;font-weight:700;color:var(--muted,#55606e);text-transform:uppercase}
+  .tr-table tr{padding:var(--sp-2) 0;border-bottom:1px solid var(--line-strong)}
+  .tr-table th,.tr-table td{border:0;padding:2px 0;display:grid;grid-template-columns:92px minmax(0,1fr);gap:var(--sp-2)}
+  .tr-table th[scope="row"]{font-size:var(--fs-base)}
+  .tr-table th::before,.tr-table td::before{content:attr(data-label);font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase}
   .tr-table td small{grid-column:2}
 }
 `;
@@ -461,21 +482,87 @@ const INLINE_JS = `
 })();
 `;
 
+/** Resmi transfer ItemList öğeleri (söylenti yapılandırılmış veriye girmez). */
+function officialListItems(leagues, pageUrl) {
+  const items = [];
+  for (const league of leagues) {
+    for (const row of league.official) {
+      if (items.some((item) => item.key === row.id)) continue;
+      items.push({ key: row.id, league, row });
+    }
+  }
+  return items.map(({ league, row }, index) => ({
+    "@type": "ListItem",
+    position: index + 1,
+    name: `${row.playerName}: ${row.fromTeam} → ${row.toTeam} (${row.type})`,
+    url: `${pageUrl}#${row.anchor || `lig-${league.id}`}`
+  }));
+}
+
+const TOOLS_HTML = `<div class="tr-tools" role="search">
+        <label class="tr-sr" for="tr-q">Oyuncu veya kulüp ara</label>
+        <input id="tr-q" type="search" placeholder="Oyuncu veya kulüp ara" autocomplete="off" data-tr-q />
+        <label class="tr-sr" for="tr-type">Transfer tipi</label>
+        <select id="tr-type" data-tr-type-filter>
+          <option value="">Tüm tipler</option>
+          <option value="bonservis">Bonservis</option>
+          <option value="kiralik">Kiralık</option>
+          <option value="serbest">Serbest / bedelsiz</option>
+          <option value="ayrilik">Fesih / sözleşme sonu</option>
+        </select>
+      </div>`;
+
+const LEGEND_HTML = `<p class="tr-legend"><span><span class="tr-tag tr-tag--ok">Resmi</span> kulüp/lig duyurusu</span><span><span class="tr-tag">Söylenti</span> doğrulanmamış haber, en fazla 72 saat</span><span>Kaynağı olmayan haber eklenmez; bedel açıklanmadıysa yazılmaz.</span></p>`;
+
+/** Ortak sayfa iskeleti (iki sayfa da aynı başlık/alt bilgi ve tasarımı kullanır). */
+function pageShell({ url, title, description, schema, breadcrumbHtml, body }) {
+  return `<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>${escapeHtml(title)}</title>
+    <meta name="description" content="${escapeHtml(description)}" />
+    <link rel="canonical" href="${url}" />
+    <meta name="robots" content="${ROBOTS_INDEX}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="tr_TR" />
+    <meta property="og:site_name" content="FutbolRadar" />
+    <meta property="og:url" content="${url}" />
+    <meta property="og:title" content="${escapeHtml(title)}" />
+    <meta property="og:description" content="${escapeHtml(description)}" />
+    <meta property="og:image" content="${DOMAIN}/assets/og-image.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="${escapeHtml(title)}" />
+    <meta name="twitter:description" content="${escapeHtml(description)}" />
+    <meta name="twitter:image" content="${DOMAIN}/assets/og-image.png" />
+    <script type="application/ld+json">${JSON.stringify(schema).replace(/</g, "\\u003c")}</script>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="./site.webmanifest" />
+    <link rel="stylesheet" href="./page.css" />
+    <style data-transfer-radar-css>${INLINE_CSS}</style>
+  </head>
+  <body class="subpage trend-seo-page tr-page">
+    ${siteHeader({ base: "./" })}
+    <main class="container" data-transfer-radar>
+      ${breadcrumbHtml}
+      ${body}
+    </main>
+    ${siteFooter({ base: "./" })}
+    <script src="./site.js" defer></script>
+    <script data-transfer-radar-js>${INLINE_JS}</script>
+  </body>
+</html>
+`;
+}
+
+/** transfer-radari.html — altı lig, her lig ayrı bölüm. */
 export function renderTransferRadarPage(data) {
   const { leagues, updatedAt } = data;
   // Birden çok lige giren kayıt (ör. Barcola: PSG → Liverpool) bir kez sayılır.
   const totalOfficial = new Set(leagues.flatMap((league) => league.official.map((row) => row.id))).size;
   const totalRumours = new Set(leagues.flatMap((league) => league.rumours.map((row) => row.id))).size;
-  const updatedLabel = formatDateTime(updatedAt);
-
-  // ItemList: yalnızca resmi transferler (söylenti yapılandırılmış veriye girmez).
-  const listItems = [];
-  for (const league of leagues) {
-    for (const row of league.official) {
-      if (listItems.some((item) => item.key === row.id)) continue;
-      listItems.push({ key: row.id, league, row });
-    }
-  }
+  const itemListElement = officialListItems(leagues, PAGE_URL);
   const schema = {
     "@context": "https://schema.org",
     "@graph": [
@@ -489,19 +576,16 @@ export function renderTransferRadarPage(data) {
         inLanguage: "tr-TR",
         dateModified: updatedAt,
         isPartOf: { "@type": "WebSite", name: "FutbolRadar", url: `${DOMAIN}/` },
+        about: leagues.map((league) => ({ "@type": "SportsOrganization", name: league.name, sport: "Futbol" })),
+        hasPart: { "@type": "WebPage", "@id": `${SUPER_LIG_PAGE_URL}#webpage`, url: SUPER_LIG_PAGE_URL, name: "Süper Lig Transferleri 2026-2027" },
         mainEntity: { "@id": `${PAGE_URL}#resmi-transferler` }
       },
       {
         "@type": "ItemList",
         "@id": `${PAGE_URL}#resmi-transferler`,
         name: "Resmi transferler — Süper Lig ve Avrupa'nın büyük ligleri (2026-2027)",
-        numberOfItems: listItems.length,
-        itemListElement: listItems.map(({ league, row }, index) => ({
-          "@type": "ListItem",
-          position: index + 1,
-          name: `${row.playerName}: ${row.fromTeam} → ${row.toTeam} (${row.type})`,
-          url: `${PAGE_URL}#${row.anchor || `lig-${league.id}`}`
-        }))
+        numberOfItems: itemListElement.length,
+        itemListElement
       },
       {
         "@type": "BreadcrumbList",
@@ -514,86 +598,113 @@ export function renderTransferRadarPage(data) {
   };
 
   const tabs = leagues.map((league, index) => `<a class="tr-tab" role="tab" id="tab-lig-${escapeHtml(league.id)}" href="#lig-${escapeHtml(league.id)}" data-tr-tab="${escapeHtml(league.id)}" aria-controls="lig-${escapeHtml(league.id)}" aria-selected="${index === 0 ? "true" : "false"}">${escapeHtml(league.name)}</a>`).join("");
+  const sections = leagues.map((league) => leagueSection(league, {
+    tabbed: true,
+    crossLink: league.id === "super-lig" ? { href: SUPER_LIG_PAGE_FILE, label: "Süper Lig transferleri 2026-2027 sayfası" } : null
+  })).join("\n      ");
 
-  return `<!doctype html>
-<html lang="tr">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>${escapeHtml(PAGE_TITLE)}</title>
-    <meta name="description" content="${escapeHtml(PAGE_DESCRIPTION)}" />
-    <link rel="canonical" href="${PAGE_URL}" />
-    <meta name="robots" content="${ROBOTS_INDEX}" />
-    <meta property="og:type" content="website" />
-    <meta property="og:locale" content="tr_TR" />
-    <meta property="og:site_name" content="FutbolRadar" />
-    <meta property="og:url" content="${PAGE_URL}" />
-    <meta property="og:title" content="${escapeHtml(PAGE_TITLE)}" />
-    <meta property="og:description" content="${escapeHtml(PAGE_DESCRIPTION)}" />
-    <meta property="og:image" content="${DOMAIN}/assets/og-image.png" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="${escapeHtml(PAGE_TITLE)}" />
-    <meta name="twitter:description" content="${escapeHtml(PAGE_DESCRIPTION)}" />
-    <meta name="twitter:image" content="${DOMAIN}/assets/og-image.png" />
-    <script type="application/ld+json">${JSON.stringify(schema).replace(/</g, "\\u003c")}</script>
-    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
-    <link rel="manifest" href="./site.webmanifest" />
-    <link rel="stylesheet" href="./page.css" />
-    <style data-transfer-radar-css>${INLINE_CSS}</style>
-  </head>
-  <body class="subpage trend-seo-page tr-page">
-    ${siteHeader({ base: "./" })}
-    <main class="container" data-transfer-radar>
-      <nav class="breadcrumb" aria-label="Sayfa yolu"><a href="./index.html">Ana Sayfa</a><span>/</span><span>Transfer Radarı</span></nav>
-      <header class="tr-hero">
+  return pageShell({
+    url: PAGE_URL,
+    title: PAGE_TITLE,
+    description: PAGE_DESCRIPTION,
+    schema,
+    breadcrumbHtml: `<nav class="breadcrumb" aria-label="Sayfa yolu"><a href="./index.html">Ana Sayfa</a><span>/</span><span>Transfer Radarı</span></nav>`,
+    body: `<header class="tr-hero">
         <span class="eyebrow">Süper Lig · Premier Lig · La Liga · Serie A · Bundesliga · Ligue 1</span>
         <h1>Transfer Radarı</h1>
-        <p class="tr-updated">Son güncelleme: <time datetime="${escapeHtml(updatedAt)}">${escapeHtml(updatedLabel)}</time></p>
+        <p class="tr-updated">Son güncelleme: <time datetime="${escapeHtml(updatedAt)}">${escapeHtml(formatDateTime(updatedAt))}</time></p>
         <p>FutbolRadar transfer radarı, 2026-2027 sezonunda Süper Lig ile Avrupa'nın beş büyük liginin transferlerini tek ekranda toplar. Resmi transferler kulüp ya da lig duyurusuyla doğrulanır; söylentiler ayrı bölümde, "Söylenti" etiketi ve kaynak yayın adıyla gösterilir. Şu an ${totalOfficial} resmi kayıt ve ${totalRumours} güncel söylenti var.</p>
-        <p class="tr-legend"><span><span class="tr-tag tr-tag--ok">Resmi</span> kulüp/lig duyurusu</span><span><span class="tr-tag">Söylenti</span> doğrulanmamış haber, en fazla 72 saat</span><span>Kaynağı olmayan haber eklenmez; bedel açıklanmadıysa yazılmaz.</span></p>
+        ${LEGEND_HTML}
       </header>
+      <p class="tr-crosslink" data-tr-crosslink>Yalnızca Süper Lig mi? <a href="./${SUPER_LIG_PAGE_FILE}">Süper Lig transferleri 2026-2027</a> sayfasında gelen-giden oyuncular, FIFA transfer yasakları ve ocak dönemi tek listede.</p>
       <nav class="tr-tabs" role="tablist" aria-label="Lig seç">${tabs}</nav>
-      <div class="tr-tools" role="search">
-        <label class="tr-sr" for="tr-q">Oyuncu veya kulüp ara</label>
-        <input id="tr-q" type="search" placeholder="Oyuncu veya kulüp ara" autocomplete="off" data-tr-q />
-        <label class="tr-sr" for="tr-type">Transfer tipi</label>
-        <select id="tr-type" data-tr-type-filter>
-          <option value="">Tüm tipler</option>
-          <option value="bonservis">Bonservis</option>
-          <option value="kiralik">Kiralık</option>
-          <option value="serbest">Serbest / bedelsiz</option>
-          <option value="ayrilik">Fesih / sözleşme sonu</option>
-        </select>
-      </div>
-      ${leagues.map(leagueSection).join("\n      ")}
+      ${TOOLS_HTML}
+      ${sections}
       <section class="tr-block">
         <h2>İlgili sayfalar</h2>
-        <p><a href="./transfer-donemi-2026-27.html">Transfer dönemi 2026-27: tarihler ve FIFA yasakları</a> · <a href="./transfer-sezonu-ne-zaman-bitiyor.html">Transfer sezonu ne zaman bitiyor?</a> · <a href="./haberler.html">Son haberler</a> · <a href="./index.html">Ana sayfa</a></p>
-      </section>
-    </main>
-    ${siteFooter({ base: "./" })}
-    <script src="./site.js" defer></script>
-    <script data-transfer-radar-js>${INLINE_JS}</script>
-  </body>
-</html>
-`;
+        <p><a href="./${SUPER_LIG_PAGE_FILE}">Süper Lig transferleri 2026-2027</a> · <a href="./transfer-donemi-2026-27">Transfer dönemi 2026-27: tarihler ve FIFA yasakları</a> · <a href="./transfer-sezonu-ne-zaman-bitiyor.html">Transfer sezonu ne zaman bitiyor?</a> · <a href="./haberler.html">Son haberler</a> · <a href="./index.html">Ana sayfa</a></p>
+      </section>`
+  });
+}
+
+/** super-lig-transferleri-2026-2027.html — yalnızca Süper Lig bölümü. */
+export function renderSuperLigTransfersPage(data) {
+  const league = data.leagues.find((item) => item.id === "super-lig");
+  if (!league) throw new Error("[transfer-radar] super-lig ligi data/transfer-radar.json içinde yok");
+  const { updatedAt } = data;
+  const itemListElement = officialListItems([league], SUPER_LIG_PAGE_URL);
+  const schema = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "CollectionPage",
+        "@id": `${SUPER_LIG_PAGE_URL}#webpage`,
+        name: "Süper Lig Transferleri 2026-2027",
+        headline: "Süper Lig Transferleri 2026-2027",
+        description: SUPER_LIG_PAGE_DESCRIPTION,
+        url: SUPER_LIG_PAGE_URL,
+        inLanguage: "tr-TR",
+        dateModified: updatedAt,
+        isPartOf: { "@type": "WebPage", "@id": `${PAGE_URL}#webpage`, url: PAGE_URL, name: "Transfer Radarı" },
+        about: { "@type": "SportsOrganization", name: "Süper Lig", sport: "Futbol" },
+        mainEntity: { "@id": `${SUPER_LIG_PAGE_URL}#resmi-transferler` }
+      },
+      {
+        "@type": "ItemList",
+        "@id": `${SUPER_LIG_PAGE_URL}#resmi-transferler`,
+        name: "Süper Lig resmi transferleri (2026-2027)",
+        numberOfItems: itemListElement.length,
+        itemListElement
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Ana Sayfa", item: `${DOMAIN}/` },
+          { "@type": "ListItem", position: 2, name: "Transfer Radarı", item: PAGE_URL },
+          { "@type": "ListItem", position: 3, name: "Süper Lig Transferleri 2026-2027", item: SUPER_LIG_PAGE_URL }
+        ]
+      }
+    ]
+  };
+
+  return pageShell({
+    url: SUPER_LIG_PAGE_URL,
+    title: SUPER_LIG_PAGE_TITLE,
+    description: SUPER_LIG_PAGE_DESCRIPTION,
+    schema,
+    breadcrumbHtml: `<nav class="breadcrumb" aria-label="Sayfa yolu"><a href="./index.html">Ana Sayfa</a><span>/</span><a href="./${PAGE_FILE}">Transfer Radarı</a><span>/</span><span>Süper Lig transferleri</span></nav>`,
+    body: `<header class="tr-hero">
+        <span class="eyebrow">Süper Lig · 2026-2027</span>
+        <h1>Süper Lig Transferleri 2026-2027</h1>
+        <p class="tr-updated">Son güncelleme: <time datetime="${escapeHtml(updatedAt)}">${escapeHtml(formatDateTime(updatedAt))}</time></p>
+        <p>2026-2027 sezonunda Süper Lig kulüplerinin resmi transferleri, kaynaklı söylentiler, FIFA transfer yasakları ve Ocak 2027 ara transfer dönemi bu sayfada. Resmi transferler kulüp ya da lig duyurusuyla doğrulanır; şu an ${league.official.length} resmi kayıt ve ${league.rumours.length} güncel söylenti var.</p>
+        ${LEGEND_HTML}
+      </header>
+      <p class="tr-crosslink" data-tr-crosslink>Premier Lig, La Liga, Serie A, Bundesliga ve Ligue 1 transferleri için: <a href="./${PAGE_FILE}">Transfer Radarı</a> — altı lig, her lig ayrı bölümde.</p>
+      ${TOOLS_HTML}
+      ${leagueSection(league, { tabbed: false, crossLink: { href: PAGE_FILE, label: "Tüm ligler: Transfer Radarı" } })}
+      <section class="tr-block">
+        <h2>İlgili sayfalar</h2>
+        <p><a href="./${PAGE_FILE}">Transfer Radarı: altı ligin transferleri</a> · <a href="./transfer-donemi-2026-27">Transfer dönemi 2026-27: tarihler ve FIFA yasakları</a> · <a href="./transfer-sezonu-ne-zaman-bitiyor.html">Transfer sezonu ne zaman bitiyor?</a> · <a href="./super-lig-puan-durumu">Süper Lig puan durumu</a> · <a href="./haberler.html">Son haberler</a></p>
+      </section>`
+  });
 }
 
 /**
- * Site haritasına sayfayı ekler/günceller. Eskiden trend üreticisi bu sayfayı
- * haritaya ekliyordu; sayfa oradan çıkınca kayıt düşüyordu ve QA
- * ("sitemap missing …") derlemeyi durduruyordu. Aynı biçimle upsert edilir.
+ * Site haritasına sayfayı ekler/günceller. generate-static-seo-pages haritayı
+ * baştan yazabildiği için kayıt yoksa burada eklenir (QA "sitemap missing …"
+ * derlemeyi durdurur). Aynı biçimle upsert edilir.
  */
-function upsertSitemapEntry(root, lastmod) {
-  const escapedLoc = PAGE_URL.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+function upsertSitemapEntry(root, pageUrl, lastmod) {
+  const escapedLoc = pageUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const entry = new RegExp(`(<url>\\s*<loc>${escapedLoc}<\\/loc>\\s*<lastmod>)[^<]*(<\\/lastmod>)`);
   for (const file of [path.join(root, "sitemap.xml"), path.join(root, "public", "sitemap.xml")]) {
     if (!fs.existsSync(file)) continue;
     const xml = fs.readFileSync(file, "utf8");
     let next;
     if (entry.test(xml)) next = xml.replace(entry, `$1${lastmod}$2`);
-    else if (xml.includes(`<loc>${PAGE_URL}</loc>`)) next = xml;
-    else next = xml.replace("</urlset>", `  <url>\n    <loc>${PAGE_URL}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.9</priority>\n  </url>\n</urlset>`);
+    else if (xml.includes(`<loc>${pageUrl}</loc>`)) next = xml;
+    else next = xml.replace("</urlset>", `  <url>\n    <loc>${pageUrl}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.9</priority>\n  </url>\n</urlset>`);
     if (next !== xml) fs.writeFileSync(file, next, "utf8");
   }
 }
@@ -603,12 +714,18 @@ export function generateTransferRadarPage(root = process.cwd(), options = {}) {
   if (data.problems.length) {
     throw new Error(`[transfer-radar] kaynak/veri sorunu, sayfa üretilmedi:\n - ${data.problems.join("\n - ")}`);
   }
-  const html = renderTransferRadarPage(data);
-  fs.writeFileSync(path.join(root, PAGE_FILE), html, "utf8");
-  if (fs.existsSync(path.join(root, "public"))) fs.writeFileSync(path.join(root, "public", PAGE_FILE), html, "utf8");
-  if (options.sitemap !== false) upsertSitemapEntry(root, data.updatedAt.slice(0, 10));
+  const pages = [
+    [PAGE_FILE, PAGE_URL, renderTransferRadarPage(data)],
+    [SUPER_LIG_PAGE_FILE, SUPER_LIG_PAGE_URL, renderSuperLigTransfersPage(data)]
+  ];
+  const hasPublic = fs.existsSync(path.join(root, "public"));
+  for (const [file, url, html] of pages) {
+    fs.writeFileSync(path.join(root, file), html, "utf8");
+    if (hasPublic) fs.writeFileSync(path.join(root, "public", file), html, "utf8");
+    if (options.sitemap !== false) upsertSitemapEntry(root, url, data.updatedAt.slice(0, 10));
+  }
   const counts = data.leagues.map((league) => `${league.name}: ${league.official.length} resmi / ${league.rumours.length} söylenti`).join(" · ");
-  console.log(`[transfer-radar] ${PAGE_FILE} üretildi — ${counts}`);
+  console.log(`[transfer-radar] ${PAGE_FILE} + ${SUPER_LIG_PAGE_FILE} üretildi — ${counts}`);
   return data;
 }
 

@@ -13,6 +13,8 @@ import { siteHeader, siteFooter } from "./lib/layout.mjs";
 import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
 import { createFreshnessTracker } from "./lib/sitemapFreshness.mjs";
 import { robotsMeta } from "./lib/robots.mjs";
+// middleware.js, News haritasının 48 saat süzgecini bu işlevin kaynak metninden alır.
+import { NEWS_SITEMAP_FILE, NEWS_SITEMAP_SOURCE_FILE, filterFreshNewsSitemap } from "./lib/newsSitemap.mjs";
 
 const root = process.cwd();
 const domain = "https://www.futbolradar.com";
@@ -882,11 +884,47 @@ function writeCanonicalMiddleware(pairs) {
 const CANONICAL = ${JSON.stringify(map, null, 2)};
 
 export const config = {
-  matcher: ["/karsilastirma/:path*"]
+  matcher: ["/karsilastirma/:path*", "/${NEWS_SITEMAP_FILE}"]
 };
+
+/*
+ * GOOGLE NEWS HARİTASI: 48 SAAT PENCERESİ İSTEK ANINDA.
+ *
+ * /${NEWS_SITEMAP_FILE} statik bir dosyadır ve pencereyi yalnızca derleme
+ * anında uygular; derlemeler arasında süresi dolan kayıt haritada kalır.
+ * Bu dal, derlemenin yazdığı kaynak kopyayı (/${NEWS_SITEMAP_SOURCE_FILE})
+ * okuyup 48 saati aşan kayıtları ayıklar. Kaynak okunamazsa ya da beklenen
+ * biçimde değilse HİÇBİR ŞEY döndürmez: istek statik dosyaya düşer, yani en
+ * kötü durum bu dal eklenmeden önceki davranıştır.
+ *
+ * Aşağıdaki işlev elle yazılmadı: scripts/lib/newsSitemap.mjs içindeki
+ * filterFreshNewsSitemap'in kaynak metnidir (birim testi orada).
+ */
+${filterFreshNewsSitemap.toString()}
+
+async function freshNewsSitemap(request) {
+  try {
+    const source = new URL("/${NEWS_SITEMAP_SOURCE_FILE}", request.url);
+    const upstream = await fetch(source, { headers: { accept: "application/xml" } });
+    if (!upstream.ok) return;
+    const filtered = filterFreshNewsSitemap(await upstream.text(), Date.now());
+    if (!filtered) return;
+    return new Response(filtered.xml, {
+      status: 200,
+      headers: {
+        "content-type": "application/xml; charset=utf-8",
+        "cache-control": "public, max-age=0, must-revalidate",
+        "x-news-sitemap": \`live; kept=\${filtered.kept}; dropped=\${filtered.dropped}\`
+      }
+    });
+  } catch {
+    return;
+  }
+}
 
 export default function middleware(request) {
   const url = new URL(request.url);
+  if (url.pathname === "/${NEWS_SITEMAP_FILE}") return freshNewsSitemap(request);
   const slug = url.pathname.replace(/^\\/karsilastirma\\//, "").replace(/\\.html$/, "");
   const canonical = CANONICAL[slug];
   if (!canonical) return;
