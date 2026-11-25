@@ -24611,3 +24611,12 @@ a.home-featured-column__note-link:focus-visible { outline: none; box-shadow: var
   .live-compact-score { font-size: 0.76rem; }
   .live-compact-status { font-size: 0.56rem; min-width: 26px; }
 }
+
+/* Ana sayfa manşet maçı: ilgili içerik listesi (mevcut renk/aralık değişkenleri) */
+.featured-headline-match { display: grid; gap: 14px; }
+.featured-headline-related { padding-top: 12px; border-top: 1px solid var(--line); }
+.featured-headline-related h3 { margin: 0 0 8px; font-size: var(--fs-base); }
+.featured-headline-related ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.featured-headline-related li { font-size: var(--fs-sm); }
+.featured-headline-related li span { color: var(--muted); font-size: var(--fs-xs); white-space: nowrap; }
+.featured-headline-note { margin: 8px 0 0; color: var(--muted); font-size: var(--fs-xs); }
