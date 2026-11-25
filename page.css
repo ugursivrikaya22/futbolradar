@@ -152,6 +152,19 @@
   --radius-md: 10px;
 
   --font-sans: Inter, "Inter Fallback", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  /* --- kart ve liste yüzeyi ---
+     Kartlar ve listeler (sayfa sonundaki "kartlar ve listeler" bölümü) bu
+     adlar üzerinden tek yüzey dilini paylaşır. Hepsi yukarıdaki belirteçlere
+     bağlı olduğundan koyu tema kendiliğinden çalışır. */
+  --card-radius: var(--radius-lg);
+  --card-bg: var(--surface);
+  --card-border: var(--glass-border);
+  --card-shadow: var(--shadow-sm);
+  --card-shadow-hover: var(--shadow-md);
+  --list-row-min: calc(var(--tap) + var(--sp-1));
+  --list-line: var(--glass-border);
+  --list-hover: var(--surface-tint);
 }
 
 :root[data-theme="dark"] {
@@ -17455,7 +17468,6 @@ body,
   letter-spacing: 0;
 }
 
-.ad-search-page .fixture-card,
 .ad-search-page .live-context-bar,
 .ad-search-page .competition-switcher {
   border-radius: 8px;
@@ -24778,26 +24790,11 @@ a.home-featured-column__note-link:focus-visible { outline: none; box-shadow: var
    tercihi kendiliğinden korunur. HTML, metin ve sınıf adları değişmez.
    Dosyanın sonunda durur: aynı özgüllükteki eski kuralların yerine geçer.
    ========================================================================== */
-:root {
-  --card-radius: var(--radius-lg);
-  --card-pad: var(--sp-4);
-  --card-bg: var(--surface);
-  --card-border: var(--glass-border);
-  --card-shadow: var(--shadow-sm);
-  --card-shadow-hover: var(--shadow-md);
-  --list-row-min: 44px;
-  --list-line: var(--glass-border);
-  --list-hover: var(--surface-tint);
-}
-
-@media (min-width: 641px) {
-  :root { --card-pad: var(--sp-5); }
-}
-
 /* --- 1. Kart yüzeyi: tek köşe/kenarlık/gölge ------------------------------ */
 .card,
 .news-card,
 .fixture-card,
+.result-card,
 .trend-card,
 .player-detail-card,
 .static-match-card,
@@ -24814,7 +24811,7 @@ a.home-featured-column__note-link:focus-visible { outline: none; box-shadow: var
    bırakıyordu; içerik kadar uzar, alt şerit kartın dibine yaslanır. */
 .news-card {
   min-height: 0;
-  padding: var(--card-pad);
+  padding: var(--sp-4);
   gap: var(--sp-3);
 }
 .news-card h3 { margin: var(--sp-1) 0 var(--sp-2); }
@@ -24822,14 +24819,25 @@ a.home-featured-column__note-link:focus-visible { outline: none; box-shadow: var
 
 .fixture-card { padding: var(--sp-3); }
 .trend-card { padding: var(--sp-4); }
-.card { padding: var(--card-pad); }
-.tr-block { padding: var(--sp-4); }
+.card { padding: var(--sp-4); }
+@media (min-width: 641px) {
+  .news-card,
+  .card { padding: var(--sp-5); }
+}
+
+/* Transfer sayfalarında `.tr-block` kuralları satır içi <style>'da ve
+   page.css'ten sonra geliyor: eşit özgüllükte onlar kazanıyordu, dolgu ve
+   kenarlık hiç uygulanmıyordu. `.tr-page` (body) özgüllüğü yükseltir.
+   Yasak bloğu (`.tr-bans`) kendi kırmızı kenarlığını korur. */
+.tr-page .tr-block { padding: var(--sp-4); }
+.tr-page .tr-block:not(.tr-bans) { border-color: var(--card-border); }
 
 /* --- 2. Hover: yalnızca imleçli cihazlarda, hareket tercihine saygılı ------ */
 @media (hover: hover) {
   .card:hover,
   .news-card:hover,
   .fixture-card:hover,
+  .result-card:hover,
   .trend-card:hover,
   .player-detail-card:hover {
     transform: translateY(-2px);
@@ -24841,6 +24849,7 @@ a.home-featured-column__note-link:focus-visible { outline: none; box-shadow: var
   .card:hover,
   .news-card:hover,
   .fixture-card:hover,
+  .result-card:hover,
   .trend-card:hover,
   .player-detail-card:hover {
     transform: none;
@@ -24851,6 +24860,7 @@ a.home-featured-column__note-link:focus-visible { outline: none; box-shadow: var
   .card:hover,
   .news-card:hover,
   .fixture-card:hover,
+  .result-card:hover,
   .trend-card:hover,
   .player-detail-card:hover { transform: none; }
 }
@@ -24897,15 +24907,26 @@ a.home-featured-column__note-link:focus-visible { outline: none; box-shadow: var
   text-transform: uppercase;
 }
 .evergreen-table th,
-.evergreen-table td,
-.tr-block .tr-table th,
-.tr-block .tr-table td {
+.evergreen-table td {
   border-bottom: 1px solid var(--list-line);
+  padding: var(--sp-3) var(--sp-2);
+  font-size: var(--fs-sm);
 }
-.evergreen-table th,
-.evergreen-table td { padding: var(--sp-3) var(--sp-2); }
-.tr-block .tr-table th,
-.tr-block .tr-table td { padding: var(--sp-3) var(--sp-2); }
+/* Transfer tablosu 720 px altında satırı yığılmış karta çevirir (satır içi
+   CSS: hücre başına `border:0; padding:2px 0`). Bu kurallar (özgüllük 0,2,1)
+   o düzeni eziyordu: her alanın altına çizgi ve 12 px dolgu geliyordu.
+   Yalnızca tablo görünümünde (721 px ve üstü) uygulanır. */
+@media (min-width: 721px) {
+  .tr-block .tr-table th,
+  .tr-block .tr-table td {
+    border-bottom: 1px solid var(--list-line);
+    padding: var(--sp-2);
+  }
+}
+@media (max-width: 720px) {
+  .tr-block .tr-table tr { border-bottom-color: var(--list-line); }
+  .tr-block .tr-table tbody tr:last-child { border-bottom: 0; }
+}
 .evergreen-table tbody tr:last-child > *,
 .tr-block .tr-table tbody tr:last-child > * { border-bottom: 0; }
 @media (hover: hover) {
@@ -24913,3 +24934,49 @@ a.home-featured-column__note-link:focus-visible { outline: none; box-shadow: var
   .tr-block .tr-table tbody tr:hover { background: var(--list-hover); }
 }
 .tr-block .tr-table tr:target { background: var(--green-tint); }
+
+/* --- 5. Sonuç kartı ve puan durumu sayfası satırları ----------------------
+   `.result-card` yukarıdaki kart yüzeyine katıldı; burada yalnızca iç
+   düzeni. `.table-row` (puan-durumu.html) liste satırı ölçüsüne bağlanır. */
+.result-card {
+  transition: transform var(--dur) var(--ease), border-color var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+.result-card-footer {
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--list-line);
+}
+.result-card-score b { font-variant-numeric: tabular-nums; }
+
+.table-row {
+  min-height: var(--list-row-min);
+  padding: var(--sp-2) var(--sp-4);
+  border-bottom: 1px solid var(--list-line);
+  color: var(--text-soft);
+  font-size: var(--fs-sm);
+  font-variant-numeric: tabular-nums;
+}
+.table-row.header {
+  min-height: 0;
+  background: var(--surface-sunken);
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+.table-row > :first-child,
+.table-row > :nth-child(n + 3) { text-align: center; }
+@media (hover: hover) {
+  .table-row:not(.header):hover { background: var(--list-hover); }
+}
+@media (max-width: 640px) {
+  .table-row {
+    grid-template-columns: 24px minmax(0, 1fr) repeat(4, 2.5rem);
+    gap: var(--sp-1);
+    padding-inline: var(--sp-3);
+    font-size: var(--fs-xs);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .result-card { transition: none; }
+}
