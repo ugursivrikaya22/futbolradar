@@ -24768,3 +24768,148 @@ a.home-featured-column__note-link:focus-visible { outline: none; box-shadow: var
 .featured-headline-related li { font-size: var(--fs-sm); }
 .featured-headline-related li span { color: var(--muted); font-size: var(--fs-xs); white-space: nowrap; }
 .featured-headline-note { margin: 8px 0 0; color: var(--muted); font-size: var(--fs-xs); }
+
+/* ==========================================================================
+   GÖRSEL YENİLEME 2 — KARTLAR VE LİSTELER (yalnızca yüzey)
+   Haber/maç/trend/oyuncu kartları, transfer listeleri ve puan tablosu
+   listeleri tek yüzey diline bağlanır: aynı köşe, kenarlık, gölge, iç boşluk
+   ve hover. Yalnızca mevcut belirteçler (--surface, --glass-border,
+   --shadow-*, --green-*) kullanılır; böylece açık/koyu tema ve sistem
+   tercihi kendiliğinden korunur. HTML, metin ve sınıf adları değişmez.
+   Dosyanın sonunda durur: aynı özgüllükteki eski kuralların yerine geçer.
+   ========================================================================== */
+:root {
+  --card-radius: var(--radius-lg);
+  --card-pad: var(--sp-4);
+  --card-bg: var(--surface);
+  --card-border: var(--glass-border);
+  --card-shadow: var(--shadow-sm);
+  --card-shadow-hover: var(--shadow-md);
+  --list-row-min: 44px;
+  --list-line: var(--glass-border);
+  --list-hover: var(--surface-tint);
+}
+
+@media (min-width: 641px) {
+  :root { --card-pad: var(--sp-5); }
+}
+
+/* --- 1. Kart yüzeyi: tek köşe/kenarlık/gölge ------------------------------ */
+.card,
+.news-card,
+.fixture-card,
+.trend-card,
+.player-detail-card,
+.static-match-card,
+.match-card,
+.transfer-radar-card,
+.tr-block {
+  border: 1px solid var(--card-border);
+  border-radius: var(--card-radius);
+  background: var(--card-bg);
+  box-shadow: var(--card-shadow);
+}
+
+/* Haber kartı: sabit 260px taban yükseklik kısa metinlerde boş alan
+   bırakıyordu; içerik kadar uzar, alt şerit kartın dibine yaslanır. */
+.news-card {
+  min-height: 0;
+  padding: var(--card-pad);
+  gap: var(--sp-3);
+}
+.news-card h3 { margin: var(--sp-1) 0 var(--sp-2); }
+.news-card-footer { padding-top: var(--sp-3); border-top-color: var(--list-line); }
+
+.fixture-card { padding: var(--sp-3); }
+.trend-card { padding: var(--sp-4); }
+.card { padding: var(--card-pad); }
+.tr-block { padding: var(--sp-4); }
+
+/* --- 2. Hover: yalnızca imleçli cihazlarda, hareket tercihine saygılı ------ */
+@media (hover: hover) {
+  .card:hover,
+  .news-card:hover,
+  .fixture-card:hover,
+  .trend-card:hover,
+  .player-detail-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--line-strong);
+    box-shadow: var(--card-shadow-hover);
+  }
+}
+@media (hover: none) {
+  .card:hover,
+  .news-card:hover,
+  .fixture-card:hover,
+  .trend-card:hover,
+  .player-detail-card:hover {
+    transform: none;
+    box-shadow: var(--card-shadow);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .card:hover,
+  .news-card:hover,
+  .fixture-card:hover,
+  .trend-card:hover,
+  .player-detail-card:hover { transform: none; }
+}
+
+/* --- 3. Liste satırları: puan tablosu, liderler -------------------------- */
+.home-standing-row,
+.leaders-row {
+  min-height: var(--list-row-min);
+  border-bottom: 1px solid var(--list-line);
+  font-variant-numeric: tabular-nums;
+}
+.home-standings-body .home-standing-row:last-child { border-bottom: 0; }
+.home-standing-row.is-head {
+  min-height: 0;
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+@media (hover: hover) {
+  .home-standing-row:not(.is-head):hover,
+  .leaders-row:hover { background: var(--list-hover); }
+}
+
+/* --- 4. Tablolar: puan durumu, transfer listeleri ------------------------ */
+.evergreen-table-wrap,
+.tr-table-wrap {
+  overflow-x: auto;
+  border-radius: var(--radius);
+}
+.evergreen-table,
+.tr-block .tr-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+.evergreen-table thead th,
+.tr-block .tr-table thead th {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+.evergreen-table th,
+.evergreen-table td,
+.tr-block .tr-table th,
+.tr-block .tr-table td {
+  border-bottom: 1px solid var(--list-line);
+}
+.evergreen-table th,
+.evergreen-table td { padding: var(--sp-3) var(--sp-2); }
+.tr-block .tr-table th,
+.tr-block .tr-table td { padding: var(--sp-3) var(--sp-2); }
+.evergreen-table tbody tr:last-child > *,
+.tr-block .tr-table tbody tr:last-child > * { border-bottom: 0; }
+@media (hover: hover) {
+  .evergreen-table tbody tr:hover,
+  .tr-block .tr-table tbody tr:hover { background: var(--list-hover); }
+}
+.tr-block .tr-table tr:target { background: var(--green-tint); }
