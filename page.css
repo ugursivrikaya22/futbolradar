@@ -14118,6 +14118,154 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
   font-size: var(--fs-sm);
 }
 
+/* "Bugün Hangi Maç Hangi Kanalda" sayfası: kanala göre özet.
+   Yalnızca tasarım belirteçleri; sabit renk yok, koyu tema kendiliğinden. */
+/* Sayfa kabuğu 3 sütunlu .grid; içerik tek hücreye sıkışmasın, tam genişlik alsın. */
+.broadcast-page-wide > * {
+  grid-column: 1 / -1;
+}
+
+.broadcast-channel-summary {
+  margin: 0 0 var(--sp-6);
+}
+
+.broadcast-channel-summary > h2 {
+  margin: 0 0 var(--sp-3);
+  font-size: var(--fs-lg);
+}
+
+.broadcast-channel-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--sp-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.broadcast-channel {
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.broadcast-channel.is-pending {
+  background: var(--surface-sunken);
+}
+
+.broadcast-channel h3 {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin: 0 0 var(--sp-2);
+  font-size: var(--fs-md);
+}
+
+.broadcast-channel h3 small {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+}
+
+.broadcast-channel ul {
+  display: grid;
+  gap: var(--sp-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--fs-sm);
+}
+
+.broadcast-channel li small {
+  color: var(--muted);
+}
+
+.broadcast-channel-time {
+  display: inline-block;
+  min-width: 3.2em;
+  color: var(--green-text);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Ana sayfa "Bugünün Maç Yayınları" kutusu. */
+.broadcast-box-card {
+  padding: var(--sp-3) var(--sp-4);
+}
+
+.broadcast-box-list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.broadcast-box-row {
+  display: grid;
+  grid-template-columns: 3.6em minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-2) 0;
+  border-bottom: 1px solid var(--line-strong);
+}
+
+.broadcast-box-row:last-child {
+  border-bottom: 0;
+}
+
+.broadcast-box-time {
+  color: var(--green-text);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.broadcast-box-match {
+  display: grid;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.broadcast-box-match small {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+}
+
+.broadcast-box-channel {
+  color: var(--text);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  text-align: right;
+}
+
+.broadcast-box-channel.is-unknown {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.broadcast-box-empty,
+.broadcast-box-more {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+.broadcast-box-more {
+  padding-top: var(--sp-2);
+}
+
+@media (max-width: 560px) {
+  .broadcast-box-row {
+    grid-template-columns: 3.4em minmax(0, 1fr);
+  }
+
+  .broadcast-box-channel {
+    grid-column: 2;
+    text-align: left;
+  }
+}
+
 /* ----------------------------------------------------------------------------
    MAÇ LİSTESİ PENCERESİ — "Daha Fazla Göster"
    Liste on iki kartta kesilir; gerisi DOM'da durur ama gizlidir. Silmek
