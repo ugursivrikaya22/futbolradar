@@ -15,10 +15,12 @@ const { writeDynamicRoutePairs } = createRequire(import.meta.url)("../services/i
 import { siteHeader, siteFooter, escapeLayoutHtml as escapeHtml } from "./lib/layout.mjs";
 import { findTurkish } from "./lib/turkish-detector.mjs";
 import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
-import { buildNewsSitemap, columnNewsItems } from "./lib/newsSitemap.mjs";
+import { NEWS_SITEMAP_FILE, NEWS_SITEMAP_SOURCE_FILE, buildNewsSitemap, columnNewsItems } from "./lib/newsSitemap.mjs";
 // Otomatik keşif kaynaklı, şablon metinli ince haberler indekslenmez (bkz. servis).
 const { isThinAutomatedNews } = createRequire(import.meta.url)("../services/newsIndexPolicy.js");
 const { publishedColumns } = createRequire(import.meta.url)("../services/columnService.js");
+// Yayıncı (logo dahil) ve kurum-yazar düğümü tek tanımdan gelir.
+const { DEFAULT_ARTICLE_IMAGE, organizationAuthorNode, publisherNode } = createRequire(import.meta.url)("../services/newsArticleSchema.js");
 
 const root = process.cwd();
 const domain = "https://www.futbolradar.com";
@@ -220,13 +222,9 @@ function jsonLd(article, locale = "tr") {
     // sonucunda bu alanlar basılır. Dil etiketi metnin diliyle uyuşmalı.
     inLanguage: copy.inLanguage,
     mainEntityOfPage: articleUrl(article, locale),
-    image: `${domain}/assets/og-image.png`,
-    author: { "@type": "Organization", name: "FutbolRadar" },
-    publisher: {
-      "@type": "Organization",
-      name: "FutbolRadar",
-      logo: { "@type": "ImageObject", url: `${domain}/assets/og-image.png` }
-    },
+    image: DEFAULT_ARTICLE_IMAGE,
+    author: organizationAuthorNode(),
+    publisher: publisherNode(),
     keywords: Array.isArray(article.tags) ? article.tags.join(", ") : undefined,
     citation: sources.length ? sources.map((source) => source.url) : undefined
   };
@@ -465,8 +463,15 @@ function updateNewsSitemap(articles) {
     urlFor: (item) => (item.kind === "column" ? item.url : articleUrl(item)),
     isExcluded: (item) => item.kind !== "column" && isThinAutomatedNews(item)
   });
-  for (const target of [path.join(root, "news-sitemap.xml"), path.join(root, "public", "news-sitemap.xml")]) {
-    writeGeneratedFile(target, xml);
+  // İki ad, aynı içerik. `news-sitemap.xml` arama motorunun istediği adres;
+  // `news-sitemap-source.xml` ise edge middleware'in istek anında okuyup 48
+  // saati aşan kayıtları ayıkladığı kaynak kopya (bkz. lib/newsSitemap.mjs
+  // `filterFreshNewsSitemap`). Middleware kendi adresini okuyamaz — okusaydı
+  // kendini çağırırdı — bu yüzden kaynak ayrı bir adreste durur.
+  for (const dir of [root, path.join(root, "public")]) {
+    for (const name of [NEWS_SITEMAP_FILE, NEWS_SITEMAP_SOURCE_FILE]) {
+      writeGeneratedFile(path.join(dir, name), xml);
+    }
   }
   return count;
 }

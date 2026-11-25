@@ -56,8 +56,13 @@ export function wrapSitemapIndex(entries, { domain = "https://www.futbolradar.co
 /**
  * Birleşik urlset'ten çocuk haritaları + indeks belgesi üretir.
  * Boş kovalar atlanır (boş urlset yayımlanmaz).
+ *
+ * `extraSitemaps`: birleşik urlset'ten TÜRETİLMEYEN ama indekste bildirilmesi
+ * gereken haritalar — bugün yalnızca Google News haritası (`news-sitemap.xml`;
+ * kendi üreticisi yazar, kendi `news:` ad alanını taşır). Sona eklenir; dosya
+ * içeriğine dokunulmaz, `files` listesine girmez.
  */
-export function buildSplitSitemaps(xml, { domain = "https://www.futbolradar.com", today = new Date().toISOString().slice(0, 10) } = {}) {
+export function buildSplitSitemaps(xml, { domain = "https://www.futbolradar.com", today = new Date().toISOString().slice(0, 10), extraSitemaps = [] } = {}) {
   const buckets = bucketUrlEntries(xml);
   /** @type {{ id: string, file: string, xml: string, count: number }[]} */
   const files = [];
@@ -67,7 +72,10 @@ export function buildSplitSitemaps(xml, { domain = "https://www.futbolradar.com"
     files.push({ id: def.id, file: def.file, xml: wrapUrlset(entries), count: entries.length });
   }
   const indexXml = wrapSitemapIndex(
-    files.map((f) => ({ file: f.file, lastmod: today })),
+    [
+      ...files.map((f) => ({ file: f.file, lastmod: today })),
+      ...extraSitemaps.map((file) => ({ file, lastmod: today }))
+    ],
     { domain }
   );
   return { files, indexXml, total: files.reduce((n, f) => n + f.count, 0) };

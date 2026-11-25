@@ -16,6 +16,10 @@
 export const NEWS_WINDOW_MS = 48 * 3600000;
 export const NEWS_MAX_URLS = 1000;
 export const NEWS_PUBLICATION = { name: "FutbolRadar", language: "tr" };
+/** Arama motoruna bildirilen adres (robots.txt + sitemap-index.xml). */
+export const NEWS_SITEMAP_FILE = "news-sitemap.xml";
+/** Aynı içeriğin kaynak kopyası; edge middleware istek anında bunu okur. */
+export const NEWS_SITEMAP_SOURCE_FILE = "news-sitemap-source.xml";
 
 const XML_ESCAPES = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&apos;" };
 export const escapeXml = (value) => String(value ?? "").replace(/[&<>"']/g, (c) => XML_ESCAPES[c]);
@@ -87,4 +91,50 @@ ${body}
 </urlset>
 `;
   return { xml, count: entries.length };
+}
+
+/**
+ * İSTEK ANINDA 48 SAAT SÜZGECİ — KAPANIMSIZ, KENDİ KENDİNE YETEN İŞLEV.
+ *
+ * `buildNewsSitemap` pencereyi DERLEME anında uygular; dosya statiktir ve bir
+ * sonraki derlemeye kadar değişmez. Derlemeler arası boşluk saatleri bulabilir
+ * (25.11.2026: son derlemeden 10 saat sonra canlı haritadaki 11 kaydın 3'ü 48
+ * saati aşmıştı). Bu işlev aynı kuralı haritanın XML'ine İSTEK anında uygular:
+ * süresi dolan `<url>` bloğu düşer, geri kalan bayt bayt aynı kalır.
+ *
+ * Yeni kayıt EKLEMEZ — yeni yazı her zaman derlemeyle gelir (sayfası da o
+ * derlemede doğar). Yalnızca eskiyeni ayıklar.
+ *
+ * NEDEN KAPANIMSIZ: `generate-stat-comparison-module.mjs` bu işlevin KAYNAK
+ * METNİNİ (`toString()`) `middleware.js` içine gömer; edge çalışma zamanında
+ * bu modül yoktur. Bu yüzden gövde dışarıdan hiçbir ad okumaz (pencere sabiti
+ * dahil — `NEWS_WINDOW_MS` ile eşitliği test denetler) ve modül düzeyinde
+ * hiçbir yardımcıya başvurmaz. Birim testi tek yerde, iki kullanım aynı kod.
+ *
+ * @param {string} xml  News site haritası belgesi
+ * @param {number} now  epoch ms
+ * @returns {{xml: string, kept: number, dropped: number} | null}
+ *   `null`: metin bir urlset değil (çağıran statik dosyaya düşmeli).
+ */
+export function filterFreshNewsSitemap(xml, now) {
+  const text = String(xml == null ? "" : xml);
+  if (text.indexOf("<urlset") === -1 || text.indexOf("</urlset>") === -1) return null;
+  const windowMs = 172800000; // 48 saat
+  let kept = 0;
+  let dropped = 0;
+  let out = text.replace(/[ \t]*<url>[\s\S]*?<\/url>[ \t]*\r?\n?/g, (block) => {
+    const match = /<news:publication_date>([^<]+)<\/news:publication_date>/.exec(block);
+    const time = match ? Date.parse(match[1]) : NaN;
+    if (Number.isFinite(time) && time <= now && now - time <= windowMs) {
+      kept += 1;
+      return block;
+    }
+    dropped += 1;
+    return "";
+  });
+  // Boş harita da geçerlidir; nedenini yorum söyler (kaynak zaten boşsa yorumu taşır).
+  if (!kept && out.indexOf("<!--") === -1) {
+    out = out.replace("</urlset>", "  <!-- Son 48 saatte yayımlanan haber ya da köşe yazısı yok. -->\n</urlset>");
+  }
+  return { xml: out, kept, dropped };
 }
