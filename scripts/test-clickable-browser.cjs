@@ -824,7 +824,7 @@ function todayCalendarFixtureCount(gun) {
         }
       });
       await test('team hubs and broadcast pages retain mobile content', async () => {
-        for (const file of ['galatasaray-maclari.html', 'fenerbahce-maclari.html', 'besiktas-maclari.html', 'trabzonspor-maclari.html', 'bugunun-maclari-hangi-kanalda.html']) {
+        for (const file of ['galatasaray-maclari.html', 'fenerbahce-maclari.html', 'besiktas-maclari.html', 'trabzonspor-maclari.html', 'bugun-hangi-mac-hangi-kanalda.html']) {
           await open(file);
           const links = page.locator('main a[href]').filter({ visible: true });
           assert.ok(await links.count(), file + ' has no links');

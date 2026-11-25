@@ -187,14 +187,14 @@ console.log("broadcast-schedule");
 
 // ── 9. İKİ SAYFA DA ÜRETİLMİŞ VE YAYIN SATIRI TAŞIYOR ────────────────────
 {
-  for (const file of ["bugunun-maclari-hangi-kanalda.html", "bugun-hangi-mac-hangi-kanalda.html", "yarinki-maclar-hangi-kanalda.html"]) {
+  for (const file of ["bugun-hangi-mac-hangi-kanalda.html", "yarinki-maclar-hangi-kanalda.html"]) {
     const full = path.join(root, file);
     assert.ok(fs.existsSync(full), `${file}: sayfa üretilmiş olmalı`);
     const html = fs.readFileSync(full, "utf8");
     assert.match(html, /fixture-card-broadcast|broadcast-schedule-empty/, `${file}: yayın satırı ya da boş gün kutusu olmalı`);
     assert.doesNotMatch(html, /Yayın kanalı henüz açıklanmadı/, `${file}: eski çift cümle kalmamalı — metin tek yerden gelir`);
   }
-  console.log("  ok  bugün, bugün-hangi-maç ve yarın sayfaları üretiliyor");
+  console.log("  ok  bugün-hangi-maç ve yarın sayfaları üretiliyor");
 }
 
 // ── 10. AKIŞTAN OKUNAN KANAL ADI ──────────────────────────────────────────
@@ -326,7 +326,7 @@ console.log("broadcast-schedule");
   }
   assert.doesNotMatch(homeBroadcastBoxHtml([fb, gs]), /href="https?:\/\//, "ana sayfa kutusunda dış bağlantı yok");
 
-  // Üç sayfa birbirine bağlı.
+  // İki sayfa birbirine bağlı.
   for (const other of PAGES.filter((item) => item.file !== FILE)) {
     const otherShell = fs.readFileSync(path.join(root, other.file), "utf8");
     const otherHtml = renderBroadcastPage(other, [fb, gs], day, otherShell).html;
@@ -374,4 +374,69 @@ console.log("broadcast-schedule");
   console.log("  ok  Bugün Hangi Maç Hangi Kanalda sayfası ve ana sayfa kutusu");
 }
 
-console.log("broadcast-schedule OK (12 bölüm)");
+// ── 13. ESKİ "BUGÜNKÜ MAÇLAR HANGİ KANALDA" ADRESİ YENİSİNE YÖNLENDİRİLİR ──
+//
+// İki sayfa aynı sorguda yarışıyordu; eski adres yeni sayfaya KALICI yönlendirilir.
+// Yönlendirilen adres: üretilmez, haritada ve iç bağlantılarda yoktur; hiçbir
+// kural zincir/döngü oluşturmaz; temiz hedef gerçekten bir sayfaya çözülür.
+{
+  const { PAGES } = await import("./generate-broadcast-schedule-page.mjs");
+  const OLD_FILE = "bugunun-maclari-hangi-kanalda.html";
+  const OLD_SLUG = "bugunun-maclari-hangi-kanalda";
+  const NEW_FILE = "bugun-hangi-mac-hangi-kanalda.html";
+  const NEW_SLUG = "bugun-hangi-mac-hangi-kanalda";
+  const vercel = JSON.parse(fs.readFileSync(path.join(root, "vercel.json"), "utf8"));
+  const redirects = vercel.redirects || [];
+  const rewrites = vercel.rewrites || [];
+
+  // Kalıcı yönlendirme: .html ve uzantısız adres, ikisi de yeni temiz adrese.
+  for (const source of [`/${OLD_FILE}`, `/${OLD_SLUG}`]) {
+    const rules = redirects.filter((rule) => rule.source === source);
+    assert.equal(rules.length, 1, `${source}: tam bir yönlendirme kuralı`);
+    assert.equal(rules[0].destination, `/${NEW_SLUG}`, `${source} → yeni temiz adres`);
+    assert.equal(rules[0].permanent, true, `${source}: kalıcı (301/308)`);
+    assert.ok(!rules[0].has && !rules[0].missing, `${source}: koşulsuz`);
+  }
+  // Eski adrese giden eski rewrite kalmamalı (yönlendirmeyle çelişir).
+  assert.ok(!rewrites.some((rule) => rule.source === `/${OLD_SLUG}` || rule.destination === `/${OLD_FILE}`), "eski adresin rewrite'ı kaldırıldı");
+  // Hedef bir yönlendirme kaynağı değil (zincir/döngü yok) ve dosyaya çözülür.
+  const sources = new Set(redirects.map((rule) => rule.source));
+  assert.ok(!sources.has(`/${NEW_SLUG}`) && !sources.has(`/${NEW_FILE}`), "hedef adres yönlendirilmez (zincir yok)");
+  assert.ok(rewrites.some((rule) => rule.source === `/${NEW_SLUG}` && rule.destination === `/${NEW_FILE}`), "hedef temiz adres dosyaya eşlenir");
+  assert.ok(fs.existsSync(path.join(root, NEW_FILE)), "hedef sayfa depoda");
+
+  // Eski sayfa üretilmez; kabuk dosyası ve public kopyası kaldırıldı.
+  assert.ok(!PAGES.some((page) => page.file === OLD_FILE || page.slug === OLD_SLUG), "üretici eski sayfayı üretmez");
+  assert.ok(!fs.existsSync(path.join(root, OLD_FILE)) && !fs.existsSync(path.join(root, "public", OLD_FILE)), "eski sayfa dosyası kaldırıldı");
+
+  // Yönlendirilen adres haritada, hreflang ve site haritası üreticisinde yok.
+  for (const file of ["sitemap.xml", "public/sitemap.xml", "sitemaps/sitemap-core.xml", "public/sitemaps/sitemap-core.xml"]) {
+    const xml = fs.readFileSync(path.join(root, file), "utf8");
+    assert.ok(!xml.includes(OLD_SLUG), `${file}: yönlendirilen eski adres haritada olmamalı`);
+    assert.equal(xml.split(`<loc>https://www.futbolradar.com/${NEW_SLUG}</loc>`).length - 1, 1, `${file}: yeni adres haritada tam bir kez`);
+  }
+  for (const file of ["scripts/generate-static-seo-pages.mjs", "scripts/inject-hreflang.mjs"]) {
+    assert.ok(!fs.readFileSync(path.join(root, file), "utf8").includes(`"${OLD_FILE}"`), `${file}: eski sayfa listede olmamalı`);
+  }
+  assert.ok(!(JSON.parse(fs.readFileSync(path.join(root, "data", "sitemap-lastmod.json"), "utf8")).pages || {})[OLD_FILE], "tazelik kaydında eski sayfa yok");
+
+  // İç bağlantılar yeni sayfaya gider: kaynak ve üretilmiş sayfalar eski adresi taşımaz
+  // (301'e giden iç bağlantı sayısı artmamalı).
+  const { execFileSync } = await import("node:child_process");
+  let hits = "";
+  try {
+    hits = execFileSync("git", ["grep", "-l", OLD_SLUG, "--", ".", ":!vercel.json", ":!scripts/test-broadcast-schedule.mjs", ":!scripts/generate-broadcast-schedule-page.mjs"], { cwd: root, encoding: "utf8" }).trim();
+  } catch (error) {
+    if (error.status !== 1) throw error; // git grep: 1 = eşleşme yok (istenen durum)
+  }
+  assert.equal(hits, "", `eski adrese iç bağlantı kalmamalı:\n${hits}`);
+  const home = fs.readFileSync(path.join(root, "index.html"), "utf8");
+  assert.ok(home.includes(`href="./${NEW_FILE}">Bugün hangi maç hangi kanalda?</a>`), "ana sayfa hızlı bağlantısı yeni sayfaya");
+  assert.ok(fs.readFileSync(path.join(root, "scripts", "prerender-core-pages.mjs"), "utf8").includes(`href="./${NEW_FILE}">Bugün hangi maç hangi kanalda?</a>`), "ön işleyici hızlı bağlantıyı yeni sayfaya yazar");
+  // Yeni sayfa kendisi eski adrese bağlanmaz; yarın sayfasından yeniye bağlantı var.
+  const tomorrow = fs.readFileSync(path.join(root, "yarinki-maclar-hangi-kanalda.html"), "utf8");
+  assert.ok(tomorrow.includes(`href="./${NEW_FILE}"`) && !tomorrow.includes(OLD_SLUG), "yarın sayfası yeni sayfaya bağlanır");
+  console.log("  ok  eski bugün sayfası yeni sayfaya kalıcı yönlendiriliyor (kural, harita, iç bağlantılar)");
+}
+
+console.log("broadcast-schedule OK (13 bölüm)");

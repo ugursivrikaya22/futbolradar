@@ -2167,7 +2167,7 @@ writePage("index.html", {
   // İki bağlantı birden: okuyucu bugünü de yarını da buradan açar. Yarın
   // sayfası yalnızca sitemap'te dursaydı hiçbir yerden bağlanmayan bir
   // sayfa olurdu (test-seo-integrity bunu "orphan" diye kırmızı yakar).
-  "today-quicklink": '<a class="section-link" href="./bugunun-maclari-hangi-kanalda.html">Bugünkü maçlar hangi kanalda?</a><a class="section-link" href="./yarinki-maclar-hangi-kanalda.html">Yarın hangi maçlar hangi kanalda?</a>',
+  "today-quicklink": '<a class="section-link" href="./bugun-hangi-mac-hangi-kanalda.html">Bugün hangi maç hangi kanalda?</a><a class="section-link" href="./yarinki-maclar-hangi-kanalda.html">Yarın hangi maçlar hangi kanalda?</a>',
   // "Bugünün Maç Yayınları" kutusu: yayın sayfasıyla AYNI maç listesi ve AYNI
   // kanal kuralı (scripts/lib/broadcastBoxes.mjs). Yalnızca kanal adı basılır;
   // yayın bağlantısı/oynatıcı yoktur. Gün her derlemede yeniden hesaplanır.

@@ -1,6 +1,11 @@
 #!/usr/bin/env node
 /**
- * "/bugunun-maclari-hangi-kanalda" — kalıcı yayın programı sayfası.
+ * "/bugun-hangi-mac-hangi-kanalda" — kalıcı yayın programı sayfası.
+ *
+ * ESKİ ADRES YÖNLENDİRİLİR: `/bugunun-maclari-hangi-kanalda` (ve `.html`)
+ * aynı soruya cevap veriyordu; iki sayfa aynı sorguda yarıştığı için vercel.json
+ * eskiyi buraya kalıcı (301) yönlendirir. Eski sayfa artık ÜRETİLMEZ, site
+ * haritasında ve iç bağlantılarda YOKTUR (test-broadcast-schedule bunu denetler).
  *
  * URL SABİT, İÇERİK GÜNLÜK. Sayfa `bugunun-maclari.html` gibi diğer
  * "çekirdek" sayfalar aynı desenle üretilir: kabuk HTML depoda durur, bu
@@ -54,7 +59,7 @@ const { escapeHtml, fixtureTeamInitials, leagueMarkHtml } = require("./lib/match
 const DOMAIN = "https://www.futbolradar.com";
 
 /**
- * ÜÇ SAYFA, TEK ÜRETİCİ: BUGÜN, YARIN VE "BUGÜN HANGİ MAÇ HANGİ KANALDA".
+ * İKİ SAYFA, TEK ÜRETİCİ: "BUGÜN HANGİ MAÇ HANGİ KANALDA" VE YARIN.
  *
  * "Hangi kanalda" sorusu maç günü değil, bir gün önce soruluyor. Bugün
  * sayfası o soruya ancak geç cevap veriyordu: okuyucu akşam 20.00 maçının
@@ -67,19 +72,11 @@ const DOMAIN = "https://www.futbolradar.com";
  * vardır — okuyucu kanal adından maça ulaşır. Veri ve kanal kuralı bugün
  * sayfasıyla AYNIDIR; yeni kaynak yoktur. Yayın bağlantısı/oynatıcı yoktur.
  *
- * Üç sayfa AYNI koddan üretilir. Ayrı bir üretici yazmak, yayın satırı
+ * İki sayfa AYNI koddan üretilir. Ayrı bir üretici yazmak, yayın satırı
  * kuralının iki yerde ayrışmasına açık kapı bırakırdı — bu depoda daha önce
  * tam olarak bu şekilde kırılan bir yer var (bkz. services/newsFeed.js).
  */
 export const PAGES = Object.freeze([
-  Object.freeze({
-    file: "bugunun-maclari-hangi-kanalda.html",
-    slug: "bugunun-maclari-hangi-kanalda",
-    offset: 0,
-    dayWord: "Bugün",
-    heading: "Bugünkü Maçlar Hangi Kanalda?",
-    titleFor: (label) => `Bugünkü Maçlar Hangi Kanalda? ${label} Maç Programı | FutbolRadar`
-  }),
   Object.freeze({
     file: "bugun-hangi-mac-hangi-kanalda.html",
     slug: "bugun-hangi-mac-hangi-kanalda",
