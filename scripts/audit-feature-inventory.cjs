@@ -10,7 +10,7 @@ for (const kind of ['team/', 'player/', 'match/']) {
   const pair = dynamicRoutePairs().find(pair => pair.en.includes(kind));
   if (pair) pages.push(pair.tr, pair.en);
 }
-pages.push('bugunun-maclari-hangi-kanalda.html', 'takim-detay.html?team=__audit_missing_team__');
+pages.push('bugun-hangi-mac-hangi-kanalda.html', 'takim-detay.html?team=__audit_missing_team__');
 (async () => {
   fs.mkdirSync(require('node:path').dirname(report), { recursive:true });
   const browser = await chromium.launch({ headless:true, ...(process.platform === 'win32' ? {channel:'msedge'} : {}) });
