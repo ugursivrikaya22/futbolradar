@@ -29,11 +29,11 @@
     if (has(['ABD', 'ABANDONED'])) return { phase: 'abandoned', label: 'Abandoned' };
     var fetched = Date.parse(row.fetchedAt || row.updatedAt);
     var fresh = Number.isFinite(fetched) && now - fetched <= STALE_DATA_MS && Number.isFinite(kickoff) && now - kickoff <= GRACE_MS && !row.__staticFallback && hasScore(row);
-    if (has(['INT', 'SUSP', 'INTERRUPTED', 'SUSPENDED'])) return fresh ? { phase: 'paused', label: 'Match paused', score: true } : { phase: 'interrupted', label: 'Suspended' };
+    if (has(STOPPAGE_TOKENS)) return fresh ? { phase: 'paused', label: 'Match paused', score: true } : { phase: 'interrupted', label: 'Suspended' };
     // Last known live score stays on screen when fetchedAt is older than
     // the freshness window. The minute/status is whatever the feed last
     // published; a missing score is not invented.
-    if (has(['LIVE', 'IN_PLAY', 'HALFTIME', 'HT', 'PAUSED', '1H', '2H', 'ET', 'BT', 'P'])) {
+    if (has(PLAYING_TOKENS)) {
       if (!hasScore(row)) return { phase: 'pending', label: 'Result pending' };
       return { phase: 'live', score: true, label: liveMinuteLabel(row) };
     }
@@ -44,14 +44,28 @@
 
   // en-home-live:start
   var HOME_LIVE_WINDOW_MS = 150 * 60 * 1000;
-  function homeLiveStatus(status) {
-    return ['LIVE', 'HALFTIME', '1H', 'HT', '2H', 'ET', 'P', 'IN_PLAY', 'BT', 'PAUSED'].indexOf(status) !== -1;
+  // ONE definition of "in play", shared by the cards, the live-feed check and
+  // the counters. It mirrors the server's LIVE_STATES vocabulary
+  // (services/matchStatus.js): the ball is rolling or it is the break
+  // (PLAYING_TOKENS), or play is temporarily stopped (STOPPAGE_TOKENS) — a
+  // suspended match is still under way and is polled like any other.
+  //
+  // There used to be two lists that had drifted apart. The card list lacked
+  // the stoppage codes, so one suspended match in the light ?live=all feed
+  // made payloadIsLiveFeed() treat that feed as the full day and wipe the
+  // upcoming cards printed at build time. The counter list lacked IN_PLAY, BT
+  // and PAUSED, so a card could be live while "Live" did not count it.
+  // scripts/test-en-live-scores.mjs checks this set against the server's.
+  var PLAYING_TOKENS = ['LIVE', 'IN_PLAY', '1H', '2H', 'ET', 'P', 'HALFTIME', 'HT', 'BT', 'PAUSED'];
+  var STOPPAGE_TOKENS = ['INTERRUPTED', 'INT', 'SUSPENDED', 'SUSP'];
+  function isLiveStatus(status) {
+    return PLAYING_TOKENS.indexOf(status) !== -1 || STOPPAGE_TOKENS.indexOf(status) !== -1;
   }
   // fetchedAt older than 150s does not hide a live row. The kick-off window
   // still drops a match whose clock has run out.
   function homeKeepsLiveRow(row, now) {
     var status = String((row && (row.status || row.providerStatus)) || '').toUpperCase();
-    if (!homeLiveStatus(status)) return false;
+    if (!isLiveStatus(status)) return false;
     var kickoff = Date.parse(row && row.kickoff);
     if (!Number.isFinite(kickoff)) return true;
     return now - kickoff < HOME_LIVE_WINDOW_MS;
@@ -68,7 +82,7 @@
   }
   function payloadIsLiveFeed(rows) {
     if (!rows.length) return true;
-    return rows.every(function (row) { return homeLiveStatus(String((row.status || row.providerStatus) || '').toUpperCase()); });
+    return rows.every(function (row) { return isLiveStatus(String((row.status || row.providerStatus) || '').toUpperCase()); });
   }
   // en-home-live:end
 
@@ -77,9 +91,6 @@
       if (!r.ok) throw new Error('unavailable');
       return r.json();
     });
-  }
-  function isLiveStatus(status) {
-    return ['LIVE', 'HALFTIME', '1H', 'HT', '2H', 'ET', 'P', 'INT', 'SUSP', 'INTERRUPTED', 'SUSPENDED'].indexOf(status) !== -1;
   }
   function isFinishedStatus(status) {
     return ['FINISHED', 'FT', 'AET', 'PEN', 'AWARDED', 'AWD', 'WO'].indexOf(status) !== -1;
@@ -214,6 +225,11 @@
       var id = String(row.id || '');
       if (!id) return;
       var card = buildFixtureCard(row);
+      // Every card this merge adds is one it must be able to retire. Only a
+      // card in the 'live' phase carried the marker, so a paused / suspended
+      // row (or a live one without a score yet) stayed on the page after the
+      // match had left the feed.
+      card.setAttribute('data-live-card', '');
       var existing = findHomeCard(id);
       if (existing) existing.replaceWith(card);
       else grid.prepend(card);
@@ -258,7 +274,7 @@
         var terminal = ['FINISHED','FT','AET','PEN','AWARDED','AWD','WO','CANCELLED','CANC','POSTPONED','PST','ABANDONED','ABD'];
         if ([row.status,row.providerStatus,row.matchStatus].some(function (value) { return terminal.includes(String(value || '').toUpperCase()); })) return false;
         var kickoff = Date.parse(row.kickoff);
-        if (homeLiveStatus(status)) return homeKeepsLiveRow(row, Date.now());
+        if (isLiveStatus(status)) return homeKeepsLiveRow(row, Date.now());
         return ['SCHEDULED','TIMED','NS','TBD'].includes(status) && kickoff >= Date.now();
       });
       if (!homeOnly && !rows.length && target.dataset.fixtureDate === date && target.querySelector('[data-fixture-id]')) return;
@@ -269,7 +285,7 @@
         fragment.appendChild(message);
       }
       rows.sort(function (a, b) {
-        var live = function (row) { return homeLiveStatus(String(row.status || row.providerStatus || '').toUpperCase()); };
+        var live = function (row) { return isLiveStatus(String(row.status || row.providerStatus || '').toUpperCase()); };
         return (homeOnly ? Number(live(b)) - Number(live(a)) : 0) || (a.fixturePriority == null ? 19 : a.fixturePriority) - (b.fixturePriority == null ? 19 : b.fixturePriority) || Date.parse(a.kickoff) - Date.parse(b.kickoff);
       });
       if (homeOnly) rows = rows.slice(0, 12);
