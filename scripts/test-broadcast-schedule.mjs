@@ -187,14 +187,14 @@ console.log("broadcast-schedule");
 
 // ── 9. İKİ SAYFA DA ÜRETİLMİŞ VE YAYIN SATIRI TAŞIYOR ────────────────────
 {
-  for (const file of ["bugunun-maclari-hangi-kanalda.html", "yarinki-maclar-hangi-kanalda.html"]) {
+  for (const file of ["bugunun-maclari-hangi-kanalda.html", "bugun-hangi-mac-hangi-kanalda.html", "yarinki-maclar-hangi-kanalda.html"]) {
     const full = path.join(root, file);
     assert.ok(fs.existsSync(full), `${file}: sayfa üretilmiş olmalı`);
     const html = fs.readFileSync(full, "utf8");
     assert.match(html, /fixture-card-broadcast|broadcast-schedule-empty/, `${file}: yayın satırı ya da boş gün kutusu olmalı`);
     assert.doesNotMatch(html, /Yayın kanalı henüz açıklanmadı/, `${file}: eski çift cümle kalmamalı — metin tek yerden gelir`);
   }
-  console.log("  ok  bugün ve yarın sayfaları üretiliyor");
+  console.log("  ok  bugün, bugün-hangi-maç ve yarın sayfaları üretiliyor");
 }
 
 // ── 10. AKIŞTAN OKUNAN KANAL ADI ──────────────────────────────────────────
@@ -260,4 +260,118 @@ console.log("broadcast-schedule");
   console.log("  ok  ek kanallar: görünen ad birleşik, JSON-LD her besleme için ayrı BroadcastEvent");
 }
 
-console.log("broadcast-schedule OK (11 bölüm)");
+// ── 12. "BUGÜN HANGİ MAÇ HANGİ KANALDA" SAYFASI VE ANA SAYFA KUTUSU ─────
+//
+// Hedef sorgu başlıkta/açıklamada/H1'de; canonical tek ve temiz adres; JSON-LD
+// SportsEvent listesi sayfadaki maçlardan; kanal adı doğrulanmış kayıttan
+// (TRT 1 …) ya da "bekleniyor"; YAYIN BAĞLANTISI/OYNATICI YOK.
+{
+  const { renderBroadcastPage, PAGES } = await import("./generate-broadcast-schedule-page.mjs");
+  const { channelSummaryHtml, homeBroadcastBoxHtml, groupByChannel } = await import("./lib/broadcastBoxes.mjs");
+  const FILE = "bugun-hangi-mac-hangi-kanalda.html";
+  const URL_ = "https://www.futbolradar.com/bugun-hangi-mac-hangi-kanalda";
+  const page = PAGES.find((item) => item.file === FILE);
+  assert.ok(page && page.offset === 0, "yeni sayfa bugünün verisini gösterir (offset 0)");
+
+  // Sabit maçlar: TRT 1 (doğrulama kaydı), iki beslemeli beIN, kanalı bilinmeyen.
+  const fb = { id: "fb-roma", providerId: "1635659", homeTeam: "Fenerbahçe", awayTeam: "AS Roma", league: "UEFA Europa League", kickoff: "2026-09-10T19:45:00+03:00", time: "19:45" };
+  const tsbjk = { id: "ts-bjk", providerId: "1584438", homeTeam: "Trabzonspor", awayTeam: "Beşiktaş", league: "Süper Lig", kickoff: "2026-10-19T20:00:00+03:00", time: "20:00" };
+  const gs = { id: "gs-x", providerId: "no-such-id", homeTeam: "Galatasaray", awayTeam: "Rize", league: "Süper Lig", kickoff: "2026-09-10T21:00:00+03:00", time: "21:00" };
+  const day = "2026-09-10";
+  const shell = fs.readFileSync(path.join(root, FILE), "utf8");
+  const { html, matchCount } = renderBroadcastPage(page, [fb, gs], day, shell);
+  assert.equal(matchCount, 2, "iki öncelikli maç listelenir");
+
+  // SEO: başlık, açıklama, H1 hedef sorguyu taşır.
+  const norm = (value) => value.toLocaleLowerCase("tr-TR");
+  const title = html.match(/<title>([^<]*)<\/title>/)[1];
+  const description = html.match(/<meta name="description" content="([^"]*)"/)[1];
+  assert.match(norm(title), /bugün hangi maç hangi kanalda\?/, "title hedef sorguyu içerir");
+  assert.match(norm(description), /bugün hangi maç hangi kanalda\?/, "meta description hedef sorguyu içerir");
+  assert.ok(description.length >= 100 && description.length <= 160, `meta description 100-160 karakter (${description.length})`);
+  assert.match(html, /<h1>Bugün Hangi Maç Hangi Kanalda\?<\/h1>/, "H1 hedef sorgu");
+  assert.equal((html.match(/<h1/g) || []).length, 1, "tek H1");
+  assert.match(title, /10 Eylül 2026/, "başlık günün tarihini taşır (içerik günlük)");
+  assert.ok(html.includes(`<link rel="canonical" href="${URL_}" />`) && html.includes(`<meta property="og:url" content="${URL_}" />`), "canonical ve og:url temiz adres");
+  assert.equal((html.match(/rel="canonical"/g) || []).length, 1, "tek canonical");
+  assert.ok(/<meta name="robots" content="index/.test(html), "dizinlenebilir");
+
+  // Kanala göre özet: doğrulanmış TRT 1 etiketi + bekleyen grup.
+  assert.match(html, /data-channel="TRT 1"[\s\S]*?Fenerbahçe – AS Roma/, "TRT 1 grubunda Fenerbahçe–Roma");
+  assert.match(html, /data-channel="pending"[\s\S]*?Galatasaray – Rize/, "kanalı bilinmeyen maç 'bekleniyor' grubunda");
+  assert.doesNotMatch(html.slice(html.indexOf("broadcast-channel-summary"), html.indexOf("broadcast-schedule-grid")), /data-channel="(?!TRT 1|pending)/, "başka kanal uydurulmamalı");
+  const groups = groupByChannel([tsbjk]);
+  assert.deepEqual(groups.map((group) => group.label), ["beIN SPORTS 1", "beIN SPORTS 1 4K"], "iki besleme iki grupta (kanal adı akıştaki yazımıyla)");
+  assert.equal(channelSummaryHtml([]), "", "maç yoksa özet basılmaz");
+
+  // JSON-LD: SportsEvent listesi sayfadaki maçlardan; TRT 1 BroadcastEvent.
+  const blocks = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => JSON.parse(m[1]));
+  const list = blocks.find((node) => node["@type"] === "ItemList");
+  assert.ok(list && list.numberOfItems === 2 && list.itemListElement.length === 2, "ItemList sayfadaki iki maçı taşır");
+  assert.ok(list.itemListElement.every((entry) => entry.item["@type"] === "SportsEvent" && entry.item.startDate), "her öğe startDate'li SportsEvent");
+  assert.match(JSON.stringify(list), /"publishedOn":\{"@type":"BroadcastService","name":"TRT 1"/, "TRT 1 BroadcastEvent olarak işaretli");
+  assert.ok(blocks.some((node) => node["@type"] === "CollectionPage" && node.url === URL_), "CollectionPage sayfa adresinde");
+  assert.ok(blocks.some((node) => node["@type"] === "BreadcrumbList"), "BreadcrumbList");
+
+  // LİSANSSIZ YAYIN YOK: oynatıcı/gömme etiketi yok; dış bağlantı yalnızca
+  // yayıncının KENDİ resmi yayın akışı sayfası (kanal doğrulama bağlantısı).
+  for (const rendered of [html, homeBroadcastBoxHtml([fb, gs])]) {
+    assert.doesNotMatch(rendered, /<(iframe|embed|object|video|audio|source)\b/i, "gömülü yayın/oynatıcı olmamalı");
+    assert.doesNotMatch(rendered, /(stream|canli-yayin|izle|player)[^"'\s]*\.(m3u8|mpd|mp4)/i, "akış dosyası bağlantısı olmamalı");
+  }
+  const scheduleHosts = new Set(Object.values(BROADCASTERS).map((b) => new URL(b.scheduleUrl).hostname));
+  const mainHtml = html.slice(html.indexOf("<main"), html.indexOf("</main>"));
+  for (const [, url] of mainHtml.matchAll(/<a\s[^>]*href="(https?:\/\/[^"]+)"/g)) {
+    assert.ok(scheduleHosts.has(new URL(url).hostname), `dış bağlantı yalnızca resmî yayın akışı sayfası olabilir: ${url}`);
+  }
+  assert.doesNotMatch(homeBroadcastBoxHtml([fb, gs]), /href="https?:\/\//, "ana sayfa kutusunda dış bağlantı yok");
+
+  // Üç sayfa birbirine bağlı.
+  for (const other of PAGES.filter((item) => item.file !== FILE)) {
+    const otherShell = fs.readFileSync(path.join(root, other.file), "utf8");
+    const otherHtml = renderBroadcastPage(other, [fb, gs], day, otherShell).html;
+    assert.ok(otherHtml.includes(`href="./${FILE}"`), `${other.file} → ${FILE} bağlantısı`);
+    assert.ok(html.includes(`href="./${other.file}"`), `${FILE} → ${other.file} bağlantısı`);
+  }
+
+  // Ana sayfa kutusu.
+  const box = homeBroadcastBoxHtml([fb, gs, tsbjk, fb, gs, tsbjk, fb], { limit: 3 });
+  assert.match(box, /TRT 1/, "kutuda TRT 1 etiketi");
+  assert.equal((box.match(/class="broadcast-box-row"/g) || []).length, 3, "kutu limit kadar satır basar");
+  assert.match(box, /\+4 maç daha/, "kalan maç sayısı yazılır");
+  assert.match(box, /Yayın bilgisi bekleniyor|bekleniyor/, "bilinmeyen kanal 'bekleniyor'");
+  assert.match(homeBroadcastBoxHtml([]), /maç bulunmuyor/, "maç yoksa boş durum cümlesi");
+  const home = fs.readFileSync(path.join(root, "index.html"), "utf8");
+  assert.match(home, /<section class="container section broadcast-box" id="bugunun-mac-yayinlari"/, "ana sayfada kutu bölümü");
+  assert.match(home, /<h2 id="broadcast-box-title">Bugünün Maç Yayınları<\/h2>/, "kutu başlığı");
+  assert.match(home, /<a class="section-link" href="\.\/bugun-hangi-mac-hangi-kanalda\.html">/, "kutu yeni sayfaya bağlanır");
+  assert.ok(home.includes("<!-- prerender:home-broadcast-box:start -->") && home.includes("<!-- prerender:home-broadcast-box:end -->"), "kutu gövdesi derlemede doldurulur (slot)");
+  const prerender = fs.readFileSync(path.join(root, "scripts", "prerender-core-pages.mjs"), "utf8");
+  assert.ok(prerender.includes('"home-broadcast-box": homeBroadcastBoxHtml('), "ön işleyici kutuyu her derlemede yazar");
+
+  // Kayıtlar: yönlendirme kuralı, site haritaları, tarama/sitemap üreticileri.
+  const vercel = JSON.parse(fs.readFileSync(path.join(root, "vercel.json"), "utf8"));
+  assert.ok((vercel.rewrites || []).some((rule) => rule.source === "/bugun-hangi-mac-hangi-kanalda" && rule.destination === `/${FILE}`), "temiz adres dosyaya eşlenir");
+  assert.ok(!(vercel.redirects || []).some((rule) => rule.source === `/${FILE}` || rule.source === "/bugun-hangi-mac-hangi-kanalda"), "adres yönlendirilmez (kalıcı)");
+  for (const file of ["sitemap.xml", "public/sitemap.xml", "sitemaps/sitemap-core.xml", "public/sitemaps/sitemap-core.xml"]) {
+    const xml = fs.readFileSync(path.join(root, file), "utf8");
+    assert.equal(xml.split(`<loc>${URL_}</loc>`).length - 1, 1, `${file}: sayfa haritada tam bir kez`);
+  }
+  const staticSeo = fs.readFileSync(path.join(root, "scripts", "generate-static-seo-pages.mjs"), "utf8");
+  assert.equal(staticSeo.split(`"${FILE}"`).length - 1, 2, "site haritası üreticisinde (günlük + çekirdek liste) kayıtlı");
+  assert.ok(fs.readFileSync(path.join(root, "scripts", "inject-hreflang.mjs"), "utf8").includes(`"${FILE}"`), "hreflang tr-only listesinde");
+  assert.ok(fs.existsSync(path.join(root, "public", FILE)), "public kopyası depoda");
+
+  // Görsel kural: yeni CSS yalnızca tasarım belirteçleri (sabit renk yok).
+  const css = fs.readFileSync(path.join(root, "page.css"), "utf8");
+  const block = css.slice(css.indexOf('/* "Bugün Hangi Maç Hangi Kanalda" sayfası'), css.indexOf("MAÇ LİSTESİ PENCERESİ"));
+  assert.ok(block.length > 500 && block.includes(".broadcast-box-row") && block.includes(".broadcast-channel"), "yeni CSS bloğu bulundu");
+  assert.doesNotMatch(block, /#[0-9a-fA-F]{3,8}\b|rgba?\(|hsla?\(/, "yeni CSS'te sabit renk yok");
+  assert.match(block, /var\(--surface\)/, "tasarım belirteci kullanılıyor");
+
+  // Depodaki kabuk sabit.
+  assert.match(shell, /<h1>Bugün Hangi Maç Hangi Kanalda\?<\/h1>/, "depodaki kabukta H1");
+  console.log("  ok  Bugün Hangi Maç Hangi Kanalda sayfası ve ana sayfa kutusu");
+}
+
+console.log("broadcast-schedule OK (12 bölüm)");

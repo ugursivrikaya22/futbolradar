@@ -24,6 +24,8 @@
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
+import { pathToFileURL } from "node:url";
+import { channelSummaryHtml } from "./lib/broadcastBoxes.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -52,18 +54,24 @@ const { escapeHtml, fixtureTeamInitials, leagueMarkHtml } = require("./lib/match
 const DOMAIN = "https://www.futbolradar.com";
 
 /**
- * İKİ SAYFA, TEK ÜRETİCİ: BUGÜN VE YARIN.
+ * ÜÇ SAYFA, TEK ÜRETİCİ: BUGÜN, YARIN VE "BUGÜN HANGİ MAÇ HANGİ KANALDA".
  *
  * "Hangi kanalda" sorusu maç günü değil, bir gün önce soruluyor. Bugün
  * sayfası o soruya ancak geç cevap veriyordu: okuyucu akşam 20.00 maçının
  * kanalını öğrenmek için sabaha kadar bekliyordu. Yarın sayfası aynı veriyi
  * bir gün önceden yayımlar.
  *
- * İki sayfa AYNI koddan üretilir. Ayrı bir üretici yazmak, yayın satırı
+ * `bugun-hangi-mac-hangi-kanalda.html` bugünün verisini "hangi maç hangi
+ * kanalda" sorgusuna göre sunar: başlık/H1 bu sorguyu taşır ve kart
+ * ızgarasının üstünde "Kanala göre" özeti (TRT 1, TRT Spor, beIN Sports …)
+ * vardır — okuyucu kanal adından maça ulaşır. Veri ve kanal kuralı bugün
+ * sayfasıyla AYNIDIR; yeni kaynak yoktur. Yayın bağlantısı/oynatıcı yoktur.
+ *
+ * Üç sayfa AYNI koddan üretilir. Ayrı bir üretici yazmak, yayın satırı
  * kuralının iki yerde ayrışmasına açık kapı bırakırdı — bu depoda daha önce
  * tam olarak bu şekilde kırılan bir yer var (bkz. services/newsFeed.js).
  */
-const PAGES = Object.freeze([
+export const PAGES = Object.freeze([
   Object.freeze({
     file: "bugunun-maclari-hangi-kanalda.html",
     slug: "bugunun-maclari-hangi-kanalda",
@@ -71,6 +79,16 @@ const PAGES = Object.freeze([
     dayWord: "Bugün",
     heading: "Bugünkü Maçlar Hangi Kanalda?",
     titleFor: (label) => `Bugünkü Maçlar Hangi Kanalda? ${label} Maç Programı | FutbolRadar`
+  }),
+  Object.freeze({
+    file: "bugun-hangi-mac-hangi-kanalda.html",
+    slug: "bugun-hangi-mac-hangi-kanalda",
+    offset: 0,
+    dayWord: "Bugün",
+    heading: "Bugün Hangi Maç Hangi Kanalda?",
+    channelSummary: true,
+    titleFor: (label) => `Bugün Hangi Maç Hangi Kanalda? ${label} Yayın Rehberi | FutbolRadar`,
+    descriptionFor: (label) => `Bugün hangi maç hangi kanalda? ${label}: günün maçlarının saati, ligi ve yayıncı kanalı (TRT, beIN Sports, S Sport) kanala göre listelendi.`
   }),
   Object.freeze({
     file: "yarinki-maclar-hangi-kanalda.html",
@@ -235,11 +253,11 @@ function emptyStateFor(page, dayLongLabel) {
   return `<div class="broadcast-schedule-empty card"><strong>${escapeHtml(page.dayWord)} önceliklendirilen liglerde ya da Türk takımlarında maç bulunmuyor.</strong><span>${escapeHtml(dayLongLabel)} için Süper Lig, 1. Lig, Şampiyonlar Ligi, Avrupa Ligi, Konferans Ligi, Premier League, La Liga, Serie A, Bundesliga ve Ligue 1 programında kayıtlı bir karşılaşma yok.</span></div>`;
 }
 
-const allMatches = curatedMatches();
-let generated = 0;
-
-for (const page of PAGES) {
-  const dayIso = istanbulDayOffset(page.offset);
+/**
+ * Tek sayfanın HTML'i: kabuk + gün + maç listesi → yeni HTML.
+ * Saf fonksiyon (dosya yazmaz): test aynı kodu sabit maçlarla çağırır.
+ */
+export function renderBroadcastPage(page, allMatches, dayIso, shellHtml) {
   const matches = selectBroadcastMatches(allMatches, { day: dayIso });
   const pageUrl = pageUrlFor(page);
   const dayLongLabel = longDateLabel(dayIso) || page.dayWord;
@@ -247,17 +265,18 @@ for (const page of PAGES) {
 
   // İki sayfa birbirine bağlanır: "bugün"e bakan okuyucu yarını da merak
   // eder ve tersi. Aynı zamanda her iki sayfayı da orphan olmaktan çıkarır.
-  const sibling = PAGES.find((other) => other.slug !== page.slug);
-  const crossLinkHtml = sibling
-    ? `<p class="broadcast-schedule-crosslink"><a class="detail-link" href="./${escapeHtml(sibling.file)}">${escapeHtml(sibling.heading)}</a></p>`
+  const siblings = PAGES.filter((other) => other.slug !== page.slug);
+  const crossLinkHtml = siblings.length
+    ? `<p class="broadcast-schedule-crosslink">${siblings.map((sibling) => `<a class="detail-link" href="./${escapeHtml(sibling.file)}">${escapeHtml(sibling.heading)}</a>`).join(" ")}</p>`
     : "";
 
-  const listHtml = (matches.length
+  const summaryHtml = page.channelSummary ? channelSummaryHtml(matches) : "";
+  const listHtml = summaryHtml + (matches.length
     ? `<div class="grid broadcast-schedule-grid">${matches.map(matchCardHtml).join("")}</div>`
     : emptyStateFor(page, dayLongLabel)) + crossLinkHtml;
 
   const title = page.titleFor(dayShortLabel);
-  const description = `${dayShortLabel}: Süper Lig, 1. Lig, Galatasaray, Fenerbahçe, Beşiktaş, Trabzonspor, Şampiyonlar Ligi, Avrupa Ligi, Konferans Ligi, Premier League, La Liga, Serie A, Bundesliga ve Ligue 1 maçlarının saatleri ve yayın kanalları.`;
+  const description = page.descriptionFor ? page.descriptionFor(dayShortLabel) : `${dayShortLabel}: Süper Lig, 1. Lig, Galatasaray, Fenerbahçe, Beşiktaş, Trabzonspor, Şampiyonlar Ligi, Avrupa Ligi, Konferans Ligi, Premier League, La Liga, Serie A, Bundesliga ve Ligue 1 maçlarının saatleri ve yayın kanalları.`;
 
   const schema = [
     matchListSchema(matches, {
@@ -286,15 +305,11 @@ for (const page of PAGES) {
     }
   ].filter(Boolean).map(jsonLdScript).join("\n");
 
-  const sourcePath = path.join(root, page.file);
-  if (!fs.existsSync(sourcePath)) {
-    console.warn(`[broadcast-schedule] kabuk dosya yok: ${page.file} — sayfa atlandı.`);
-    continue;
-  }
-
-  let html = fs.readFileSync(sourcePath, "utf8");
+  let html = shellHtml;
   html = html.replace(/<title>[^<]*<\/title>/, `<title>${escapeHtml(title)}</title>`);
   html = html.replace(/(<meta name="description" content=")[^"]*("\s*\/>)/, `$1${escapeHtml(description)}$2`);
+  html = html.replace(/(<link rel="canonical" href=")[^"]*("\s*\/>)/, `$1${pageUrl}$2`);
+  html = html.replace(/(<meta property="og:url" content=")[^"]*("\s*\/>)/, `$1${pageUrl}$2`);
   html = html.replace(/(<meta property="og:title" content=")[^"]*("\s*\/>)/, `$1${escapeHtml(title)}$2`);
   html = html.replace(/(<meta property="og:description" content=")[^"]*("\s*\/>)/, `$1${escapeHtml(description)}$2`);
   html = html.replace(/(<meta name="twitter:title" content=")[^"]*("\s*\/>)/, `$1${escapeHtml(title)}$2`);
@@ -302,13 +317,27 @@ for (const page of PAGES) {
   html = replaceStaticSlot(html, "broadcast-date-label", escapeHtml(dayLongLabel));
   html = replaceStaticSlot(html, "broadcast-matches", listHtml);
   html = replaceStaticSlot(html, "broadcast-schema", schema);
-
-  for (const targetRoot of [root, path.join(root, "public")]) {
-    writeGeneratedFile(path.join(targetRoot, page.file), html);
-  }
-
-  console.log(`Generated ${page.file} (${matches.length} maç, ${dayIso})`);
-  generated += 1;
+  return { html, matchCount: matches.length };
 }
 
-console.log(`[broadcast-schedule] ${generated} sayfa üretildi.`);
+function main() {
+  const allMatches = curatedMatches();
+  let generated = 0;
+  for (const page of PAGES) {
+    const dayIso = istanbulDayOffset(page.offset);
+    const sourcePath = path.join(root, page.file);
+    if (!fs.existsSync(sourcePath)) {
+      console.warn(`[broadcast-schedule] kabuk dosya yok: ${page.file} — sayfa atlandı.`);
+      continue;
+    }
+    const { html, matchCount } = renderBroadcastPage(page, allMatches, dayIso, fs.readFileSync(sourcePath, "utf8"));
+    for (const targetRoot of [root, path.join(root, "public")]) {
+      writeGeneratedFile(path.join(targetRoot, page.file), html);
+    }
+    console.log(`Generated ${page.file} (${matchCount} maç, ${dayIso})`);
+    generated += 1;
+  }
+  console.log(`[broadcast-schedule] ${generated} sayfa üretildi.`);
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) main();
