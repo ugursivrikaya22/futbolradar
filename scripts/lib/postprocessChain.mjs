@@ -115,6 +115,10 @@ export const POSTPROCESS_CHAIN = [
   { id: "en-league-pages", script: "generate-en-league-pages.mjs", args: [], timeoutMinutes: 3 },
   { id: "en-league-statistics-pages", script: "generate-en-league-statistics-pages.mjs", args: [], timeoutMinutes: 3 },
   { id: "en-info-pages", script: "generate-en-info-pages.mjs", args: [], timeoutMinutes: 2 },
+  // Rehber / soru-cevap / maç rehberi / transfer merkezi sayfalarının İngilizcesi
+  // (/en/guides/): Türkçe sayfalar generate-search-demand-pages ile yazılmış olmalı,
+  // ortak düzen ve hreflang adımlarından ÖNCE üretilmeli.
+  { id: "en-guide-pages", script: "generate-en-guide-pages.mjs", args: [], timeoutMinutes: 2 },
   // Oyuncu listeleri kulüp/form sayfalarından ÖNCE: ikincisi ilkine
   // bağlantı verir ve yalnızca diskte bulduğu hedefe bağlanır.
   { id: "en-player-list-pages", script: "generate-en-player-list-pages.mjs", args: [], timeoutMinutes: 3 },
