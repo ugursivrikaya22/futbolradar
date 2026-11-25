@@ -261,6 +261,33 @@ function expect(condition, message) {
   }
 }
 
+/**
+ * HABER / KÖŞE YAZISI: NewsArticle EKSİKSİZ OLMALI.
+ *
+ * Google News ve Article zengin sonuçlarının okuduğu yedi alan: headline,
+ * datePublished, dateModified, author, publisher (logo dahil), image,
+ * mainEntityOfPage. Biri düşerse sayfa yayında kalır ama haber yüzeylerinde
+ * sessizce görünmez olur; bu yüzden eksiklik derlemeyi durdurur. Ayrıntılı
+ * denetim (tarih biçimi, logo boyutu, yayın adı): scripts/test-news-article-schema.mjs.
+ */
+function expectCompleteNewsArticle(html, page) {
+  let article = null;
+  for (const [, body] of html.matchAll(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)) {
+    let parsed;
+    try { parsed = JSON.parse(body); } catch { continue; }
+    const nodes = [].concat(parsed && parsed["@graph"] ? parsed["@graph"] : parsed);
+    article = nodes.find((node) => node && [].concat(node["@type"] || []).includes("NewsArticle")) || article;
+  }
+  expect(Boolean(article), `${page}: missing NewsArticle JSON-LD`);
+  if (!article) return;
+  const filled = (value) => value !== undefined && value !== null && value !== "" && !(Array.isArray(value) && !value.length);
+  for (const field of ["headline", "datePublished", "dateModified", "author", "publisher", "image", "mainEntityOfPage"]) {
+    expect(filled(article[field]), `${page}: NewsArticle.${field} missing`);
+  }
+  expect(filled(article.author && article.author.name), `${page}: NewsArticle.author.name missing`);
+  expect(filled(article.publisher && article.publisher.logo), `${page}: NewsArticle.publisher.logo missing`);
+}
+
 function apiFunctionFiles() {
   const apiDir = path.join(root, "api");
   return walk(apiDir, (full) => {
@@ -662,6 +689,10 @@ function checkSeoAndLinks() {
       expect(html.includes("Köşe Yazıları"), `${page}: missing visible section label`);
     }
 
+    if (columnArticlePages.includes(page) || newsArticlePages.includes(page)) {
+      expectCompleteNewsArticle(html, page);
+    }
+
     if (columnArticlePages.includes(page)) {
       const columnRecord = publishedColumnRecords.find((column) => column.path === page);
       if (!columnRecord || !columnRecord.hideStandfirst) {
@@ -813,6 +844,18 @@ function checkSeoAndLinks() {
   const robots = fs.readFileSync(path.join(root, "robots.txt"), "utf8");
   expect(robots.split(/\r?\n/).includes("Sitemap: https://www.futbolradar.com/sitemap-index.xml"), "robots.txt missing sitemap index URL");
   expect(robots.split(/\r?\n/).includes("Sitemap: https://www.futbolradar.com/news-sitemap.xml"), "robots.txt missing news sitemap URL");
+  // Google News haritası üç yerden tutarlı bildirilir: robots.txt (üstte),
+  // ana sitemap indeksi ve istek anında 48 saat süzgecini uygulayan edge
+  // middleware. Middleware kaynağı ayrı bir kopyadan okur; kopya asıl
+  // dosyayla aynı olmak zorunda (bkz. scripts/lib/newsSitemap.mjs).
+  const sitemapIndex = fs.readFileSync(path.join(root, "sitemap-index.xml"), "utf8");
+  expect(sitemapIndex.includes("<loc>https://www.futbolradar.com/news-sitemap.xml</loc>"), "sitemap-index.xml missing news sitemap");
+  const newsSitemapSource = path.join(root, "news-sitemap-source.xml");
+  expect(fs.existsSync(newsSitemapSource), "missing news-sitemap-source.xml (edge middleware source copy)");
+  if (fs.existsSync(newsSitemapSource)) {
+    expect(fs.readFileSync(newsSitemapSource, "utf8") === fs.readFileSync(path.join(root, "news-sitemap.xml"), "utf8"), "news-sitemap-source.xml must mirror news-sitemap.xml");
+  }
+  expect(/matcher:\s*\[[^\]]*"\/news-sitemap\.xml"/.test(fs.readFileSync(path.join(root, "middleware.js"), "utf8")), "middleware.js must filter /news-sitemap.xml to the 48-hour window");
   // PAYLAŞIM GÖRSELİ PNG'DİR. X, Facebook, WhatsApp ve Telegram SVG
   // önizleme çözmez; SVG bildiren bir bağlantı o ağlarda GÖRSELSİZ çıkar.
   // Bu yüzden asıl denetlenen varlık PNG: sayfaların og:image/twitter:image

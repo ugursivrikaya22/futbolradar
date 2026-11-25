@@ -32,6 +32,8 @@ const { statusLabel, BREAKING_LABEL } = require("../services/editorialStatus.js"
 const { publishableNews } = require("../services/newsFeed.js");
 // Otomatik keşif kaynaklı, şablon metinli ince haberler indekslenmez (bkz. servis).
 const { isThinAutomatedNews } = require("../services/newsIndexPolicy.js");
+// Yayıncı (logo dahil) ve kurum-yazar düğümü Türkçe tarafla aynı tek tanımdan gelir.
+const { DEFAULT_ARTICLE_IMAGE, organizationAuthorNode, publisherNode } = require("../services/newsArticleSchema.js");
 
 const root = process.cwd();
 const domain = "https://www.futbolradar.com";
@@ -107,13 +109,9 @@ function jsonLd(article) {
     dateModified: article.updatedAt || article.publishedAt || null,
     inLanguage: "en",
     mainEntityOfPage: articleUrl(article),
-    image: `${domain}/assets/og-image.png`,
-    author: { "@type": "Organization", name: "FutbolRadar" },
-    publisher: {
-      "@type": "Organization",
-      name: "FutbolRadar",
-      logo: { "@type": "ImageObject", url: `${domain}/assets/og-image.png` }
-    },
+    image: DEFAULT_ARTICLE_IMAGE,
+    author: organizationAuthorNode(),
+    publisher: publisherNode(),
     keywords: Array.isArray(article.tags) ? article.tags.join(", ") : undefined,
     citation: sources.length ? sources.map((source) => source.url) : undefined
   };

@@ -33,7 +33,17 @@ console.log("sitemap-buckets");
   assert.ok(built.indexXml.includes("sitemapindex"));
   assert.ok(built.indexXml.includes("sitemaps/sitemap-core.xml"));
   assert.ok(!built.files.some((f) => f.count === 0));
-  console.log("  ok  kova sınıflandırma + indeks üretimi");
+  assert.ok(!built.indexXml.includes("news-sitemap.xml"), "ek harita verilmedikçe indekse girmez");
+
+  // Google News haritası birleşik urlset'ten türemez; indekse ek çocuk olarak girer.
+  const withNews = buildSplitSitemaps(sample, { today: "2026-11-05", extraSitemaps: ["news-sitemap.xml"] });
+  assert.equal(withNews.total, 7, "ek harita URL toplamını değiştirmez");
+  assert.deepEqual(withNews.files.map((f) => f.file), built.files.map((f) => f.file), "ek harita çocuk dosya listesine girmez (içeriğini kendi üreticisi yazar)");
+  const locs = [...withNews.indexXml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+  assert.equal(locs.length, built.files.length + 1);
+  assert.equal(locs[locs.length - 1], "https://www.futbolradar.com/news-sitemap.xml", "News haritası indeksin sonunda, kök adresiyle");
+  assert.match(withNews.indexXml, /<loc>https:\/\/www\.futbolradar\.com\/news-sitemap\.xml<\/loc>\n    <lastmod>2026-11-05<\/lastmod>/);
+  console.log("  ok  kova sınıflandırma + indeks üretimi (News haritası ek çocuk)");
 }
 
 {
