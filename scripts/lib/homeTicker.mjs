@@ -36,7 +36,7 @@ function internalHref(url, base) {
 
 /** Transfer Radarı sayfası (adres sabit). TR bandındaki transfer/söylenti
  *  öğeleri ve "Tümü" bağlantısı buraya gider. */
-export const TRANSFER_RADAR_HREF = "super-lig-transferleri-2026-2027.html";
+export const TRANSFER_RADAR_HREF = "transfer-radari.html";
 const TRANSFER_CATEGORIES = new Set(["transfer", "iddia"]);
 
 const COPY = Object.freeze({

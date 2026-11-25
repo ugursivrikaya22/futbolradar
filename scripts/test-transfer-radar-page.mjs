@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 /**
  * TRANSFER RADARI TESTLERİ (scripts/generate-transfer-radar-page.mjs).
- *  1. SEO: title, H1, meta açıklama (≤160), canonical aynı adres, ilk paragrafta "transfer radarı".
+ *  0. İki sayfa: transfer-radari.html (altı lig) + super-lig-transferleri-2026-2027.html
+ *     (Süper Lig; adres değişmez, silinmez). Karşılıklı bağlantı, ayrı canonical.
+ *  1. SEO: title, H1, meta açıklama (≤160) "Transfer Radarı" içerir, canonical aynı adres, ilk paragrafta "transfer radarı".
  *  2. Altı lig sekmesi; her ligde resmi / söylenti / Ocak 2027 bölümleri.
  *  3. Resmi ve söylenti ayrı: söylenti tabloya girmez, her söylentide "Söylenti" etiketi + kaynak.
  *  4. Kaynak kuralı: her dış bağlantı beyaz listede, yasaklı alan adı yok, rel nofollow noopener noreferrer;
@@ -16,7 +18,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { createRequire } from "node:module";
-import { buildTransferRadar, renderTransferRadarPage, generateTransferRadarPage, sourceProblem, slugify, PAGE_TITLE, PAGE_DESCRIPTION, PAGE_FILE } from "./generate-transfer-radar-page.mjs";
+import { buildTransferRadar, renderTransferRadarPage, renderSuperLigTransfersPage, generateTransferRadarPage, sourceProblem, slugify, PAGE_TITLE, PAGE_DESCRIPTION, PAGE_FILE, SUPER_LIG_PAGE_FILE, SUPER_LIG_PAGE_TITLE, SUPER_LIG_PAGE_DESCRIPTION } from "./generate-transfer-radar-page.mjs";
 import { renderHomeTicker } from "./lib/homeTicker.mjs";
 
 const require = createRequire(import.meta.url);
@@ -29,13 +31,18 @@ assert.deepEqual(data.problems, [], "gerçek veride kaynak sorunu olmamalı");
 const html = renderTransferRadarPage(data);
 
 // 1. SEO
+assert.equal(PAGE_FILE, "transfer-radari.html", "Transfer Radarı ayrı sayfa");
+assert.equal(SUPER_LIG_PAGE_FILE, "super-lig-transferleri-2026-2027.html", "eski adres değişmez");
+assert.ok(PAGE_DESCRIPTION.includes("Transfer Radarı"), "meta açıklamada Transfer Radarı");
 assert.equal(PAGE_TITLE, "Transfer Radarı 2026-2027 | Süper Lig ve Avrupa'nın Büyük Ligleri Transferleri | FutbolRadar");
 assert.ok(html.includes(`<title>Transfer Radarı 2026-2027 | Süper Lig ve Avrupa&#039;nın Büyük Ligleri Transferleri | FutbolRadar</title>`), "title");
 assert.match(html, /<h1>Transfer Radarı<\/h1>/, "H1 yalnızca Transfer Radarı");
 assert.equal((html.match(/<h1/g) || []).length, 1, "tek H1");
 assert.ok(PAGE_DESCRIPTION.length <= 160 && PAGE_DESCRIPTION.length >= 120, `meta açıklama 120-160 karakter (${PAGE_DESCRIPTION.length})`);
 for (const league of ["Süper Lig", "Premier Lig", "La Liga", "Serie A", "Bundesliga", "Ligue 1"]) assert.ok(PAGE_DESCRIPTION.includes(league), `meta açıklama ${league}`);
-assert.ok(html.includes('<link rel="canonical" href="https://www.futbolradar.com/super-lig-transferleri-2026-2027.html" />'), "canonical aynı adres");
+assert.ok(html.includes('<link rel="canonical" href="https://www.futbolradar.com/transfer-radari.html" />'), "canonical aynı adres");
+assert.equal((html.match(/rel="canonical"/g) || []).length, 1, "tek canonical");
+assert.ok(html.includes('<meta name="robots" content="index'), "dizinlenebilir");
 const firstParagraph = html.slice(html.indexOf("</h1>")).match(/<p>([\s\S]*?)<\/p>/)[1];
 assert.match(firstParagraph.toLocaleLowerCase("tr-TR"), /transfer radarı/, "ilk paragrafta 'transfer radarı'");
 assert.match(html, /Son güncelleme: <time datetime="[^"]+">\d{1,2} \S+ 2026/, "Son güncelleme tarihi görünür");
@@ -77,7 +84,7 @@ for (const [tag, url] of external) {
 
 // 4b. FIFA transfer yasakları: ayrı kutu, resmi tabloda değil, izinli ana kaynak.
 {
-  const superLig = html.slice(html.indexOf('id="lig-super-lig"'), html.indexOf('id="lig-premier-league"'));
+  const superLig = html.slice(html.indexOf('id="lig-super-lig"'), html.indexOf('id="lig-premier-lig"'));
   const bans = superLig.slice(superLig.indexOf("data-tr-bans"), superLig.indexOf('class="tr-block tr-official"'));
   assert.ok(bans.includes("FIFA transfer yasakları"), "Süper Lig sekmesinde FIFA yasak kutusu");
   const banItems = bans.match(/<li class="tr-ban"[\s\S]*?<\/li>/g) || [];
@@ -90,7 +97,7 @@ for (const [tag, url] of external) {
   assert.ok(xLinks.length >= mainX.length);
   const table = superLig.slice(superLig.indexOf("<table"), superLig.indexOf("</table>"));
   assert.ok(!/Pendikspor|yasağı/.test(table), "yasak resmi transfer tablosunda değil");
-  for (const otherId of ["premier-league", "la-liga", "serie-a", "bundesliga", "ligue-1"]) {
+  for (const otherId of ["premier-lig", "la-liga", "serie-a", "bundesliga", "ligue-1"]) {
     const start = html.indexOf(`id="lig-${otherId}"`);
     const other = html.slice(start, html.indexOf("</section>", start));
     assert.ok(!other.includes("data-tr-bans"), `${otherId}: yasak kutusu yok`);
@@ -163,7 +170,9 @@ for (const record of transfers.filter((item) => item.status === "confirmed")) {
     generateTransferRadarPage(sm, { now: NOW });
     for (const f of ["sitemap.xml", "public/sitemap.xml"]) {
       const xml = fs.readFileSync(path.join(sm, f), "utf8");
-      assert.equal(xml.split("<loc>https://www.futbolradar.com/super-lig-transferleri-2026-2027.html</loc>").length - 1, 1, `${f}: sayfa haritada tam bir kez`);
+      for (const file of [PAGE_FILE, SUPER_LIG_PAGE_FILE]) {
+        assert.equal(xml.split(`<loc>https://www.futbolradar.com/${file}</loc>`).length - 1, 1, `${f}: ${file} haritada tam bir kez`);
+      }
     }
     fs.rmSync(sm, { recursive: true, force: true });
   }
@@ -174,7 +183,7 @@ assert.ok(html.includes("Pencere tarihleri: <strong>Güncelleniyor</strong>"), "
 const ld = JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1]);
 const list = ld["@graph"].find((node) => node["@type"] === "ItemList");
 assert.ok(list && list.itemListElement.length === list.numberOfItems && list.numberOfItems > 0, "ItemList dolu");
-assert.ok(list.itemListElement.every((item, index) => item.position === index + 1 && /^https:\/\/www\.futbolradar\.com\/super-lig-transferleri-2026-2027\.html#/.test(item.url)), "ItemList sıra + adres");
+assert.ok(list.itemListElement.every((item, index) => item.position === index + 1 && /^https:\/\/www\.futbolradar\.com\/transfer-radari\.html#/.test(item.url)), "ItemList sıra + adres");
 assert.ok(ld["@graph"].some((node) => node["@type"] === "BreadcrumbList"), "BreadcrumbList");
 const rumourIds = new Set(data.leagues.flatMap((league) => league.rumours.map((item) => item.id)));
 assert.ok(!list.itemListElement.some((item) => [...rumourIds].some((id) => item.url.endsWith(id))), "söylenti ItemList'e girmez");
@@ -182,14 +191,58 @@ assert.ok(!list.itemListElement.some((item) => [...rumourIds].some((id) => item.
 // 8. İç bağlantılar
 {
   const band = renderHomeTicker([{ id: "a", text: "Örnek iddia", category: "iddia", date: "2026-11-24T10:00:00+03:00", expiresAt: "2026-11-25T10:00:00+03:00", sourceName: "NTV Spor", sourceUrl: "https://www.ntvspor.net/x" }]);
-  assert.ok(band.includes('class="home-ticker__all" href="./super-lig-transferleri-2026-2027.html"'), "ana sayfa bandında Tümü → Transfer Radarı");
-  assert.ok(band.includes('class="home-ticker__link" href="./super-lig-transferleri-2026-2027.html"'), "bağlantısız söylenti Transfer Radarı'na gider");
+  assert.ok(band.includes('class="home-ticker__all" href="./transfer-radari.html"'), "ana sayfa bandında Tümü → Transfer Radarı");
+  assert.ok(band.includes('class="home-ticker__link" href="./transfer-radari.html"'), "bağlantısız söylenti Transfer Radarı'na gider");
   const en = renderHomeTicker([{ id: "a", text: "x", category: "haber", date: "2026-11-24T10:00:00+03:00", sourceName: "NTV Spor", sourceUrl: "https://www.ntvspor.net/x" }], { locale: "en" });
   assert.ok(!en.includes("home-ticker__all"), "EN bandına Türkçe sayfa bağlantısı eklenmez");
   const leagueGen = fs.readFileSync(path.join(root, "scripts", "generate-league-pages.mjs"), "utf8");
-  assert.ok(leagueGen.includes("../super-lig-transferleri-2026-2027.html#lig-"), "lig sayfaları Transfer Radarı'na bağlanır");
+  assert.ok(leagueGen.includes("../transfer-radari.html#lig-"), "lig sayfaları Transfer Radarı'na bağlanır");
+  const { NAV_KEYS } = require("../services/i18n.js");
+  assert.equal(NAV_KEYS.tr.primary.find((item) => item.key === "nav.transferRadar").href, PAGE_FILE, "menü Transfer Radarı → transfer-radari.html");
+  const vercel = JSON.parse(fs.readFileSync(path.join(root, "vercel.json"), "utf8"));
+  const redirects = vercel.redirects || [];
+  assert.ok(!redirects.some((rule) => rule.source === `/${PAGE_FILE}`), "transfer-radari.html yönlendirilmez");
+  assert.ok(!redirects.some((rule) => rule.source === `/${SUPER_LIG_PAGE_FILE}`), "eski sayfa yönlendirilmez");
+  assert.ok(redirects.some((rule) => rule.source === "/transfer-radari" && rule.destination === `/${PAGE_FILE}`), "uzantısız adres yeni sayfaya");
+}
+
+// 9. Eski Süper Lig sayfası: kalır, Süper Lig'e özgü, kendi canonical'ı, karşılıklı bağlantı.
+{
+  const sl = renderSuperLigTransfersPage(data);
+  assert.ok(sl.includes('<link rel="canonical" href="https://www.futbolradar.com/super-lig-transferleri-2026-2027.html" />'), "eski sayfa kendi adresini canonical gösterir");
+  assert.ok(sl.includes('<meta name="robots" content="index'), "eski sayfa dizinlenebilir kalır");
+  assert.match(sl, /<h1>Süper Lig Transferleri 2026-2027<\/h1>/, "eski sayfa H1");
+  assert.equal((sl.match(/<h1/g) || []).length, 1, "eski sayfa tek H1");
+  assert.ok(SUPER_LIG_PAGE_TITLE !== PAGE_TITLE && SUPER_LIG_PAGE_DESCRIPTION !== PAGE_DESCRIPTION, "iki sayfanın başlık/açıklaması farklı");
+  assert.ok(SUPER_LIG_PAGE_DESCRIPTION.length <= 160, "eski sayfa meta açıklama ≤160");
+  assert.ok(sl.includes('href="./transfer-radari.html"'), "eski sayfa → Transfer Radarı");
+  assert.ok(html.includes('href="./super-lig-transferleri-2026-2027.html"'), "Transfer Radarı → eski sayfa");
+  assert.ok(sl.includes('id="lig-super-lig"'), "Süper Lig bölümü");
+  for (const otherId of ["premier-lig", "la-liga", "serie-a", "bundesliga", "ligue-1"]) assert.ok(!sl.includes(`id="lig-${otherId}"`), `eski sayfada ${otherId} bölümü yok (yinelenen içerik olmasın)`);
+  for (const record of transfers.filter((item) => item.status === "confirmed")) {
+    assert.ok(sl.includes(`id="transfer-${slugify(record.playerName)}"`), `eski sayfada kayan yazı çapası: transfer-${slugify(record.playerName)}`);
+  }
+  const slLd = JSON.parse(sl.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1]);
+  const slList = slLd["@graph"].find((node) => node["@type"] === "ItemList");
+  assert.ok(slList.itemListElement.every((item) => item.url.startsWith("https://www.futbolradar.com/super-lig-transferleri-2026-2027.html#")), "eski sayfa ItemList kendi adresinde");
+  const crumbs = slLd["@graph"].find((node) => node["@type"] === "BreadcrumbList").itemListElement;
+  assert.equal(crumbs[1].item, "https://www.futbolradar.com/transfer-radari.html", "eski sayfa içerik yolu Transfer Radarı'ndan geçer");
+}
+
+// 10. Görsel kural: renkler yalnızca page.css belirteçlerinden.
+{
+  for (const page of [html, renderSuperLigTransfersPage(data)]) {
+    const css = page.match(/<style data-transfer-radar-css>([\s\S]*?)<\/style>/)[1];
+    assert.ok(!/#[0-9a-f]{3,8}\b|rgba?\(/i.test(css), "satır içi CSS'te sabit renk yok");
+  }
+}
+
+for (const file of [PAGE_FILE, SUPER_LIG_PAGE_FILE]) {
+  assert.ok(fs.existsSync(path.join(root, file)), `${file} depoda`);
 }
 const committed = fs.readFileSync(path.join(root, PAGE_FILE), "utf8");
 assert.ok(committed.includes("<h1>Transfer Radarı</h1>"), "depodaki sayfa yeni üreticiden");
+const committedLegacy = fs.readFileSync(path.join(root, SUPER_LIG_PAGE_FILE), "utf8");
+assert.ok(committedLegacy.includes("<h1>Süper Lig Transferleri 2026-2027</h1>"), "depodaki eski sayfa yeni üreticiden");
 
 console.log(`test-transfer-radar-page: ok (${data.leagues.map((l) => `${l.id} ${l.official.length}/${l.rumours.length}`).join(", ")})`);
