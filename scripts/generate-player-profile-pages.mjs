@@ -14,6 +14,7 @@ import {
 } from "./lib/player360.mjs";
 import { turkishPlayer360 } from "./lib/player360English.mjs";
 import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
+import { hasSubstantivePlayerContent } from "./lib/playerIndexing.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -251,18 +252,8 @@ function profileAvatarHtml(player) {
     `width="96" height="96" loading="lazy" decoding="async">`;
 }
 
-function hasSubstantivePlayerContent(model) {
-  if (!model) return false;
-  const rows = (block) => Boolean(block && (block.available || (Array.isArray(block.rows) && block.rows.length) || (Array.isArray(block.items) && block.items.length)));
-  return Boolean(
-    (model.profileEvidence && model.profileEvidence.matches.length > 0) ||
-    (model.seasonStats && model.seasonStats.available) ||
-    (model.matchLog && model.matchLog.available) ||
-    rows(model.career) || rows(model.transfers) ||
-    Boolean(model.news && ((model.news.transfer || []).length || (model.news.general || []).length)) ||
-    rows(model.honours) || (model.availability && model.availability.available)
-  );
-}
+// `hasSubstantivePlayerContent` (indeks kapısı) İngilizce üreticiyle ORTAK:
+// scripts/lib/playerIndexing.mjs.
 
 function playerDescription(player, view) {
   if (view && !view.verified) {

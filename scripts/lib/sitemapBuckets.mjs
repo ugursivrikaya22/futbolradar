@@ -15,14 +15,24 @@ export const INDEX_OPEN =
 
 /** @typedef {{ id: string, file: string, test: (loc: string) => boolean }} Bucket */
 
-/** Sıra önemli: ilk eşleşen kova kazanır. */
+/**
+ * Sıra önemli: ilk eşleşen kova kazanır.
+ *
+ * İNGİLİZCE KOVA EN BAŞTA. `/en/` altındaki her adres — maç, oyuncu, haber,
+ * köşe yazısı, rehber, kulüp — `sitemap-en.xml`e gider. Önceki sıralamada
+ * `matches`, `players` ve `news` kovaları `/en/match`, `/en/player`,
+ * `/en/news` ve `/en/columns` adreslerini kendi desenleriyle önce yakalıyor,
+ * İngilizce sitenin yarıdan fazlası Türkçe haritaların içinde kalıyor ve
+ * `sitemap-en.xml` yalnızca ~50 adres taşıyordu. İngilizce sayfaların AYRI
+ * bir haritada olması, indekslenme durumunun dil bazında izlenebilmesi için.
+ */
 export const SITEMAP_BUCKETS = [
+  { id: "en", file: "sitemaps/sitemap-en.xml", test: (loc) => /\/en(\/|$)/.test(loc) },
   { id: "comparisons", file: "sitemaps/sitemap-comparisons.xml", test: (loc) => /\/karsilastirma\//.test(loc) },
   { id: "matches", file: "sitemaps/sitemap-matches.xml", test: (loc) => /\/(mac|mac-raporu|mac-dosyasi|mac-takvimi|en\/match)\b/.test(loc) },
   { id: "players", file: "sitemaps/sitemap-players.xml", test: (loc) => /\/(futbolcu|oyuncular|players|en\/player)\b/.test(loc) },
   { id: "teams", file: "sitemaps/sitemap-teams.xml", test: (loc) => /\/takimlar\//.test(loc) },
   { id: "news", file: "sitemaps/sitemap-news-pages.xml", test: (loc) => /\/(haber|kose-yazilari|en\/news|en\/columns)\b/.test(loc) },
-  { id: "en", file: "sitemaps/sitemap-en.xml", test: (loc) => /\/en(\/|$)/.test(loc) },
   { id: "core", file: "sitemaps/sitemap-core.xml", test: () => true }
 ];
 
