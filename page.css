@@ -24620,3 +24620,327 @@ a.home-featured-column__note-link:focus-visible { outline: none; box-shadow: var
 .featured-headline-related li { font-size: var(--fs-sm); }
 .featured-headline-related li span { color: var(--muted); font-size: var(--fs-xs); white-space: nowrap; }
 .featured-headline-note { margin: 8px 0 0; color: var(--muted); font-size: var(--fs-xs); }
+
+/* ==========================================================================
+   KART VE LİSTE YÜZEYİ — TEK KAYNAK (görsel yenileme, 2. adım)
+   --------------------------------------------------------------------------
+   Haber kartı, maç kartı, sonuç kartı, takım kartı ve puan listeleri dosyanın
+   farklı yerlerinde ayrı ayrı biçimlendirilmişti: köşe 8 / 10 / 14 px,
+   gölge sm / md, kenarlık --line / --glass-border / sabit mavi, dolgu 10 / 12 /
+   18 / 20 px. Aynı sayfada yan yana duran kartlar bu yüzden birbirine
+   benzemiyordu.
+
+   Bu bölüm dosyanın SONUNDA durur ve yalnızca üstteki tasarım belirteçlerini
+   kullanır (yeni :root değişkeni yok, ham renk yok); koyu tema belirteçlerle
+   kendiliğinden çalışır. Yalnızca görünüm: HTML, içerik ve davranış aynı.
+
+   Kural:
+     kart   -> yüzey --surface, kenarlık --glass-border, köşe --radius-lg,
+               dinlenme gölgesi --shadow-sm, üzerine gelince --shadow-md
+     liste  -> satır en az 44 px, ayraç --glass-border, başlık satırı küçük
+               büyük harf + --surface-sunken, sayılar tabular-nums
+   ========================================================================== */
+
+/* --- 1. Kart yüzeyi ------------------------------------------------------- */
+.news-card,
+.fixture-card,
+.result-card,
+.trend-card,
+.ad-search-page .fixture-card {
+  min-width: 0;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--dur) var(--ease), border-color var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease), background-color var(--dur) var(--ease);
+}
+
+/* Veri kartları sıkı, haber kartı metin ağırlıklı: iki dolgu basamağı. */
+.fixture-card,
+.result-card,
+.trend-card {
+  padding: var(--sp-4);
+}
+
+.news-card {
+  padding: var(--sp-5);
+}
+
+/* Üzerine gelme yalnızca fareyle: dokunmatikte "yapışan" hover kalmaz. */
+@media (hover: hover) {
+  .news-card:hover,
+  .fixture-card:hover,
+  .trend-card:hover,
+  .result-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--line-strong);
+    box-shadow: var(--shadow-md);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .news-card,
+  .fixture-card,
+  .result-card,
+  .trend-card {
+    transition: none;
+  }
+
+  .news-card:hover,
+  .fixture-card:hover,
+  .trend-card:hover,
+  .result-card:hover {
+    transform: none;
+  }
+}
+
+/* Kart ızgaraları: tek boşluk ölçüsü. */
+.news-grid,
+.matches-grid,
+.league-match-grid,
+.results-grid {
+  gap: var(--sp-4);
+}
+
+/* --- 2. Haber kartı ------------------------------------------------------- */
+/* Eski `justify-content: space-between` boş yüksekliği üç bloğun arasına
+   dağıtıyordu: aynı satırdaki kartlarda başlıklar farklı yükseklikte
+   başlıyordu. Bloklar yukarıdan dizilir, alt çubuk dibe yaslanır. */
+.news-card {
+  justify-content: flex-start;
+  gap: var(--sp-3);
+  min-height: 0;
+}
+
+.news-card h3 {
+  margin: var(--sp-1) 0 var(--sp-2);
+  font-size: var(--fs-md);
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.news-card p {
+  color: var(--text-soft);
+  font-size: var(--fs-base);
+  line-height: 1.6;
+}
+
+.news-card-meta time,
+.news-card-footer > span {
+  font-size: var(--fs-xs);
+}
+
+.news-card-footer {
+  margin-top: auto;
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--glass-border);
+}
+
+@media (max-width: 640px) {
+  .news-card {
+    padding: var(--sp-4);
+  }
+}
+
+/* --- 3. Maç ve sonuç kartı ------------------------------------------------ */
+.fixture-card {
+  gap: var(--sp-2);
+}
+
+.fixture-card-rows {
+  gap: var(--sp-2);
+}
+
+.fixture-card.is-live {
+  border-color: color-mix(in srgb, var(--live) 28%, transparent);
+}
+
+.result-card {
+  gap: var(--sp-3);
+}
+
+.result-card-head span {
+  font-size: var(--fs-xs);
+}
+
+.result-card-head strong {
+  border-radius: var(--radius);
+  font-size: var(--fs-xs);
+}
+
+.result-card-footer {
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--glass-border);
+}
+
+.result-card-score b {
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- 4. Takım kartı (ana sayfa trend) ------------------------------------- */
+.trend-card {
+  gap: var(--sp-3);
+}
+
+.trend-card-stats div {
+  border-radius: var(--radius);
+  background: var(--surface-sunken);
+}
+
+/* `.trend-card-head span` (özgüllük 0,1,1) avatarın `display: grid` ve renk
+   ayarını eziyordu: harf sol üstte, soluk ve yeşil üstüne yeşil kalıyordu.
+   Ana sayfa puan listesindeki takım rozetiyle aynı dil. */
+.trend-card-head .trend-card-avatar {
+  display: grid;
+  place-items: center;
+  overflow: visible;
+  background: var(--green-tint);
+  color: var(--green-text);
+  font-size: var(--fs-sm);
+  font-weight: 800;
+  text-overflow: clip;
+}
+
+/* --- 5. Puan listeleri ---------------------------------------------------- */
+/* Üç ayrı puan listesi vardı (ana sayfa kutusu, puan durumu sayfası, lig
+   sayfası tablosu): satır yüksekliği 38 / 58 / 45 px, ayraç üç ayrı renk.
+   Hepsi aynı ölçüye çekilir. */
+
+/* 5a. Ana sayfa puan kutusu */
+.home-standing-row {
+  min-height: calc(var(--tap) + var(--sp-1));
+  padding: var(--sp-2) var(--sp-4);
+  border-bottom: 1px solid var(--glass-border);
+  font-size: var(--fs-sm);
+}
+
+.home-standing-row.is-head {
+  min-height: 0;
+  padding-block: var(--sp-2);
+  background: var(--surface-sunken);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.03em;
+}
+
+.home-standing-points,
+.home-standing-gd {
+  font-variant-numeric: tabular-nums;
+}
+
+.home-standing-gd.is-negative {
+  color: var(--live);
+}
+
+.home-standing-row.is-europe {
+  background: color-mix(in srgb, var(--green) 7%, transparent);
+}
+
+.home-standing-row.is-relegation {
+  border-left-color: var(--live);
+  background: color-mix(in srgb, var(--live) 7%, transparent);
+}
+
+.home-standings-dot.is-relegation {
+  background: var(--live);
+}
+
+@media (hover: hover) {
+  .home-standing-row:not(.is-head):hover {
+    background: var(--surface-tint);
+  }
+}
+
+@media (max-width: 640px) {
+  .home-standing-row {
+    padding: var(--sp-2) var(--sp-3);
+    font-size: var(--fs-xs);
+  }
+
+  .home-standing-row.is-head {
+    padding-block: var(--sp-2);
+    font-size: var(--fs-xs);
+  }
+}
+
+/* 5b. Puan durumu sayfası (ızgara satırları) */
+.table-row {
+  min-height: calc(var(--tap) + var(--sp-1));
+  padding: var(--sp-2) var(--sp-4);
+  border-bottom: 1px solid var(--glass-border);
+  color: var(--text-soft);
+  font-size: var(--fs-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.table-row.header {
+  min-height: 0;
+  background: var(--surface-sunken);
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.table-row > :first-child,
+.table-row > :nth-child(n + 3) {
+  text-align: center;
+}
+
+@media (hover: hover) {
+  .table-row:not(.header):hover {
+    background: var(--surface-tint);
+  }
+}
+
+@media (max-width: 640px) {
+  .table-row {
+    grid-template-columns: 24px minmax(0, 1fr) repeat(4, 2.5rem);
+    gap: var(--sp-1);
+    padding-inline: var(--sp-3);
+    font-size: var(--fs-xs);
+  }
+}
+
+/* 5c. Lig puan durumu tablosu. `--border` hiçbir yerde tanımlı değildi; sabit
+   açık mavi yedek koyu temada parlak çizgi çiziyordu. */
+.evergreen-table th,
+.evergreen-table td {
+  /* Tablo hücresinde `height` alt sınırdır: satır en az 44 px. */
+  height: calc(var(--tap) + var(--sp-1));
+  padding: var(--sp-2) var(--sp-3);
+  border-bottom: 1px solid var(--glass-border);
+  font-variant-numeric: tabular-nums;
+}
+
+.evergreen-table thead th {
+  background: var(--surface-sunken);
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.evergreen-table tbody td {
+  color: var(--text-soft);
+  font-size: var(--fs-sm);
+}
+
+.evergreen-table tbody th[scope="row"] {
+  color: var(--text);
+  font-size: var(--fs-sm);
+}
+
+@media (hover: hover) {
+  .evergreen-table tbody tr:hover > * {
+    background: var(--surface-tint);
+  }
+}
+
+/* Lig sayfası bölüm kutusu: kart ile aynı köşe ve kenarlık (eski `--border`
+   tanımsızdı, sabit açık mavi yedek koyu temada parlıyordu). */
+.evergreen-section,
+.evergreen-related {
+  border-color: var(--glass-border);
+  border-radius: var(--radius-lg);
+}
