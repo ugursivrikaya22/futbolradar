@@ -19,6 +19,7 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { siteHeader, siteFooter, escapeLayoutHtml as escapeHtml } from "./lib/layout.mjs";
 import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
+import { withDiscoverMedia } from "./lib/discoverMedia.mjs";
 
 const require = createRequire(import.meta.url);
 const { SOURCE_LINK_REL } = require("../services/sourceLinks.js");
@@ -235,7 +236,8 @@ ${siteFooter({ base: "../../", locale: "en" })}
 
 function writeArticle(article) {
   const file = path.join("en", "news", `${article.slug}.html`);
-  const html = pageHtml(article);
+  // Discover: 16:9 öne çıkan görsel + og:image/JSON-LD image (bkz. lib).
+  const html = withDiscoverMedia(root, file, pageHtml(article));
   for (const targetRoot of [root, path.join(root, "public")]) {
     const target = path.join(targetRoot, file);
     fs.mkdirSync(path.dirname(target), { recursive: true });

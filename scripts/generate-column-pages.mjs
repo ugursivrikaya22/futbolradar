@@ -23,6 +23,8 @@ import { createRequire } from "node:module";
 import { pathToFileURL } from "node:url";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
 import { ROBOTS_INDEX } from "./lib/robots.mjs";
+// Discover: 16:9 öne çıkan görsel + og:image/JSON-LD image (bkz. lib).
+import { withDiscoverMedia } from "./lib/discoverMedia.mjs";
 import { columnTeams, matchPageFor, teamStandingsLink } from "./lib/clusterLinks.mjs";
 
 const root = process.cwd();
@@ -683,7 +685,8 @@ function replaceSlot(html, target, content) {
   return html.replace(expression, `${start}\n${content}\n${end}`);
 }
 
-function writeBoth(relativePath, html) {
+function writeBoth(relativePath, rawHtml) {
+  const html = withDiscoverMedia(root, relativePath, rawHtml);
   const target = path.join(root, relativePath);
   fs.mkdirSync(path.dirname(target), { recursive: true });
   writeGeneratedFile(target, html);
