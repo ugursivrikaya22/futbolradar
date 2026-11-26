@@ -770,6 +770,8 @@
       box.setAttribute("data-favourite-team", "");
     }
 
+    // Keep every selected team above the general homepage content.
+    main.insertBefore(box, main.firstChild);
     var teams = [];
     var picking = false;
 
@@ -808,7 +810,18 @@
       box.innerHTML = "";
       // Seçili hâl satırlar/haberler/bağlantılarla uzar; yer baştan ayrılır, seçici hâlinde serbest.
       box.style.minHeight = team && !picking ? "250px" : "";
-      if (team && !picking) renderChosen(team); else renderPicker();
+      if (team && !picking) {
+        var ids = favStore() ? favStore().getState().teams : [chosen];
+        ids.forEach(function(id) {
+          var selected = teams.find(function(item){return item.id === id;});
+          if (!selected) return;
+          var card = document.createElement('article');
+          card.setAttribute('data-favorite-id', id);
+          card.style.cssText = 'min-width:0;padding:12px 0;border-bottom:1px solid var(--border, #293849)';
+          box.appendChild(card);
+          renderChosen(selected, card);
+        });
+      } else renderPicker();
     }
 
     function renderPicker() {
@@ -858,7 +871,7 @@
       return a;
     }
 
-    function renderChosen(team) {
+    function renderChosen(team, box) {
       var title = document.createElement("span");
       title.className = "favourite-team__title";
       title.textContent = "⭐ " + s.title;
@@ -927,7 +940,7 @@
         list = list || [];
         var finished = null;
         list.forEach(function (m) {
-          if (m.status !== "FINISHED" || !(sameClub(m.homeTeam, team.name) || sameClub(m.awayTeam, team.name))) return;
+          if (!/^(FINISHED|FT|AET|PEN)$/.test(String(m.providerStatus || m.status).toUpperCase()) || !(sameClub(m.homeTeam, team.name) || sameClub(m.awayTeam, team.name))) return;
           var t = Date.parse(m.kickoff || "");
           if (isFinite(t) && (!finished || t > Date.parse(finished.kickoff))) finished = m;
         });
@@ -937,11 +950,15 @@
           rowsHost.appendChild(favRow(s.last,
             finished.homeTeam + " " + finished.score.home + "–" + finished.score.away + " " + finished.awayTeam, "", matchHref(finished)));
         }
-        if (upcoming.length) return;
+        if (upcoming.length && finished) return;
         fixturesOnce().then(function (rounds) {
           var all = [];
           (rounds || []).forEach(function (round) { (Array.isArray(round && round.matches) ? round.matches : []).forEach(function (m) { if (m && m.homeTeam && m.awayTeam && m.kickoff) all.push(m); }); });
-          showUpcoming(addUpcoming(all));
+          if (!upcoming.length) showUpcoming(addUpcoming(all));
+          if (!finished) {
+            var results = all.filter(function(m){return /^(FINISHED|FT|AET|PEN)$/.test(String(m.providerStatus || m.status).toUpperCase()) && (sameClub(m.homeTeam,team.name)||sameClub(m.awayTeam,team.name)) && m.score && Number.isFinite(m.score.home) && Number.isFinite(m.score.away);}).sort(function(a,b){return Date.parse(b.kickoff)-Date.parse(a.kickoff);});
+            if (results[0]) {var last = results[0];rowsHost.appendChild(favRow(s.last,last.homeTeam+' '+last.score.home+'–'+last.score.away+' '+last.awayTeam,'',matchHref(last)));}
+          }
         });
       });
 
@@ -5246,12 +5263,17 @@
       a.setAttribute("target", "_blank");
       a.setAttribute("rel", "nofollow noopener noreferrer");
     }
+    var who = item.attribution || "";
+    var pageLang = document.documentElement.lang === "en" ? "en" : "tr";
+    if (item.textLang && String(item.textLang).toLowerCase() !== pageLang) {
+      a.appendChild(make("span", "news-ticker-lang", String(item.textLang).toUpperCase()));
+    }
     if (item.label) a.appendChild(make("span", "news-ticker-tag", item.label));
     if (item.confidenceBadge) {
       a.appendChild(make("span", "news-ticker-confidence is-" + String(item.confidence || "rumour").replace(/[^a-z0-9_-]/gi, ""), item.confidenceBadge));
     }
     a.appendChild(make("span", "", item.text));
-    var who = item.attribution || "";
+    if (who) a.appendChild(make("span", "news-ticker-source", who));
     var spoken = item.confidenceBadge ? item.confidenceBadge + ": " + item.text : item.text;
     if (who || item.confidenceBadge) a.setAttribute("aria-label", spoken + (who ? " — " + (document.documentElement.lang === "en" ? "source" : "kaynak") + ": " + who : ""));
     if (who) a.setAttribute("title", (document.documentElement.lang === "en" ? "Source: " : "Kaynak: ") + who);
