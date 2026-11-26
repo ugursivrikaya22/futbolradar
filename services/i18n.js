@@ -469,6 +469,10 @@ const NAV_KEYS = Object.freeze({
     ],
     secondary: [
       { href: "mac-takvimi.html", key: "nav.matchCalendar" },
+      // HANGİ KANALDA: kalıcı yayın rehberi (scripts/generate-broadcast-schedule-page.mjs).
+      // İngilizce karşılığı yok → yalnızca TR menüsünde (tarihte-bugun gibi);
+      // sessizce Türkçe sayfaya yönlendiren bir EN öğesi eklenmez.
+      { href: "bugun-hangi-mac-hangi-kanalda.html", key: "nav.broadcastToday" },
       { href: "oyuncu-radari.html", key: "nav.playerRadar" },
       { href: "momentum.html", key: "nav.momentum" },
       { href: "gol-kralligi.html", key: "nav.topScorers" },
