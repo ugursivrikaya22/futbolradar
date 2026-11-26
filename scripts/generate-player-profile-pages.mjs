@@ -25,7 +25,7 @@ const { getPlayers } = require("../services/playerService.js");
 const { buildPlayer360 } = require("../services/player360Service.js");
 const { createPlayerUrlResolver } = require("../services/playerUrl.js");
 const { resolvePlayerPhoto, playerPhotoAlt } = require("../services/playerPhotoService.js");
-const { publicPlayerView, statsAreVerified, ratingIsVerified } = require("../services/cardCredibility.js");
+const { publicPlayerView, statsAreVerified, publishedOverallLabel } = require("../services/cardCredibility.js");
 const { annotateDuplicates } = require("../services/duplicatePlayerService.js");
 const { absoluteUrl, hreflangOf } = require("../services/i18n.js");
 // Mevki etiketi TEK tablodan: sağlayıcı İngilizce verir ("Attacker"), sayfa Türkçe basar.
@@ -478,15 +478,19 @@ function pageHtml(player) {
   // Sıfır ya da tire basılmaz: gerçek bir ölçüm sanılabilir. Doğrulanmamış
   // kayıtta puan rozeti HİÇ çizilmez (aşağıda view.verified ile).
   //
-  // "Overall" ile aşağıdaki "Oyuncu Skoru" FARKLI ölçütlerdir: bu bir radar
-  // modeli tahmini, diğeri maç verisine dayalı, kapsam yetersizse hiç
-  // basılmayan bir skor. `ratingStatus` "estimated" olduğunda ikisi aynı
-  // sayı sanılmasın diye "(tahmini)" eklenir — Osimhen'de "Overall 36
-  // (tahmini)" yanında "Oyuncu Skoru: Hesaplanamadı" görmek, aynı oyuncu
-  // için iki çelişkili KESİN sayı görmekten farklıdır.
-  const overallIsEstimate = view.verified && !ratingIsVerified(player);
+  // TAHMİNİ PUAN YAYIMLANMAZ.
+  //
+  // Kahraman şeridi bu değeri `player.overallRating`'den DOĞRUDAN okuyor ve
+  // "estimated" kayıtlara "(tahmini)" ekleyip yine de basıyordu: Mohamed
+  // Khalil'de "Overall 15 (tahmini)", yayımlanan 529 profilin tamamında aynı
+  // desen. Oysa `ratingStatus` "estimated" tam olarak kadro senkronunun
+  // varsayılanla doldurduğu, ölçülmemiş değeri işaret ediyor
+  // (services/cardCredibility.js · MAINTAINED_RATING_STATUS) ve meta açıklaması,
+  // JSON-LD ve kıyas sayfaları bu yüzden puanı `view.fields` kapısından alıyor.
+  // Şerit de aynı kapıdan geçer; kapı puanı vermiyorsa sayı yerine neden
+  // yazılır: ölçülmüş veri yok.
   const overall = view.verified
-    ? (player.overallRating || player.aiRating || player.rating || "-") + (overallIsEstimate ? " (tahmini)" : "")
+    ? publishedOverallLabel(view)
     : null;
 
   return `<!doctype html>
@@ -577,7 +581,7 @@ function pageHtml(player) {
             <p class="lead">${escapeHtml(lead)}</p>
           </div>
           ${view.verified
-            ? `<span class="hero-meta">Overall ${escapeHtml(overall)} · ${escapeHtml(positionLabelTr(player.position))} · ${escapeHtml(age)}</span>`
+            ? `<span class="hero-meta">${escapeHtml(overall)} · ${escapeHtml(positionLabelTr(player.position))} · ${escapeHtml(age)}</span>`
             // Doğrulanmamış kayıtta puan gösterilmez. Yaş ve mevki bağımsız
             // olarak güvenli bilgiler: kulüpten ve sezondan bağımsızlar.
             : `<span class="hero-meta">${escapeHtml(positionLabelTr(player.position) || "Mevki bekleniyor")} · ${escapeHtml(age)}</span>`}
