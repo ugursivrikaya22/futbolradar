@@ -8105,15 +8105,18 @@
         profileItemHtml("Rating durumu", statusLabel(player.ratingStatus, "rating"), "Yakinda")
       ]) +
       profileRatingScoresHtml(player) +
+      // Tahmini ("estimated") puan yayımlanmaz: yalnızca ratingStatus
+      // doğrulanmış/güncel kayıtta sayı basılır, diğerinde "Yeterli veri yok".
+      // Statik profil sayfasındaki kural ile aynı (services/cardCredibility.js).
       profileSectionHtml("Rating Modeli", [
-        profileItemHtml("Overall", player.overallRating || player.aiRating || player.rating),
-        profileItemHtml("Potansiyel", player.potentialRating),
-        profileItemHtml("Teknik", player.technicalRating),
-        profileItemHtml("Fiziksel", player.physicalRating),
-        profileItemHtml("Mental", player.mentalRating),
-        profileItemHtml("Hücum", player.attackingRating),
-        profileItemHtml("Savunma", player.defensiveRating),
-        profileItemHtml("Form", player.formRating)
+        profileItemHtml("Overall", verifiedRatingValue(player, player.overallRating || player.aiRating || player.rating), "Yeterli veri yok"),
+        profileItemHtml("Potansiyel", verifiedRatingValue(player, player.potentialRating), "Yeterli veri yok"),
+        profileItemHtml("Teknik", verifiedRatingValue(player, player.technicalRating), "Yeterli veri yok"),
+        profileItemHtml("Fiziksel", verifiedRatingValue(player, player.physicalRating), "Yeterli veri yok"),
+        profileItemHtml("Mental", verifiedRatingValue(player, player.mentalRating), "Yeterli veri yok"),
+        profileItemHtml("Hücum", verifiedRatingValue(player, player.attackingRating), "Yeterli veri yok"),
+        profileItemHtml("Savunma", verifiedRatingValue(player, player.defensiveRating), "Yeterli veri yok"),
+        profileItemHtml("Form", verifiedRatingValue(player, player.formRating), "Yeterli veri yok")
       ]) +
       profileSectionHtml("Teknik Profil", [
         profileItemHtml("Mevki", player.position),

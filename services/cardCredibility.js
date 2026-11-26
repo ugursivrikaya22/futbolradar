@@ -415,6 +415,23 @@ function publicPlayerView(player, options = {}) {
   };
 }
 
+/** Puan yayımlanamadığında sayının yerine yazılan metin. */
+const OVERALL_NO_DATA_LABEL = "Overall: Yeterli veri yok";
+
+/**
+ * Profil kahraman şeridindeki Overall metni.
+ *
+ * Sayı YALNIZCA `view.fields` kapısından geçtiyse basılır (yani ratingStatus
+ * doğrulanmış/güncel). Kapı puanı vermiyorsa "Yeterli veri yok" yazılır;
+ * tahmini sayı ve "(tahmini)" eki yayımlanmaz. `publicPlayerView` ile aynı
+ * karardan beslenir, ayrı bir kural değildir.
+ */
+function publishedOverallLabel(view) {
+  const fields = (view && view.fields) || {};
+  const rating = fields.overallRating || fields.aiRating || fields.rating;
+  return rating ? `Overall ${rating}` : OVERALL_NO_DATA_LABEL;
+}
+
 /** Listeyi süzer; elenenleri gerekçesiyle döndürür. */
 function filterPlayerCards(players, options = {}) {
   const evaluate = options.trend ? evaluateTrendPlayerCard : evaluatePlayerCard;
@@ -449,6 +466,8 @@ module.exports = {
   evaluatePlayerCardForProfile,
   evaluateTrendPlayerCard,
   publicPlayerView,
+  publishedOverallLabel,
+  OVERALL_NO_DATA_LABEL,
   SAFE_FIELDS,
   RESTRICTED_FIELDS,
   filterPlayerCards,
