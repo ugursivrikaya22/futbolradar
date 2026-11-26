@@ -27,6 +27,7 @@ const { officialSquadIdentity } = require("./officialSquadIdentity.js");
  */
 
 const { publicPlayerView, statsAreVerified } = require("./cardCredibility.js");
+const { clubKey } = require("./turkishNames.js");
 const { buildPlayerMatchLog, nameKey, namesMatch, normalizeName } = require("./playerMatchLogService.js");
 const { bestTrustTierOf, TRUST_TIER } = require("./sourceTrust.js");
 const { createComparisonSlugResolver, profileCompareCandidates } = require("./playerComparisonPairs.js");
@@ -297,6 +298,12 @@ function buildAvailability(player, squadStatuses) {
  * değil, "kulüp-katılım-ayrılış" tablosudur. Olmayan sütunu boş basmak
  * yerine, olan sütunla dürüst bir tablo kurulur.
  */
+/** Sağlayıcı "Loan"/"Kiralık" der; dönüş kayıtları ("Back from Loan", "Return from loan") kiralık değildir. */
+function isLoanEntry(type) {
+  const text = String(type || "").toLocaleLowerCase("tr-TR");
+  return /(loan|kiral)/.test(text) && !/(back|return|dönüş|donus)/.test(text);
+}
+
 function buildCareer(player) {
   const history = Array.isArray(player && player.transferHistory) ? player.transferHistory.slice() : [];
   history.sort((left, right) => String(left.date || "").localeCompare(String(right.date || "")));
@@ -334,9 +341,11 @@ function buildCareer(player) {
     if (looksLikeOwnName(entry.toTeam)) continue;
 
     const previous = stints.at(-1);
-    if (previous && normalizeName(previous.club) === normalizeName(entry.toTeam)) {
+    // Kulüp kimliği yazımdan bağımsız: "Istanbul Basaksehir" ile "Başakşehir" tek kulüp.
+    if (previous && clubKey(previous.club) === clubKey(entry.toTeam)) {
       // Aynı kulübe dönüş: dönemi uzatır, yeni satır açmaz.
       previous.leftAt = null;
+      previous.loan = previous.loan && isLoanEntry(entry.type);
       continue;
     }
     if (previous && !previous.leftAt) previous.leftAt = entry.date || null;
@@ -345,13 +354,15 @@ function buildCareer(player) {
       joinedAt: entry.date || null,
       leftAt: null,
       type: meaningful(entry.type),
+      // Kiralık dönem: oyuncu o kulübe kiralık gitti. "Kiralıktan dönüş" kiralık DEĞİL.
+      loan: isLoanEntry(entry.type),
       fee: meaningful(entry.feeLabel),
       source: meaningful(entry.source)
     });
   }
 
   const formerTeams = (Array.isArray(player && player.formerTeams) ? player.formerTeams : [])
-    .filter((name) => name && !stints.some((stint) => normalizeName(stint.club) === normalizeName(name)));
+    .filter((name) => name && !stints.some((stint) => clubKey(stint.club) === clubKey(name)));
 
   return {
     available: stints.length > 0 || formerTeams.length > 0,

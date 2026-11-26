@@ -28,6 +28,8 @@ const { competitionLabel, t } = require("../../services/i18n.js");
 // Veride Türkçe hazır metin olarak duran künye satırları.
 const { sourceNoteLabel } = require("../../services/displayLabels.js");
 const { isAllowedSourceUrl, hostOf } = require("../../services/sourceLinks.js");
+// Kulüp kimliği yazımdan bağımsız tek anahtardan (services/turkishNames.js).
+const { clubKey } = require("../../services/turkishNames.js");
 
 export function escapeHtml(value) {
   return String(value ?? "")
@@ -479,12 +481,21 @@ function renderCareer(model, locale) {
         </div>`
     : "";
 
+  // Kulüp yolu: tek bakışta kronoloji, gidip dönen kulübün dönemleri ve kiralıklar.
+  const path = model.career.stints.length > 1
+    ? careerClubList(model.career.stints, { locale })
+    : [];
+  const pathLine = path.length > 1
+    ? `<p class="p360-source" data-p360="career-path">${escapeHtml(text("player360.career.path", locale))}: ${escapeHtml(path.join(", "))}</p>`
+    : "";
+
   const former = model.career.formerTeams.length
     ? `<p class="p360-source">${escapeHtml(text("player360.career.formerTeams", locale))}: ${escapeHtml(model.career.formerTeams.join(", "))}</p>`
     : "";
 
   return `<section class="p360" aria-labelledby="p360-career-title" data-p360-section="career">
         <div class="p360-head"><h2 id="p360-career-title">${escapeHtml(heading)}</h2></div>
+        ${pathLine}
         ${table}
         ${former}
       </section>`;
@@ -625,28 +636,67 @@ export function player360KimdirSources(model) {
   return [source];
 }
 
-function foldClubName(value) {
-  return String(value || "")
-    .trim()
-    .toLocaleLowerCase("tr-TR")
-    .normalize("NFD")
-    .replace(/\p{M}/gu, "")
-    .replace(/[^a-z0-9]+/g, "");
+function yearOf(value) {
+  const match = /^(\d{4})/.exec(String(value || ""));
+  return match ? match[1] : null;
 }
 
-function uniqueClubs(stints, exceptName) {
-  const seen = new Set();
-  const clubs = [];
-  const skip = exceptName ? foldClubName(exceptName) : "";
-  for (const stint of Array.isArray(stints) ? stints : []) {
-    if (!stint || !player360ValuePresent(stint.club)) continue;
-    const key = foldClubName(stint.club);
-    if (!key || (skip && key === skip)) continue;
-    if (seen.has(key)) continue;
-    seen.add(key);
-    clubs.push(String(stint.club).trim());
+/**
+ * KARİYER KULÜP LİSTESİ — dönem ve kiralık bilgisiyle.
+ *
+ * Kronolojik sırada, kulüp kimliği yazımdan bağımsız (`clubKey`). Bir kulüp
+ * listede BİRDEN FAZLA kez geçiyorsa (gidip dönen oyuncu) her geçişin dönemi
+ * yazılır ki okuyucu iki "Galatasaray"ı ayırt edebilsin; tek geçişte dönem
+ * yazılmaz (gürültü). Kiralık dönem her zaman işaretlenir.
+ *
+ *   Galatasaray (2017–2021), Leicester (kiralık), Galatasaray
+ *
+ * `excludeCurrent`: son, açık uçlu dönem şu anki kulüpse listeden çıkar
+ * ("Daha önce …" cümlesi için); yine de tekrar sayımına girer. Dönemi
+ * bilinmeyen (tarihsiz) kayıt için dönem uydurulmaz.
+ */
+export function careerClubList(stints, options = {}) {
+  const locale = options.locale === "en" ? "en" : "tr";
+  const loanLabel = locale === "en" ? "loan" : "kiralık";
+  const rows = (Array.isArray(stints) ? stints : [])
+    .filter((stint) => stint && player360ValuePresent(stint.club))
+    .slice()
+    .reverse(); // model en yeni dönemi başa koyar; burada kronolojik.
+
+  const currentKey = options.currentTeam ? clubKey(options.currentTeam) : "";
+  const counts = new Map();
+  // Aynı kulüp kayıtta farklı yazımlarla geçebilir ("İstanbul Başakşehir" / "Başakşehir");
+  // listede ilk görülen yazım kullanılır ki bir kulüp tek adla görünsün.
+  const spelling = new Map();
+  for (const row of rows) {
+    const key = clubKey(row.club);
+    counts.set(key, (counts.get(key) || 0) + 1);
+    if (!spelling.has(key)) spelling.set(key, String(row.club).trim());
   }
-  return clubs;
+
+  let visible = rows;
+  const last = rows.at(-1);
+  if (options.excludeCurrent && last && !last.leftAt && currentKey && clubKey(last.club) === currentKey) {
+    visible = rows.slice(0, -1);
+  }
+
+  return visible.map((row) => {
+    const parts = [];
+    const open = !row.leftAt;
+    if ((counts.get(clubKey(row.club)) || 0) > 1 && !open) {
+      const from = yearOf(row.joinedAt);
+      const to = yearOf(row.leftAt);
+      if (from && to) parts.push(from === to ? from : `${from}–${to}`);
+      else if (from) parts.push(`${from}–`);
+    }
+    if (row.loan) parts.push(loanLabel);
+    const club = spelling.get(clubKey(row.club));
+    return parts.length ? `${club} (${parts.join(", ")})` : club;
+  });
+}
+
+function uniqueClubs(stints, exceptName, locale) {
+  return careerClubList(stints, { locale, currentTeam: exceptName, excludeCurrent: true });
 }
 
 function formatDateLong(value, locale) {
@@ -700,7 +750,7 @@ export function player360Bio(model, options = {}) {
       sentences.push(extras.length ? `${name}, ${team} formasıyla oynamaktadır (${extras.join(", ")}).` : `${bits[0]}.`);
     }
 
-    const clubs = uniqueClubs(model && model.career && model.career.stints, team);
+    const clubs = uniqueClubs(model && model.career && model.career.stints, team, locale);
     if (clubs.length) {
       sentences.push(clubs.length === 1
         ? `Daha önce ${clubs[0]} forması giydi.`
@@ -725,7 +775,7 @@ export function player360Bio(model, options = {}) {
         : `${name} plays for ${team}.`);
     }
 
-    const clubs = uniqueClubs(model && model.career && model.career.stints, team);
+    const clubs = uniqueClubs(model && model.career && model.career.stints, team, locale);
     if (clubs.length) {
       sentences.push(clubs.length === 1
         ? `Previous club: ${clubs[0]}.`

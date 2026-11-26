@@ -74,6 +74,25 @@ function personDisplayName(name) {
   return PERSON_NAMES[asciiKey(text.trim().replace(/\s+/g, " "))] || text;
 }
 
+/** Kulüp kimliğini bozmayan, yazım ve ön ek farkı yaratan kelimeler. */
+const CLUB_NOISE_WORDS = new Set(["fk", "sk", "istanbul", "caykur", "corendon"]);
+
+/**
+ * KULÜP KİMLİK ANAHTARI. "Istanbul Basaksehir", "İstanbul Başakşehir" ve
+ * "Başakşehir" AYNI kulüptür; "Çaykur Rizespor" ile "Rizespor" da öyle.
+ * Dönemleri birleştirmek ve tekrar eden kulübü bulmak için bu anahtar
+ * kullanılır — görünen yazım değil.
+ */
+function clubKey(name) {
+  const words = String(name ?? "")
+    .toLocaleLowerCase("tr-TR")
+    .normalize("NFD").replace(/\p{M}/gu, "")
+    .replace(/ı/g, "i")
+    .split(/[^a-z0-9]+/)
+    .filter((word) => word && !CLUB_NOISE_WORDS.has(word));
+  return words.join("");
+}
+
 const PLAYER_CLUB_FIELDS = ["team", "currentTeam", "parentClub", "loanClub"];
 
 /**
@@ -112,6 +131,7 @@ module.exports = {
   CLUB_TOKENS,
   PERSON_NAMES,
   clubDisplayName,
+  clubKey,
   personDisplayName,
   localizePlayer,
   localizePlayers,
