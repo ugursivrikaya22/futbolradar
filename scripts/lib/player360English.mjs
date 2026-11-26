@@ -15,7 +15,9 @@
 import { createRequire } from "node:module";
 import { findTurkish } from "./turkish-detector.mjs";
 
-const { positionLabelTr } = createRequire(import.meta.url)("../../services/playerLabels.js");
+const requireFromHere = createRequire(import.meta.url);
+const { positionLabelTr } = requireFromHere("../../services/playerLabels.js");
+const { clubDisplayName } = requireFromHere("../../services/turkishNames.js");
 
 const POSITIONS = {
   "santrfor": "Centre-forward", "forvet": "Forward", "sol kanat": "Left winger", "sağ kanat": "Right winger",
@@ -165,6 +167,18 @@ export function turkishPlayer360(model) {
     identity.position = positionLabelTr(identity.position);
     identity.secondaryPosition = positionLabelTr(identity.secondaryPosition);
     identity.nationality = fromDictionaryKeep(identity.nationality, COUNTRIES_TR);
+    identity.team = clubDisplayName(identity.team);
+  }
+  // Kulüp yazımı modelde de tek tablodan: sağlayıcı satırları ASCII gelebilir.
+  const rows = model && model.transfers && Array.isArray(model.transfers.rows) ? model.transfers.rows : [];
+  for (const row of rows) {
+    row.fromTeam = clubDisplayName(row.fromTeam);
+    row.toTeam = clubDisplayName(row.toTeam);
+  }
+  const career = model && model.career;
+  if (career) {
+    for (const stint of Array.isArray(career.stints) ? career.stints : []) stint.club = clubDisplayName(stint.club);
+    if (Array.isArray(career.formerTeams)) career.formerTeams = career.formerTeams.map(clubDisplayName);
   }
   return model;
 }
