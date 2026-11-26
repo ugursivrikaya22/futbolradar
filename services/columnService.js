@@ -28,6 +28,7 @@
  */
 
 const { t } = require("./i18n.js");
+const { checkColumnNewsBasis } = require("./columnNewsGate.js");
 
 /** Yazı durumları. Sıra bir yaşam döngüsüdür. */
 const STATUSES = Object.freeze({
@@ -326,6 +327,8 @@ function presentColumn(entry, locale) {
     featuredImageAlt: wanted === "en"
       ? text((entry.en || {}).featuredImageAlt)
       : text(entry.featuredImageAlt),
+    // Yazının dayandığı doğrulanmış haber (services/columnNewsGate.js).
+    newsRef: text(entry.newsRef),
     hideStandfirst: Boolean(entry.hideStandfirst),
     // Ana sayfada (öne çıkan yazı + Son Köşe Yazıları) gösterme; yazı sayfası,
     // arşiv, site haritası ve takım sayfaları etkilenmez.
@@ -402,6 +405,12 @@ function publishedColumns(store, options = {}) {
       continue;
     }
     if (text(entry.status) !== "published") continue;
+    // Haber kapısı: doğrulanmamış habere dayanan yazı yayımlanmaz.
+    const basis = checkColumnNewsBasis(entry, options.news);
+    if (!basis.ok) {
+      rejected.push({ id: text(entry.id), errors: [basis.reason] });
+      continue;
+    }
     if (englishOnly && !hasEnglish(entry)) continue;
     columns.push(presentColumn(entry, options.locale));
   }
