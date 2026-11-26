@@ -172,12 +172,20 @@ async function handlePushSubscription(req, res) {
     return sendError(res, 400, "Gecerli bir takim ya da mac secilmeli.", "INVALID_TEAM", SOURCE);
   }
 
+  const favoriteTeams = body.favoriteTeams === undefined ? [favoriteTeam] : body.favoriteTeams;
+  const types = require("../services/pushPreferences").TYPES;
+  if (!Array.isArray(favoriteTeams) || !favoriteTeams.length || favoriteTeams.length > 5 || !favoriteTeams.every(isFollowKey) ||
+      (body.notificationTypes !== undefined && (!Array.isArray(body.notificationTypes) || !body.notificationTypes.every(t => types.includes(t))))) {
+    return sendError(res, 400, "Gecerli takimlar ve bildirim turleri gerekli.", "INVALID_PREFERENCES", SOURCE);
+  }
   try {
     await saveSubscription({
       endpoint,
       p256dh,
       auth,
       favoriteTeam,
+      favoriteTeams: [...new Set(favoriteTeams)],
+      notificationTypes: body.notificationTypes,
       userAgent: req.headers && req.headers["user-agent"]
     });
     return sendSuccess(res, { saved: true, favoriteTeam }, SOURCE);
