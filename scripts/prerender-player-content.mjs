@@ -9,6 +9,7 @@ const { getPlayers, formatMarketValueEur } = require("../services/playerService.
 const { publicPlayerView } = require("../services/cardCredibility.js");
 const { buildPlayerProfile } = require("../services/playerProfileService.js");
 const { createPlayerUrlResolver } = require("../services/playerUrl.js");
+const { collapseDuplicates } = require("../services/duplicatePlayerService.js");
 
 /**
  * Profil sayfası artık sabit bir dizinde değil: tam adı bilinen oyuncu
@@ -26,6 +27,9 @@ const playerUrls = createPlayerUrlResolver((() => {
 })());
 const playerProfileView = require("../player-profile.js");
 const players = getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8")));
+// Liste sayfalarında aynı oyuncu kısa ("A. Batagov") ve uzun ("Arseniy Batagov")
+// adla iki kez çıkmasın: profil sayfaları tüm kayıtlarla, listeler tekilleştirilmişle.
+const listPlayers = collapseDuplicates(players);
 const transfers = JSON.parse(fs.readFileSync(path.join(root, "data", "transfers.json"), "utf8"));
 
 function escapeHtml(value) {
@@ -229,7 +233,7 @@ for (const player of players) {
 
 for (const slug of ["forvetler", "kaleciler", "defanslar", "orta-sahalar", "genc-yetenekler", "en-iyi-oyuncular"]) {
   const filter = landingConfig(slug);
-  const selected = players.filter(filter).sort((a, b) => Number(rating(b)) - Number(rating(a)));
+  const selected = listPlayers.filter(filter).sort((a, b) => Number(rating(b)) - Number(rating(a)));
   const content = selected.length
     ? selected.map((player) => playerCard(player, "../")).join("\n")
     : `<article class="data-empty"><strong>Bu listede oyuncu bulunamadi</strong><span>Yeni ve doğrulanmış oyuncu verileri geldikçe liste genişleyecek.</span></article>`;
@@ -248,7 +252,7 @@ for (const slug of [
   "genc-yetenekler"
 ]) {
   const filter = rootLandingConfig(slug);
-  const selected = players.filter(filter).sort((a, b) => Number(rating(b)) - Number(rating(a)));
+  const selected = listPlayers.filter(filter).sort((a, b) => Number(rating(b)) - Number(rating(a)));
   const shouldIndex = selected.length >= 2;
   const content = selected.length
     ? selected.map((player) => playerCard(player, "./")).join("\n")

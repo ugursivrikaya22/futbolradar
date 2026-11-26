@@ -9,6 +9,7 @@ import { faqItems, faqSchemaNode, faqSectionHtml, genitive, lastFinishedMatch, l
 
 const require = createRequire(import.meta.url);
 const { playerLink } = require("../services/playerLinks.js");
+const { collapseDuplicates } = require("../services/duplicatePlayerService.js");
 const { superLigTeamPages, teamHubIndexable, standingsPageIndexable } = require("../services/superLigTeamPages.js");
 const { sameClub } = require("../services/superLigTeams.js");
 const { pageShareHtml } = require("../services/columnShare.js");
@@ -17,7 +18,8 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const siteUrl = "https://www.futbolradar.com";
 const socialImage = `${siteUrl}/assets/og-image.png`;
 const teams = JSON.parse(fs.readFileSync(path.join(root, "data", "teams.json"), "utf8"));
-const players = JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"));
+// Aynı oyuncunun kısa ("A. Batagov") ve uzun adlı kayıtları tek satıra iner.
+const players = collapseDuplicates(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8")));
 const richSources = loadTeamSources(root);
 
 const featuredTeams = [

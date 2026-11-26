@@ -42,10 +42,14 @@ function lastNameKey(player) {
   return tokens[tokens.length - 1] || "";
 }
 
-function firstInitialKey(player) {
-  const tokens = nameTokens(player);
-  const first = String(tokens[0] || "").replace(/[^a-z]/g, "");
-  return first.charAt(0) || "";
+function firstInitials(player) {
+  const initials = new Set();
+  for (const value of [player && player.name, player && player.fullName]) {
+    const first = normalizeText(value || "").split(/\s+/).filter(Boolean)[0] || "";
+    const letter = String(first).replace(/[^a-z]/g, "").charAt(0);
+    if (letter) initials.add(letter);
+  }
+  return initials;
 }
 
 function teamKey(player) {
@@ -78,35 +82,59 @@ function recordCompleteness(player) {
  */
 function buildDuplicateGroups(players) {
   const list = Array.isArray(players) ? players : [];
-  const groups = new Map();
+  const buckets = new Map();
 
+  // Aynı soyad + aynı güncel kulüp kovası. Kova içinde iki kayıt, ad baş
+  // harfleri kesiştiğinde bağlanır. Baş harf kümesi hem `name` hem `fullName`
+  // alanının ilk sözcüğünden gelir: "Kerem Aktürkoğlu" kaydının tam adı
+  // "Muhammed Kerem Aktürkoğlu" olduğundan yalnızca tam ada bakmak "K."
+  // kaydıyla eşleştiremiyordu. Orta ad baş harfi KULLANILMAZ: "Barış Alper
+  // Yılmaz" ile "A. Yılmaz" ayrı kişilerdir.
   for (const player of list) {
     if (!player || !player.id) continue;
     const lastName = lastNameKey(player);
-    const firstInitial = firstInitialKey(player);
     const team = teamKey(player);
-    if (!lastName || !firstInitial || !team) continue;
-    const key = `${lastName}|${firstInitial}|${team}`;
-    if (!groups.has(key)) groups.set(key, []);
-    groups.get(key).push(player);
+    const initials = firstInitials(player);
+    if (!lastName || !team || !initials.size) continue;
+    const key = `${lastName}|${team}`;
+    if (!buckets.has(key)) buckets.set(key, []);
+    buckets.get(key).push({ player, initials });
   }
 
   const canonicalById = new Map();
   const duplicateGroups = [];
 
-  for (const [key, members] of groups) {
-    if (members.length < 2) continue;
-    const ranked = members.slice().sort((a, b) => recordCompleteness(b) - recordCompleteness(a));
-    const canonical = ranked[0];
-    for (const member of members) canonicalById.set(member.id, canonical.id);
-
-    duplicateGroups.push({
-      key,
-      name: canonical.name || canonical.fullName || "",
-      team: canonical.currentTeam || canonical.team || "",
-      canonicalId: canonical.id,
-      memberIds: members.map((member) => member.id)
+  for (const [bucketKey, entries] of buckets) {
+    if (entries.length < 2) continue;
+    // Birleşik küme bul (kovalar küçük: iki üç kayıt).
+    const parent = entries.map((_, index) => index);
+    const find = (i) => (parent[i] === i ? i : (parent[i] = find(parent[i])));
+    for (let i = 0; i < entries.length; i += 1) {
+      for (let j = i + 1; j < entries.length; j += 1) {
+        const shared = [...entries[i].initials].some((initial) => entries[j].initials.has(initial));
+        if (shared) parent[find(j)] = find(i);
+      }
+    }
+    const clusters = new Map();
+    entries.forEach((entry, index) => {
+      const root = find(index);
+      if (!clusters.has(root)) clusters.set(root, []);
+      clusters.get(root).push(entry.player);
     });
+
+    for (const members of clusters.values()) {
+      if (members.length < 2) continue;
+      const ranked = members.slice().sort((a, b) => recordCompleteness(b) - recordCompleteness(a));
+      const canonical = ranked[0];
+      for (const member of members) canonicalById.set(member.id, canonical.id);
+      duplicateGroups.push({
+        key: `${bucketKey}|${[...firstInitials(canonical)].join("")}`,
+        name: canonical.name || canonical.fullName || "",
+        team: canonical.currentTeam || canonical.team || "",
+        canonicalId: canonical.id,
+        memberIds: members.map((member) => member.id)
+      });
+    }
   }
 
   return { canonicalById, duplicateGroups };
@@ -137,10 +165,107 @@ function sameCanonicalPlayer(left, right, canonicalById) {
   return canonicalOf(left) === canonicalOf(right);
 }
 
+/**
+ * MEVKİ ETİKETİ — Türkçe, tek tip.
+ *
+ * Veride aynı mevki iki dilde ve çok biçimde duruyor: sağlayıcı kaydı
+ * "Defender"/"Goalkeeper", elle kürasyonlu kayıt "Stoper"/"Kaleci"; yazım
+ * varyantları da var ("Sag kanat", "On numara"). Sayfada yan yana bu
+ * karışım görünüyordu. Etiket bir SUNUM olduğundan veri değişmez, burada
+ * çözülür. Özgül Türkçe mevki (Stoper, Sağ bek...) genel gruptan ("Defans")
+ * daha bilgilidir ve korunur; yalnızca İngilizce/yazım varyantı çevrilir.
+ */
+const POSITION_LABELS = new Map([
+  ["goalkeeper", "Kaleci"], ["kaleci", "Kaleci"], ["gk", "Kaleci"],
+  ["defender", "Defans"], ["defans", "Defans"], ["stoper", "Stoper"],
+  ["sag bek", "Sağ bek"], ["sol bek", "Sol bek"],
+  ["midfielder", "Orta saha"], ["orta saha", "Orta saha"],
+  ["merkez orta saha", "Merkez orta saha"], ["on libero", "Ön libero"],
+  ["10 numara", "10 numara"], ["on numara", "10 numara"],
+  ["attacker", "Forvet"], ["forward", "Forvet"], ["forvet", "Forvet"],
+  ["santrfor", "Santrfor"], ["kanat", "Kanat"],
+  ["sag kanat", "Sağ kanat"], ["sol kanat", "Sol kanat"]
+]);
+const GENERIC_POSITIONS = new Set(["Defans", "Orta saha", "Forvet"]);
+
+function positionLabelTr(position) {
+  const raw = String(position || "").trim();
+  if (!raw) return "";
+  return POSITION_LABELS.get(normalizeText(raw)) || raw;
+}
+
+/** "A. Batagov" gibi baş harfe kısaltılmış ad mı? */
+function isAbbreviatedName(name) {
+  return /^\p{L}\.(\s|$)/u.test(String(name || "").trim());
+}
+
+function displayNameScore(name) {
+  const clean = String(name || "").replace(/\s+/g, " ").trim();
+  if (!clean) return -1;
+  const tokens = clean.split(" ");
+  const abbreviatedTokens = tokens.filter((token) => /^\p{L}\.$/u.test(token)).length;
+  // Önce kısaltma içermeyen ad, sonra daha çok sözcük, sonra daha uzun ad.
+  return (abbreviatedTokens === 0 ? 1000 : 0) + tokens.length * 20 + clean.length;
+}
+
+function bestDisplayName(members) {
+  return members
+    .map((member) => String(member.fullName || member.name || "").replace(/\s+/g, " ").trim())
+    .filter(Boolean)
+    .sort((a, b) => displayNameScore(b) - displayNameScore(a))[0] || "";
+}
+
+function bestPositionLabel(members, canonical) {
+  const labels = [canonical].concat(members).map((member) => positionLabelTr(member && member.position)).filter(Boolean);
+  return labels.find((label) => !GENERIC_POSITIONS.has(label)) || labels[0] || "";
+}
+
+/**
+ * Kadro listesi için TEK KAYIT: aynı oyuncunun kısa/uzun adlı kayıtlarını
+ * kanonik kayıtta birleştirir. Kanonik kayıt (gerçek sağlayıcı kimliği olan)
+ * kimliği, fotoğrafı ve sağlayıcı alanlarını korur; gösterilen ad grubun en
+ * tam adı, mevki ise en özgül Türkçe etikettir. Birleştirilen kayıtların
+ * kimlikleri `mergedIds`'te kalır (profil bağlantısı çözümü için).
+ * Giriş sırası korunur; mükerrer olmayan kayıtlar yalnızca mevki etiketini
+ * Türkçeleştirir.
+ */
+function collapseDuplicates(players) {
+  const list = Array.isArray(players) ? players : [];
+  const { canonicalById, duplicateGroups } = buildDuplicateGroups(list);
+  const membersByCanonical = new Map(duplicateGroups.map((group) => [group.canonicalId, group.memberIds]));
+  const byId = new Map(list.filter((p) => p && p.id).map((p) => [p.id, p]));
+  const out = [];
+
+  for (const player of list) {
+    if (!player) continue;
+    const canonicalId = canonicalById.get(player.id) || player.id;
+    if (canonicalId !== player.id) continue; // kopya: kanonik kayıt temsil eder
+    const memberIds = membersByCanonical.get(player.id);
+    if (!memberIds) {
+      out.push({ ...player, position: positionLabelTr(player.position) || player.position });
+      continue;
+    }
+    const members = memberIds.map((id) => byId.get(id)).filter(Boolean);
+    const name = bestDisplayName(members) || player.name;
+    out.push({
+      ...player,
+      name,
+      fullName: name,
+      position: bestPositionLabel(members, player),
+      mergedIds: memberIds.filter((id) => id !== player.id)
+    });
+  }
+  return out;
+}
+
 module.exports = {
   hasRealProviderId,
   recordCompleteness,
   buildDuplicateGroups,
   annotateDuplicates,
-  sameCanonicalPlayer
+  sameCanonicalPlayer,
+  positionLabelTr,
+  isAbbreviatedName,
+  bestDisplayName,
+  collapseDuplicates
 };
