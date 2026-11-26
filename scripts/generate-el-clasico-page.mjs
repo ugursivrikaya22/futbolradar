@@ -161,7 +161,7 @@ function render(m) {
 
   const faq = faqItems(m);
   if (faq.length) parts.push(`<section class="evergreen-section" aria-labelledby="clasico-sss"><h2 id="clasico-sss">El Clásico hakkında sık sorulan sorular</h2>${faq.map(([q, a]) => `<details class="clasico-faq"><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join("")}</section>`);
-  parts.push(`<aside class="evergreen-related" aria-labelledby="clasico-related"><h2 id="clasico-related">El Clásico'dan devam edin</h2><div class="evergreen-link-grid"><a href="./la-liga-puan-durumu">La Liga puan durumu</a><a href="./lig/la-liga.html">La Liga fikstür ve sonuçlar</a><a href="./bugunun-maclari-hangi-kanalda">Bugünün maçları hangi kanalda</a><a href="./derbi-radari.html">Derbi radarı</a></div></aside>`);
+  parts.push(`<aside class="evergreen-related" aria-labelledby="clasico-related"><h2 id="clasico-related">El Clásico'dan devam edin</h2><div class="evergreen-link-grid"><a href="./la-liga-puan-durumu">La Liga puan durumu</a><a href="./lig/la-liga.html">La Liga fikstür ve sonuçlar</a><a href="./bugun-hangi-mac-hangi-kanalda">Bugünün maçları hangi kanalda</a><a href="./derbi-radari.html">Derbi radarı</a></div></aside>`);
 
   const graph = [
     { "@type": "WebPage", "@id": `${canonical}#page`, url: canonical, name: title, description, inLanguage: "tr-TR" },

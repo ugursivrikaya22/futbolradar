@@ -2046,8 +2046,64 @@ const NEWS = {
 };
 
 export const config = {
-  matcher: ["/karsilastirma/:path*", "/haber/:path*", "/en/news/:path*"]
+  matcher: ["/karsilastirma/:path*", "/haber/:path*", "/en/news/:path*", "/news-sitemap.xml"]
 };
+
+/*
+ * GOOGLE NEWS HARİTASI: 48 SAAT PENCERESİ İSTEK ANINDA.
+ *
+ * /news-sitemap.xml statik bir dosyadır ve pencereyi yalnızca derleme
+ * anında uygular; derlemeler arasında süresi dolan kayıt haritada kalır.
+ * Bu dal, derlemenin yazdığı kaynak kopyayı (/news-sitemap-source.xml)
+ * okuyup 48 saati aşan kayıtları ayıklar. Kaynak okunamazsa ya da beklenen
+ * biçimde değilse HİÇBİR ŞEY döndürmez: istek statik dosyaya düşer, yani en
+ * kötü durum bu dal eklenmeden önceki davranıştır.
+ *
+ * Aşağıdaki işlev elle yazılmadı: scripts/lib/newsSitemap.mjs içindeki
+ * filterFreshNewsSitemap'in kaynak metnidir (birim testi orada).
+ */
+function filterFreshNewsSitemap(xml, now) {
+  const text = String(xml == null ? "" : xml);
+  if (text.indexOf("<urlset") === -1 || text.indexOf("</urlset>") === -1) return null;
+  const windowMs = 172800000; // 48 saat
+  let kept = 0;
+  let dropped = 0;
+  let out = text.replace(/[ \t]*<url>[\s\S]*?<\/url>[ \t]*\r?\n?/g, (block) => {
+    const match = /<news:publication_date>([^<]+)<\/news:publication_date>/.exec(block);
+    const time = match ? Date.parse(match[1]) : NaN;
+    if (Number.isFinite(time) && time <= now && now - time <= windowMs) {
+      kept += 1;
+      return block;
+    }
+    dropped += 1;
+    return "";
+  });
+  // Boş harita da geçerlidir; nedenini yorum söyler (kaynak zaten boşsa yorumu taşır).
+  if (!kept && out.indexOf("<!--") === -1) {
+    out = out.replace("</urlset>", "  <!-- Son 48 saatte yayımlanan haber ya da köşe yazısı yok. -->\n</urlset>");
+  }
+  return { xml: out, kept, dropped };
+}
+
+async function freshNewsSitemap(request) {
+  try {
+    const source = new URL("/news-sitemap-source.xml", request.url);
+    const upstream = await fetch(source, { headers: { accept: "application/xml" } });
+    if (!upstream.ok) return;
+    const filtered = filterFreshNewsSitemap(await upstream.text(), Date.now());
+    if (!filtered) return;
+    return new Response(filtered.xml, {
+      status: 200,
+      headers: {
+        "content-type": "application/xml; charset=utf-8",
+        "cache-control": "public, max-age=0, must-revalidate",
+        "x-news-sitemap": `live; kept=${filtered.kept}; dropped=${filtered.dropped}`
+      }
+    });
+  } catch {
+    return;
+  }
+}
 
 function redirectTo(url, pathname) {
   url.pathname = pathname;
@@ -2058,6 +2114,8 @@ function redirectTo(url, pathname) {
 export default function middleware(request) {
   const url = new URL(request.url);
   const path = url.pathname;
+
+  if (path === "/news-sitemap.xml") return freshNewsSitemap(request);
 
   if (path.startsWith("/karsilastirma/")) {
     const slug = path.replace(/^\/karsilastirma\//, "").replace(/\.html$/, "");

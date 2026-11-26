@@ -52,7 +52,7 @@ const DAILY_PAGES = new Set([
   "index.html",
   "mac-merkezi.html",
   "haftanin-maclari.html",
-  "bugunun-maclari-hangi-kanalda.html",
+  "bugun-hangi-mac-hangi-kanalda.html",
   "yarinki-maclar-hangi-kanalda.html",
   "bugunku-mac-tahminleri.html",
   "gunun-radar-bulteni.html",
@@ -525,7 +525,7 @@ function sitemapXml(files) {
   const core = [
     "index.html",
     "bugunun-maclari.html",
-    "bugunun-maclari-hangi-kanalda.html",
+    "bugun-hangi-mac-hangi-kanalda.html",
     "yarinki-maclar-hangi-kanalda.html",
     "mac-sonuclari.html",
     "iddaa-sonuclari.html",
@@ -609,7 +609,7 @@ ${unique.map((file) => {
   // kanonik hâli uzantısız; site haritasında `.html` listelemek, canonical
   // ile çelişen ikinci bir adres bildirmek olurdu.
   // Aynı kural, sayfanın kendi canonical'ı uzantısız olan diğer dosyalar için
-  // de geçerli (ör. bugunun-maclari-hangi-kanalda.html → /bugunun-maclari-hangi-kanalda).
+  // de geçerli (ör. bugun-hangi-mac-hangi-kanalda.html → /bugun-hangi-mac-hangi-kanalda).
   // Yalnızca canonical, dosyanın uzantısız hâliyle birebir eşleşiyorsa uygulanır.
   const canonicalFile = file.startsWith("futbolcu/") || selfCanonicalIsExtensionless(file) ? file.replace(/\.html$/, "") : file;
   const loc = alternatesByFile.has(file) ? i18nUrl(file) : (file === "index.html" ? `${domain}/` : `${domain}/${canonicalFile}`);

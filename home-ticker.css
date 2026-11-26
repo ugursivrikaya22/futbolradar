@@ -107,6 +107,20 @@
   font-weight: 700;
   cursor: pointer;
 }
+/* "Tümü" → Transfer Radarı sayfası (yalnızca TR bandı). */
+.home-ticker__inner--with-all { grid-template-columns: auto minmax(0, 1fr) auto auto; }
+.home-ticker__all {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 4px 4px;
+  color: var(--green-text, #086a43);
+  font-size: var(--fs-xs, 0.8125rem);
+  font-weight: 800;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.home-ticker__all:hover { text-decoration: underline; }
 .home-ticker__toggle:focus-visible, .home-ticker a:focus-visible { outline: none; box-shadow: var(--ring, 0 0 0 2px rgba(13, 148, 136, 0.275)); }
 /* SON DAKİKA ÖĞESİ (data/ticker.json → "breaking": true). Kırmızı zemin
    (--live, #c81e2d) üzerinde beyaz kalın metin: kontrast ≈ 5,9:1 (WCAG AA).
@@ -161,10 +175,18 @@
   .home-ticker__label { grid-area: label; justify-self: start; }
   .home-ticker__toggle { grid-area: toggle; min-height: 28px; padding: 2px 10px; }
   .home-ticker__viewport { grid-area: viewport; }
+  .home-ticker__inner--with-all {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-areas: "label all toggle" "viewport viewport viewport";
+  }
+  .home-ticker__all { grid-area: all; min-height: 28px; }
 }
 /* Hareket azaltma: kaymaz, kopya gizlenir, öğeler alt alta düz liste. */
 @media (prefers-reduced-motion: reduce) {
   .home-ticker__inner { grid-template-columns: minmax(0, 1fr); padding-block: 8px; }
+  .home-ticker__inner--with-all { grid-template-columns: minmax(0, 1fr); grid-template-areas: none; }
+  .home-ticker__inner--with-all > * { grid-area: auto; }
+  .home-ticker__all { justify-self: start; }
   .home-ticker__viewport { overflow: visible; mask-image: none; -webkit-mask-image: none; }
   .home-ticker__track { animation: none; width: auto; display: block; }
   .home-ticker__group { flex-direction: column; align-items: flex-start; gap: 4px; padding: 0; }

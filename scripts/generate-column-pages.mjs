@@ -38,7 +38,10 @@ const {
 } = require("../services/columnService.js");
 // Dış kaynak künyesi `nofollow` taşır; kural services/sourceLinks.js.
 const { SOURCE_LINK_REL } = require("../services/sourceLinks.js");
+const { FEATURED_MAX_AGE_MS } = require("../services/homeFreshness.js");
 const { columnShareHtml } = require("../services/columnShare.js");
+// Yayıncı düğümü (logo dahil) haber sayfalarıyla aynı tek tanımdan gelir.
+const { publisherNode } = require("../services/newsArticleSchema.js");
 
 const STORE = path.join(root, "data", "columns.json");
 const OUT_DIR = path.join(root, "kose-yazilari");
@@ -239,12 +242,16 @@ export function pickFeaturedColumn(columns, now = Date.now()) {
   return dated.length ? dated[0].column : null;
 }
 
-export function featuredColumnHtml(columns, now = Date.now()) {
+export function featuredColumnHtml(columns, now = Date.now(), { maxAgeMs = Infinity } = {}) {
   const column = pickFeaturedColumn(columns, now);
   if (!column) return "";
+  // Ana sayfa vitrini 48 saatten eski yazıyı "öne çıkan" diye sunmaz (services/homeFreshness.js).
+  const published = Date.parse(column.date);
+  if (now - published >= maxAgeMs) return "";
   const href = escapeHtml(`./${cleanPublicPath(column.path)}`);
   const badge = column.contentType || column.badge || OPINION_BADGE;
-  return `<article class="home-featured-column__card" data-card="featured-column">
+  const expires = Number.isFinite(maxAgeMs) ? ` data-expires="${new Date(published + maxAgeMs).toISOString()}"` : "";
+  return `<article class="home-featured-column__card" data-card="featured-column"${expires}>
             <div class="home-featured-column__meta">
               <span class="column-badge">${escapeHtml(badge)}</span>
               ${column.categoryLabel ? `<span class="column-category">${escapeHtml(column.categoryLabel)}</span>` : ""}
@@ -497,12 +504,7 @@ export function columnPageHtml(column, locale = "tr") {
     // değişiklik tarihi en yeni notun tarihidir.
     dateModified: column.updates.length ? column.updates[0].date : column.date,
     author: { "@type": schemaAuthorType(column.author), name: column.author, url: `${DOMAIN}/${column.authorPath}` },
-    publisher: {
-      "@type": "Organization",
-      name: "FutbolRadar",
-      url: `${DOMAIN}/`,
-      logo: `${DOMAIN}/favicon-512x512.png`
-    },
+    publisher: publisherNode(),
     articleSection: column.categoryLabel,
     keywords: (column.keywords && column.keywords.length ? column.keywords : column.tags).join(", "),
     mainEntityOfPage: url,
@@ -814,7 +816,7 @@ export function generateColumnPages() {
     html = html.replace(/(<div class="column-grid column-grid-home" data-api-target="home-columns")( data-hide-slugs="[^"]*")?/, (_, head) => hiddenSlugs ? `${head} data-hide-slugs="${escapeHtml(hiddenSlugs)}"` : head);
 
     // Öne çıkan köşe yazısı: en yeni yayımlanmış yazı, her derlemede yeniden seçilir.
-    const featured = featuredColumnHtml(homeColumns);
+    const featured = featuredColumnHtml(homeColumns, Date.now(), { maxAgeMs: FEATURED_MAX_AGE_MS });
     html = replaceSlot(html, "home-featured-column", featured);
     const featuredTag = (html.match(/<section\b[^>]*\bdata-featured-column\b[^>]*>/) || [])[0];
     if (featuredTag) {
