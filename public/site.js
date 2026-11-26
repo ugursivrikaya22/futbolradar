@@ -5347,3 +5347,12 @@
     })
     .catch(function () { /* iskelet kalır */ });
 })();
+
+// The public weekly board loads only when its homepage section approaches the viewport.
+(function(){
+  var host=document.querySelector('[data-weekly-predictors]');if(!host)return;
+  var started=false;
+  function load(){if(started)return;started=true;var script=document.createElement('script');script.src='/home-predictors.js';script.async=true;document.head.appendChild(script);}
+  if('IntersectionObserver' in window){var observer=new IntersectionObserver(function(entries){if(entries.some(function(entry){return entry.isIntersecting;})){observer.disconnect();load();}},{rootMargin:'100px'});observer.observe(host);}
+  else if('requestIdleCallback' in window)requestIdleCallback(load);else setTimeout(load,1500);
+})();
