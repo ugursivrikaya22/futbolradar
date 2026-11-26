@@ -13,8 +13,14 @@ async function tick({ provider, previous, now = Date.now() }) {
   const subscriptions = await store.listAll();
   if (!subscriptions.length) return [];
   const keys = new Set(subscriptions.flatMap(row => row.favorite_teams || [row.favorite_team]));
-  const date = new Intl.DateTimeFormat('en-CA', { timeZone:'Europe/Istanbul', year:'numeric', month:'2-digit', day:'2-digit' }).format(now);
-  const rows = await provider.getMatches({ date });
+  const day = new Intl.DateTimeFormat('en-CA', { timeZone:'Europe/Istanbul', year:'numeric', month:'2-digit', day:'2-digit' });
+  const dates = new Set([day.format(now)]);
+  // Keep a match that started before midnight until its verified final whistle.
+  for (const match of previous.values()) {
+    const kickoff = Date.parse(match.kickoff);
+    if (Number.isFinite(kickoff) && now - kickoff < 4 * 3600000 && !/^(FT|FINISHED|AET|PEN)$/.test(match.providerStatus || match.status)) dates.add(day.format(kickoff));
+  }
+  const rows = (await Promise.all([...dates].map(date => provider.getMatches({date})))).flat();
   const snapshots = [];
   for (const row of rows) {
     const teamKeys = [notifier.slugForTeamName(row.homeTeam), notifier.slugForTeamName(row.awayTeam), 'match:' + (row.providerId || row.id)];
@@ -53,7 +59,7 @@ async function main() {
     if (Date.now() - saved.at < 120000) previous = new Map(saved.matches.map(row => [row.id, row]));
   } catch { /* first run establishes a baseline */ }
   const provider = getProvider('matches');
-  if (provider.source === 'mock') throw new Error('Push worker cannot use mock data.');
+  if (provider.name !== 'api-football') throw new Error('Push worker requires the API-Football provider for events and official lineups.');
   let stopped = false;
   process.on('SIGTERM', () => { stopped = true; });
   process.on('SIGINT', () => { stopped = true; });
