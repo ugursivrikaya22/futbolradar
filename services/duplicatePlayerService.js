@@ -166,32 +166,20 @@ function sameCanonicalPlayer(left, right, canonicalById) {
 }
 
 /**
- * MEVKİ ETİKETİ — Türkçe, tek tip.
+ * MEVKİ ETİKETİ — Türkçe, tek tip: TEK TABLO services/playerLabels.js.
  *
- * Veride aynı mevki iki dilde ve çok biçimde duruyor: sağlayıcı kaydı
- * "Defender"/"Goalkeeper", elle kürasyonlu kayıt "Stoper"/"Kaleci"; yazım
- * varyantları da var ("Sag kanat", "On numara"). Sayfada yan yana bu
- * karışım görünüyordu. Etiket bir SUNUM olduğundan veri değişmez, burada
- * çözülür. Özgül Türkçe mevki (Stoper, Sağ bek...) genel gruptan ("Defans")
- * daha bilgilidir ve korunur; yalnızca İngilizce/yazım varyantı çevrilir.
+ * Etiket bir SUNUM olduğundan veri değişmez. Burada yalnızca iki ek kural:
+ * boş değer "" döner (liste satırında null basılmaz) ve birleştirilen kayıtlar
+ * arasında özgün Türkçe mevki (Stoper, Sağ bek...) genel gruptan ("Defans")
+ * daha bilgilidir ve korunur.
  */
-const POSITION_LABELS = new Map([
-  ["goalkeeper", "Kaleci"], ["kaleci", "Kaleci"], ["gk", "Kaleci"],
-  ["defender", "Defans"], ["defans", "Defans"], ["stoper", "Stoper"],
-  ["sag bek", "Sağ bek"], ["sol bek", "Sol bek"],
-  ["midfielder", "Orta saha"], ["orta saha", "Orta saha"],
-  ["merkez orta saha", "Merkez orta saha"], ["on libero", "Ön libero"],
-  ["10 numara", "10 numara"], ["on numara", "10 numara"],
-  ["attacker", "Forvet"], ["forward", "Forvet"], ["forvet", "Forvet"],
-  ["santrfor", "Santrfor"], ["kanat", "Kanat"],
-  ["sag kanat", "Sağ kanat"], ["sol kanat", "Sol kanat"]
-]);
-const GENERIC_POSITIONS = new Set(["Defans", "Orta saha", "Forvet"]);
+const { positionLabelTr: tableLabel } = require("./playerLabels.js");
+
+const GENERIC_POSITIONS = new Set(["Defans", "Orta saha", "Forvet", "Kaleci"]);
 
 function positionLabelTr(position) {
-  const raw = String(position || "").trim();
-  if (!raw) return "";
-  return POSITION_LABELS.get(normalizeText(raw)) || raw;
+  const label = tableLabel(position);
+  return label === null || label === undefined ? "" : String(label);
 }
 
 /** "A. Batagov" gibi baş harfe kısaltılmış ad mı? */
