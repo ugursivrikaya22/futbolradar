@@ -407,8 +407,8 @@ assert.match(workflow, /cron: "0 2 \* \* \*"/);
 // altı saatinde neredeyse hiçbir şey değişmezken saatlik tazeleme doğrudan
 // faturaya yazılıyordu. Kapsam daralmadı: gündüzün tamamı hâlâ saatlik.
 assert.match(workflow, /cron: "7 4-21 \* \* \*"/);
-assert.match(workflow, /cron: "7 0-1,3,22-23 \* \* \*"/);
-// İki kısa ifade de 02:00 UTC'yi DIŞARIDA bırakıyor (4-21 ve 0,3,22): orası
+assert.match(workflow, /cron: "7 22,0 \* \* \*"/);
+// İki kısa ifade de 02:00 UTC'yi DIŞARIDA bırakıyor (4-21 ve 22,0): orası
 // tam tazelemenin saati, iki iş aynı dosyalara yazmak için sıraya giremez.
 // Saatleri tek tek çözüp doğruluyoruz ki ilerideki bir düzenleme 2'yi sessizce
 // geri sokamasın.
@@ -418,9 +418,18 @@ assert.match(workflow, /cron: "7 0-1,3,22-23 \* \* \*"/);
       const [from, to] = part.split("-").map(Number);
       return Number.isInteger(to) ? Array.from({ length: to - from + 1 }, (_, i) => from + i) : [from];
     });
-  const shortRunHours = [...hoursOf("4-21"), ...hoursOf("0-1,3,22-23")];
+  const shortRunHours = [...hoursOf("4-21"), ...hoursOf("22,0")];
   assert.ok(!shortRunHours.includes(2), "kısa koşu 02:00 UTC'ye girmemeli — tam tazeleme orada");
   assert.equal(new Set(shortRunHours).size, shortRunHours.length, "aynı saat iki kez tetiklenmemeli");
+  // GECE İKİ SAATTE BİR (20.09.2026 kararının gerçek uygulaması): önceki
+  // "0-1,3,22-23" ardışık saatlerdi ve gece fiilen saatlikti. Günlük koşu
+  // sayısı üst sınırı da burada: 1 tam + 18 gündüz + 2 gece = 21. Üstüne
+  // çıkmak Actions dakikasını bilinçli kabul etmek demektir (docs/actions-dakika.md).
+  const perDay = 1 + shortRunHours.length;
+  assert.ok(perDay <= 21, `günlük zamanlanmış koşu ${perDay} > 21`);
+  const all = [2, ...shortRunHours].sort((a, b) => a - b);
+  const gaps = all.map((h, i) => ((all[(i + 1) % all.length] - h) + 24) % 24 || 24);
+  assert.ok(Math.max(...gaps) <= 2, `iki koşu arası en çok 2 saat olmalı (izleyici 3 saatte uyarır): ${gaps}`);
 }
 // Tam koşu ile saatlik koşu ÇAKIŞMAZ: saatlik ifade 02:00'ı dışarıda
 // bırakıyor. Aksi hâlde iki iş aynı dosyalara yazmak için sıraya girerdi.
