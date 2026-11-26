@@ -38,6 +38,14 @@ function playerPositionGroup(player) {
   return "diger";
 }
 
+/**
+ * `playerPositionGroup` bir ANAHTAR döndürür ("diger" karşılaştırmalarda
+ * eşleştirme için ASCII kalmalı); okura gösterilen metin için bu etiketi kullan.
+ */
+function positionGroupLabel(group) {
+  return group === "diger" ? "diğer" : group;
+}
+
 /** İki kimlik her zaman aynı sırada — tek bir adres, kopya URL yok. */
 function comparisonSlug(leftId, rightId) {
   return [leftId, rightId].sort().join("-vs-");
@@ -53,7 +61,7 @@ function comparisonSlug(leftId, rightId) {
  * o bağlantıları kırar.
  */
 const EDITORIAL_PAIRS = Object.freeze([
-  ["mauro-icardi", "edin-dzeko", "Super Lig gol tehdidi"],
+  ["mauro-icardi", "edin-dzeko", "Süper Lig gol tehdidi"],
   ["kerem-akturkoglu", "semih-kilicsoy", "Yükselen yerli hücum profili"],
   ["ugurcan-cakir", "abdulkerim-bardakci", "Savunma güveni"],
   ["sebastian-szymanski", "gedson-fernandes", "Orta saha etki kıyaslaması"],
@@ -213,9 +221,9 @@ function computeCompareCandidates(player, players) {
     .sort((a, b) => Number(b.marketValueEur || 0) - Number(a.marketValueEur || 0))[0];
 
   const baseLinks = uniqueCompareCandidates([
-    { label: "Akilli eslesme", player: bestPeer, note: "Rol, rating ve piyasa yakinligi" },
-    { label: "Aynı rol kıyası", player: sameRole, note: `${playerPositionGroup(player)} profili` },
-    { label: "Rating sinavi", player: closeRating, note: "Overall farkini oku" },
+    { label: "Akıllı eşleşme", player: bestPeer, note: "Rol, rating ve piyasa yakınlığı" },
+    { label: "Aynı rol kıyası", player: sameRole, note: `${positionGroupLabel(playerPositionGroup(player))} profili` },
+    { label: "Rating sınavı", player: closeRating, note: "Overall farkını oku" },
     { label: "Transfer okuma", player: transferRead, note: "Güncel takım ve piyasa değeri" }
   ]);
   const fallbackLinks = candidates
@@ -234,6 +242,7 @@ module.exports = {
   createComparisonSlugResolver,
   playerCurrentTeam,
   playerPositionGroup,
+  positionGroupLabel,
   playerRating,
   profileCompareCandidates,
   uniqueCompareCandidates
