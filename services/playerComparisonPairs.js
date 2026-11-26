@@ -38,6 +38,18 @@ function playerPositionGroup(player) {
   return "diger";
 }
 
+/**
+ * Kullanıcıya gösterilen rol adı. playerPositionGroup() karşılaştırma anahtarı
+ * olarak ASCII anahtar döndürür; ekrana olduğu gibi basılırsa kartta ASCII
+ * metin görünür. Anahtar değişmez, yalnızca gösterim Türkçeleşir.
+ */
+const POSITION_GROUP_LABELS = Object.freeze({ diger: "diğer" });
+
+function positionGroupLabel(player) {
+  const group = playerPositionGroup(player);
+  return POSITION_GROUP_LABELS[group] || group;
+}
+
 /** İki kimlik her zaman aynı sırada — tek bir adres, kopya URL yok. */
 function comparisonSlug(leftId, rightId) {
   return [leftId, rightId].sort().join("-vs-");
@@ -213,9 +225,9 @@ function computeCompareCandidates(player, players) {
     .sort((a, b) => Number(b.marketValueEur || 0) - Number(a.marketValueEur || 0))[0];
 
   const baseLinks = uniqueCompareCandidates([
-    { label: "Akilli eslesme", player: bestPeer, note: "Rol, rating ve piyasa yakinligi" },
-    { label: "Aynı rol kıyası", player: sameRole, note: `${playerPositionGroup(player)} profili` },
-    { label: "Rating sinavi", player: closeRating, note: "Overall farkini oku" },
+    { label: "Akıllı eşleşme", player: bestPeer, note: "Rol, rating ve piyasa yakınlığı" },
+    { label: "Aynı rol kıyası", player: sameRole, note: `${positionGroupLabel(player)} profili` },
+    { label: "Rating sınavı", player: closeRating, note: "Overall farkını oku" },
     { label: "Transfer okuma", player: transferRead, note: "Güncel takım ve piyasa değeri" }
   ]);
   const fallbackLinks = candidates
@@ -234,6 +246,7 @@ module.exports = {
   createComparisonSlugResolver,
   playerCurrentTeam,
   playerPositionGroup,
+  positionGroupLabel,
   playerRating,
   profileCompareCandidates,
   uniqueCompareCandidates

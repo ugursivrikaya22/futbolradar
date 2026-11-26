@@ -6495,10 +6495,10 @@
       return Number(b.marketValueEur || 0) - Number(a.marketValueEur || 0);
     })[0];
 
-    pushCandidate("Akilli eslesme", bestComparePeer(player, players), "Rol, lig, rating ve piyasa yakinligina gore otomatik secildi.");
-    pushCandidate("Ayni rol", sameRole[0], "Benzer rol grubu ve radar profiliyle yan yana okunabilir.");
-    pushCandidate("Rating sinavi", ratingTest, "Overall farki dusuk oyuncuyla karar metriği daha net gorunur.");
-    pushCandidate("Transfer okuma", transferRead, "Guncel takim, piyasa degeri ve transfer gecmisi birlikte karsilastirilir.");
+    pushCandidate("Akıllı eşleşme", bestComparePeer(player, players), "Rol, lig, rating ve piyasa yakınlığına göre otomatik seçildi.");
+    pushCandidate("Aynı rol", sameRole[0], "Benzer rol grubu ve radar profiliyle yan yana okunabilir.");
+    pushCandidate("Rating sınavı", ratingTest, "Overall farkı düşük oyuncuyla karar metriği daha net görünür.");
+    pushCandidate("Transfer okuma", transferRead, "Güncel takım, piyasa değeri ve transfer geçmişi birlikte karşılaştırılır.");
 
     if (!cards.length) {
       return "";
@@ -6506,11 +6506,11 @@
 
     return (
       '<section class="profile-section profile-compare-hub">' +
-      '<div class="profile-section-head"><h2>Karsilastirma Merkezi</h2><span>Profil icinden akilli kiyas akisi</span></div>' +
+      '<div class="profile-section-head"><h2>Karşılaştırma Merkezi</h2><span>Profil içinden akıllı kıyas akışı</span></div>' +
       '<div class="profile-compare-grid">' + cards.slice(0, 4).join("") + '</div>' +
       '<div class="profile-compare-footer">' +
-      '<a class="detail-link" href="' + escapeHtml(playerCompareHref("?p1=" + encodeURIComponent(player.id))) + '">Akilli eslesmeyi ac</a>' +
-      '<a class="detail-link ghost" href="' + escapeHtml(siteHref("oyuncu-radari.html?team=" + encodeURIComponent(playerCurrentTeam(player)))) + '">Takim oyuncularini filtrele</a>' +
+      '<a class="detail-link" href="' + escapeHtml(playerCompareHref("?p1=" + encodeURIComponent(player.id))) + '">Akıllı eşleşmeyi aç</a>' +
+      '<a class="detail-link ghost" href="' + escapeHtml(siteHref("oyuncu-radari.html?team=" + encodeURIComponent(playerCurrentTeam(player)))) + '">Takım oyuncularını filtrele</a>' +
       '</div>' +
       '</section>'
     );
