@@ -137,11 +137,13 @@ function detectMatchEvents(previousById, matches, everPolled) {
   for (const match of matches) {
     const prev = previousById.get(match.id);
 
-    if (everPolled && !(prev && prev.live) && match.live) {
+    if (everPolled && prev && /^(NS|SCHEDULED|TIMED|NOT_STARTED)$/.test(statusCode(prev)) && match.live) {
       events.push({ type: "kickoff", match });
     }
 
     if (prev) {
+      const teams = (match.lineupTeams || []).filter(team => !(prev.lineupTeams || []).includes(team));
+      if (teams.length) events.push({type:"lineup", teams, match});
       const prevHome = Number.isFinite(prev.score && prev.score.home) ? prev.score.home : null;
       const prevAway = Number.isFinite(prev.score && prev.score.away) ? prev.score.away : null;
       const nextHome = Number.isFinite(match.score && match.score.home) ? match.score.home : null;
@@ -350,7 +352,7 @@ function getLiveScoreHub() {
     // bu dosyayı değil `getLiveScoreHub`ı hiç import etmiyor, ama ileride
     // etseydi bu satır modül yükleme sırasına bağlı kalmazdı.
     const { notifyMatchEvents } = require("./pushNotifier");
-    globalThis[key] = new LiveScoreHub({ onMatchEvents: notifyMatchEvents });
+    globalThis[key] = new LiveScoreHub({ onMatchEvents: process.env.PUSH_DELIVERY_MODE === "worker" ? null : notifyMatchEvents });
   }
   return globalThis[key];
 }

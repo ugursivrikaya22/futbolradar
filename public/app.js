@@ -14,7 +14,7 @@
   // Slow discovery only. Once a match is live, SSE takes over and the
   // fallback follows the provider's documented 15-second refresh cadence.
   var MATCH_LIVE_POLL_MS = 60000;
-  var MATCH_DETAIL_POLL_MS = 15000;
+  var MATCH_DETAIL_POLL_MS = 30000;
   // API-Football refreshes fixture scores/events every 15 seconds. Polling
   // faster consumes application requests without producing fresher data.
   var LIVE_MATCH_FAST_POLL_MS = 15000;
