@@ -10,5 +10,7 @@ for(const row of (archived.records||[]).map(r=>r.match).concat(Array.isArray(mat
  rows.push({homeTeam:row.homeTeam,awayTeam:row.awayTeam,kickoff:row.kickoff,status:'FINISHED',score:{home:row.score.home,away:row.score.away}});
 }
 fs.mkdirSync(path.join(root,'data/slim'),{recursive:true});
-fs.writeFileSync(path.join(root,'data/slim/prematch-history.json'),JSON.stringify(rows)+'\n');
+const {teamKey}=require('../prematch-stats');
+const teams={};rows.forEach((row,index)=>{for(const name of [row.homeTeam,row.awayTeam]){const key=teamKey(name);(teams[key]||(teams[key]=[])).push(index);}});
+fs.writeFileSync(path.join(root,'data/slim/prematch-history.json'),JSON.stringify({matches:rows,teams})+'\n');
 console.log('Compact pre-match history: '+rows.length+' results, '+fs.statSync(path.join(root,'data/slim/prematch-history.json')).size+' bytes.');

@@ -1,4 +1,4 @@
-const {build} = require('../prematch-stats');
+const {build,teamKey} = require('../prematch-stats');
 const cache = new Map();
 let history;
 module.exports = function getPrematch(match) {
@@ -7,7 +7,8 @@ module.exports = function getPrematch(match) {
   if (!history) {
     history = require('../data/slim/prematch-history.json');
   }
-  const data = build(match,history);
+  const indices = new Set([...(history.teams[teamKey(match.homeTeam)] || []), ...(history.teams[teamKey(match.awayTeam)] || [])]);
+  const data = build(match,[...indices].map(index=>history.matches[index]));
   if (cache.size >= 128) cache.delete(cache.keys().next().value);
   cache.set(key,data);return data;
 };
