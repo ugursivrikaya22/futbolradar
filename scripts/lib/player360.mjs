@@ -1000,9 +1000,10 @@ export function player360Description(model, options = {}) {
     if (bio.sentences.length) {
       return joinDescription([`${name} kimdir? ${bio.sentences[0]}`], tail, DESCRIPTION_LIMIT);
     }
-    return joinDescription([
-      `${name} kimdir? Kulüp, sezon istatistikleri ve piyasa verileri doğrulanmış sağlayıcı kaydıyla eşleştiğinde yayımlanır; tahmini değer gösterilmez`
-    ], tail, DESCRIPTION_LIMIT);
+    // Doğrulanmış veri yoksa meta açıklama YER TUTUCU vaat etmez ("yayımlanır",
+    // "tahmini değer gösterilmez" gibi cümleler arama sonucunda görünüyordu).
+    // Böyle sayfa zaten noindex'tir (scripts/lib/playerIndexing.mjs).
+    return joinDescription([`${name} kimdir?`], tail, DESCRIPTION_LIMIT);
   }
 
   const parts = [];
@@ -1047,10 +1048,6 @@ export function player360Description(model, options = {}) {
   if (model.career.available && model.career.stints.length > 1) {
     const clubs = model.career.stints.slice(0, 3).map((stint) => stint.club).join(", ");
     parts.push(`career clubs: ${clubs}`);
-  }
-
-  if (parts.length === 1) {
-    parts.push("club, season statistics and market data are published once they match a verified provider record — estimates are never shown");
   }
 
   let used = [];
