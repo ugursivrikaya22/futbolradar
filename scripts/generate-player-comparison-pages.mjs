@@ -4,7 +4,8 @@ import { createRequire } from "node:module";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
 import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
 import { createFreshnessTracker } from "./lib/sitemapFreshness.mjs";
-import { ROBOTS_INDEX } from "./lib/robots.mjs";
+import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
+import { playerNameNeedsReview } from "./lib/playerNameGate.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -208,7 +209,7 @@ function buildPairs() {
  */
 function comparisonInsight(left, right) {
   const bothVerified = publicPlayerView(left).verified && publicPlayerView(right).verified;
-  const roleLine = `${positionGroupLabel(left)} ve ${positionGroupLabel(right)} rolleri birlikte okunmalı; tek skor karar için yeterli değil.`;
+  const roleLine = `${positionGroupLabel(playerPositionGroup(left))} ve ${positionGroupLabel(playerPositionGroup(right))} rolleri birlikte okunmalı; tek skor karar için yeterli değil.`;
 
   if (!bothVerified) {
     return [
@@ -387,6 +388,15 @@ function ratingLeadHtml(left, right) {
   return `<p class="rating-lead">${rows.map((row) => escapeHtml(row)).join(" · ")}</p>`;
 }
 
+/**
+ * Taraflardan biri sıra bozukluğu şüphesi taşıyan bir ada sahipse ("Sami Bircan
+ * Ahmet") başlık ve gövde o adı basar: ad düzelene kadar sayfa noindex olur.
+ * Bkz. scripts/lib/playerNameGate.mjs.
+ */
+function pairNeedsNameReview(pair) {
+  return playerNameNeedsReview(pair.left, root) || playerNameNeedsReview(pair.right, root);
+}
+
 function pageHtml(pair) {
   const { left, right, slug, reasons } = pair;
   const title = `${left.name} vs ${right.name} | Oyuncu Karşılaştırması | FutbolRadar`;
@@ -418,7 +428,7 @@ function pageHtml(pair) {
     <title>${escapeHtml(title)}</title>
     <meta name="description" content="${escapeHtml(description)}" />
     <link rel="canonical" href="${canonical}" />
-    <meta name="robots" content="${ROBOTS_INDEX}" />
+    <meta name="robots" content="${pairNeedsNameReview(pair) ? ROBOTS_NOINDEX_FOLLOW : ROBOTS_INDEX}" />
     <meta property="og:type" content="article" />
     <meta property="og:locale" content="tr_TR" />
     <meta property="og:site_name" content="FutbolRadar" />
@@ -540,8 +550,8 @@ function pageHtml(pair) {
 function comparisonIndexCard(pair) {
   const { left, right, slug, reasons } = pair;
   const roleLabel = playerPositionGroup(left) === playerPositionGroup(right)
-    ? `${positionGroupLabel(left)} eşleşmesi`
-    : `${positionGroupLabel(left)} / ${positionGroupLabel(right)}`;
+    ? `${positionGroupLabel(playerPositionGroup(left))} eşleşmesi`
+    : `${positionGroupLabel(playerPositionGroup(left))} / ${positionGroupLabel(playerPositionGroup(right))}`;
 
   // Rating farkı bir SAYIDAN türetilmiş iddiadır; iki taraf da doğrulanmış
   // değilse basılmaz — bu tam olarak comparisonInsight()'ın uyguladığı
@@ -703,7 +713,7 @@ for (const sitemapPath of [path.join(root, "sitemap.xml"), path.join(root, "publ
     });
   // Tarih sabit yazılıyordu (2026-07-13) ve karşılaştırma sayfaları
   // güncellenmesine rağmen hiç ilerlemiyordu; gerekçe lib/sitemapFreshness.mjs.
-  const entries = pairs.map((pair) => {
+  const entries = pairs.filter((pair) => !pairNeedsNameReview(pair)).map((pair) => {
     const file = `karsilastirma/${pair.slug}.html`;
     const lastmod = freshness.lastmodForFile(file, path.join(root, file));
     return `  <url>\n    <loc>${domain}/${file}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.65</priority>\n  </url>`;

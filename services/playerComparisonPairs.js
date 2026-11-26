@@ -39,15 +39,11 @@ function playerPositionGroup(player) {
 }
 
 /**
- * Kullanıcıya gösterilen rol adı. playerPositionGroup() karşılaştırma anahtarı
- * olarak ASCII anahtar döndürür; ekrana olduğu gibi basılırsa kartta ASCII
- * metin görünür. Anahtar değişmez, yalnızca gösterim Türkçeleşir.
+ * `playerPositionGroup` bir ANAHTAR döndürür ("diger" karşılaştırmalarda
+ * eşleştirme için ASCII kalmalı); okura gösterilen metin için bu etiketi kullan.
  */
-const POSITION_GROUP_LABELS = Object.freeze({ diger: "diğer" });
-
-function positionGroupLabel(player) {
-  const group = playerPositionGroup(player);
-  return POSITION_GROUP_LABELS[group] || group;
+function positionGroupLabel(group) {
+  return group === "diger" ? "diğer" : group;
 }
 
 /** İki kimlik her zaman aynı sırada — tek bir adres, kopya URL yok. */
@@ -65,7 +61,7 @@ function comparisonSlug(leftId, rightId) {
  * o bağlantıları kırar.
  */
 const EDITORIAL_PAIRS = Object.freeze([
-  ["mauro-icardi", "edin-dzeko", "Super Lig gol tehdidi"],
+  ["mauro-icardi", "edin-dzeko", "Süper Lig gol tehdidi"],
   ["kerem-akturkoglu", "semih-kilicsoy", "Yükselen yerli hücum profili"],
   ["ugurcan-cakir", "abdulkerim-bardakci", "Savunma güveni"],
   ["sebastian-szymanski", "gedson-fernandes", "Orta saha etki kıyaslaması"],
@@ -226,7 +222,7 @@ function computeCompareCandidates(player, players) {
 
   const baseLinks = uniqueCompareCandidates([
     { label: "Akıllı eşleşme", player: bestPeer, note: "Rol, rating ve piyasa yakınlığı" },
-    { label: "Aynı rol kıyası", player: sameRole, note: `${positionGroupLabel(player)} profili` },
+    { label: "Aynı rol kıyası", player: sameRole, note: `${positionGroupLabel(playerPositionGroup(player))} profili` },
     { label: "Rating sınavı", player: closeRating, note: "Overall farkını oku" },
     { label: "Transfer okuma", player: transferRead, note: "Güncel takım ve piyasa değeri" }
   ]);

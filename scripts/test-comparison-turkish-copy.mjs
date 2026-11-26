@@ -36,8 +36,8 @@ for (const word of ["${playerPositionGroup(left)} eslesmesi", "Rating farki ${",
 // Konum bilgisi tanınmayan oyuncu "diger" anahtarına düşer; ekranda "diğer" yazmalı.
 const odd = { id: "odd", position: "Teknik direktör", rating: 60, team: "X" };
 assert.equal(playerPositionGroup(odd), "diger", "karşılaştırma anahtarı değişmemeli");
-assert.equal(positionGroupLabel(odd), "diğer");
-assert.equal(positionGroupLabel({ position: "Kaleci" }), "kaleci");
+assert.equal(positionGroupLabel(playerPositionGroup(odd)), "diğer");
+assert.equal(positionGroupLabel("kaleci"), "kaleci");
 
 const pool = [odd, 1, 2, 3, 4].map((v, i) => (i === 0 ? v : { id: `p${v}`, position: "Teknik direktör", rating: 60 + v, team: "Y" }));
 const cards = profileCompareCandidates(odd, pool);
