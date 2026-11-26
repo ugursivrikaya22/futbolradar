@@ -41,6 +41,7 @@ const {
   EDITORIAL_PAIRS,
   playerCurrentTeam,
   playerPositionGroup,
+  positionGroupLabel,
   playerRating,
   profileCompareCandidates,
   uniqueCompareCandidates
@@ -208,7 +209,7 @@ function buildPairs() {
  */
 function comparisonInsight(left, right) {
   const bothVerified = publicPlayerView(left).verified && publicPlayerView(right).verified;
-  const roleLine = `${playerPositionGroup(left)} ve ${playerPositionGroup(right)} rolleri birlikte okunmalı; tek skor karar için yeterli değil.`;
+  const roleLine = `${positionGroupLabel(playerPositionGroup(left))} ve ${positionGroupLabel(playerPositionGroup(right))} rolleri birlikte okunmalı; tek skor karar için yeterli değil.`;
 
   if (!bothVerified) {
     return [
@@ -223,7 +224,7 @@ function comparisonInsight(left, right) {
   const marketLeader = marketDiff >= 0 ? left : right;
 
   return [
-    `${leader.name} overall rating tarafinda onde gorunuyor.`,
+    `${leader.name} overall rating tarafında önde görünüyor.`,
     `${marketLeader.name} piyasa değeri okumasında daha güçlü sinyal veriyor.`,
     roleLine
   ];
@@ -280,7 +281,7 @@ function playerMiniCard(player) {
     : `<div><dt>Veri durumu</dt><dd>Doğrulanmış kayıt bekleniyor</dd></div>`;
 
   return `<article class="comparison-mini-card" data-player-verified="${verified ? "true" : "false"}">
-    <span>${escapeHtml(player.position || "Mevki yakinda")}</span>
+    <span>${escapeHtml(player.position || "Mevki yakında")}</span>
     <h2>${escapeHtml(player.name)}</h2>
     <dl>
       ${rows}
@@ -514,7 +515,7 @@ function pageHtml(pair) {
           <ul>
             ${insights.map((item) => `<li>${escapeHtml(item)}</li>`).join("\n            ")}
           </ul>
-          <p>${escapeHtml(reasons.slice(0, 3).join(" - ") || "Rol, form ve rating yakinligi")}</p>
+          <p>${escapeHtml(reasons.slice(0, 3).join(" - ") || "Rol, form ve rating yakınlığı")}</p>
         </article>
         ${playerMiniCard(right)}
       </section>
@@ -549,8 +550,8 @@ function pageHtml(pair) {
 function comparisonIndexCard(pair) {
   const { left, right, slug, reasons } = pair;
   const roleLabel = playerPositionGroup(left) === playerPositionGroup(right)
-    ? `${playerPositionGroup(left)} eslesmesi`
-    : `${playerPositionGroup(left)} / ${playerPositionGroup(right)}`;
+    ? `${positionGroupLabel(playerPositionGroup(left))} eşleşmesi`
+    : `${positionGroupLabel(playerPositionGroup(left))} / ${positionGroupLabel(playerPositionGroup(right))}`;
 
   // Rating farkı bir SAYIDAN türetilmiş iddiadır; iki taraf da doğrulanmış
   // değilse basılmaz — bu tam olarak comparisonInsight()'ın uyguladığı
@@ -559,7 +560,7 @@ function comparisonIndexCard(pair) {
   const ratingDelta = bothVerified ? Math.abs(playerRating(left) - playerRating(right)) : null;
   const footer = ratingDelta === null
     ? "Doğrulanmış puan bekleniyor"
-    : `Rating farki ${escapeHtml(ratingDelta.toFixed(1))}`;
+    : `Rating farkı ${escapeHtml(ratingDelta.toFixed(1))}`;
 
   return `<a class="comparison-index-card" href="./karsilastirma/${escapeHtml(slug)}.html">
     <span>${escapeHtml(roleLabel)}</span>
