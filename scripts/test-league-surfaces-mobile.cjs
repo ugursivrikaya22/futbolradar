@@ -1,0 +1,17 @@
+const fs=require('node:fs'),http=require('node:http'),path=require('node:path'),assert=require('node:assert/strict');const {chromium}=require('playwright');
+const root=path.resolve(__dirname,'..'),ids=['1-lig','tff-2-lig','premier-league','la-liga','serie-a','bundesliga','ligue-1'];
+const server=http.createServer((req,res)=>{const url=new URL(req.url,'http://localhost');const file=path.join(root,decodeURIComponent(url.pathname));if(fs.existsSync(file)&&fs.statSync(file).isFile()){res.setHeader('Content-Type',file.endsWith('.html')?'text/html; charset=utf-8':file.endsWith('.css')?'text/css':file.endsWith('.json')?'application/json':'text/javascript');return res.end(fs.readFileSync(file));}res.statusCode=404;res.end();});
+(async()=>{await new Promise(r=>server.listen(0,'127.0.0.1',r));const origin='http://127.0.0.1:'+server.address().port,browser=await chromium.launch({headless:true,channel:process.platform==='win32'?'msedge':undefined});try{
+ const page=await browser.newPage({viewport:{width:390,height:844}}),errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.route('**/*',async route=>{const url=new URL(route.request().url());if(url.origin!==origin)return route.abort();if(url.pathname.startsWith('/api/')){const league=url.searchParams.get('league');const table=['Kırmızı Grup','Beyaz Grup'].map((group,i)=>({rank:1,team:'Takım '+i,group,played:1,won:1,drawn:0,lost:0,goalDifference:1,points:3}));const matches=[{id:'a',homeTeam:'Ev',awayTeam:'Konuk',competitionId:league,status:'1H',minute:15,score:{home:1,away:0}},{id:'b',homeTeam:'Yanlış lig',awayTeam:'Görünmemeli',competitionId:'wrong',status:'1H',score:{home:3,away:0}}];return route.fulfill({json:{data:url.pathname==='/api/standings'?table:url.pathname==='/api/matches'?matches:[]}});}return route.continue();});
+ for(const id of ids){for(const view of ['fikstur','canli-skor','puan-durumu']){
+   await page.goto(origin+'/lig/'+id+'/'+view+'.html');await page.locator('main h1').waitFor();assert.equal(await page.locator('main nav[aria-label="Lig sayfaları"] a').count(),3);
+   assert.equal(await page.locator('link[rel="canonical"]').getAttribute('href'),'https://www.futbolradar.com/lig/'+id+'/'+view+'.html');
+   if(view==='canli-skor'){await page.waitForFunction(()=>document.querySelector('[data-league-live]').textContent.includes('Ev'));assert.ok(!(await page.locator('[data-league-live]').innerText()).includes('Yanlış lig'));}
+   if(view==='puan-durumu'){await page.waitForFunction(()=>document.querySelector('[data-league-table]').textContent.includes('Beyaz Grup'));assert.equal(await page.locator('[data-league-table] table').count(),2);}
+   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),id+' '+view+' overflow');
+ }}
+ fs.mkdirSync(path.join(root,'outputs/features'),{recursive:true});await page.screenshot({path:path.join(root,'outputs/features/leagues.png'),fullPage:true});assert.deepEqual(errors,[]);
+ const {checkStandings}=require('../services/standingsIntegrity');assert.ok(!checkStandings([{name:'A',rank:1,group:'Red'},{name:'B',rank:1,group:'White'}]).some(v=>v.includes('iki takım')));
+ console.log('PASS: all 21 pages at 390px, canonical/nav, live league isolation, both table groups and overflow.');
+}finally{server.closeAllConnections();server.close();await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1;server.closeAllConnections();server.close();});

@@ -8,7 +8,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
-import { hasSubstantivePlayerContent } from "./lib/playerIndexing.mjs";
+import { hasSubstantivePlayerContent, playerPageIsIndexable } from "./lib/playerIndexing.mjs";
 
 const root = process.cwd();
 const failures = [];
@@ -62,20 +62,26 @@ const read = (file) => fs.readFileSync(path.join(root, file), "utf8");
 const tr = read("scripts/generate-player-profile-pages.mjs");
 const en = read("scripts/generate-en-player-pages.mjs");
 
-check("Türkçe üretici ortak işlevi içe aktarıyor, yerelde tanımlamıyor", () => {
-  assert.match(tr, /import \{ hasSubstantivePlayerContent \} from "\.\/lib\/playerIndexing\.mjs"/);
-  assert.doesNotMatch(tr, /function hasSubstantivePlayerContent/);
+check("Türkçe üretici ortak kapıyı içe aktarıyor, yerelde tanımlamıyor", () => {
+  assert.match(tr, /import \{ playerPageIsIndexable \} from "\.\/lib\/playerIndexing\.mjs"/);
+  assert.doesNotMatch(tr, /function hasSubstantivePlayerContent|function playerPageIsIndexable/);
 });
-check("İngilizce üretici ortak işlevi içe aktarıyor, yerelde tanımlamıyor", () => {
-  assert.match(en, /import \{ hasSubstantivePlayerContent \} from "\.\/lib\/playerIndexing\.mjs"/);
-  assert.doesNotMatch(en, /function hasSubstantivePlayerContent/);
+check("İngilizce üretici ortak kapıyı içe aktarıyor, yerelde tanımlamıyor", () => {
+  assert.match(en, /import \{ playerPageIsIndexable \} from "\.\/lib\/playerIndexing\.mjs"/);
+  assert.doesNotMatch(en, /function hasSubstantivePlayerContent|function playerPageIsIndexable/);
 });
-check("İngilizce indeks kararı yalnızca `verified` değil, ortak kapıyı da içeriyor", () => {
-  assert.match(en, /const indexable = view\.verified === true \|\| hasSubstantivePlayerContent\(model\);/);
-  assert.doesNotMatch(en, /const indexable = view\.verified === true;/);
+check("iki üretici de indeks kararını ortak kapıdan veriyor; `verified` tek başına gerekçe değil", () => {
+  // Ortak içerik kapısı + ad-inceleme kapısı (playerNameNeedsReview) birlikte.
+  assert.match(en, /const indexable = !playerNameNeedsReview\(player, root\) && playerPageIsIndexable\(\{ model \}\);/);
+  assert.match(tr, /const indexable = !playerNameNeedsReview\(player, root\) && playerPageIsIndexable\(\{ model, hasRecentTransfer: Boolean\(recentTransfer\) \}\);/);
+  assert.doesNotMatch(en, /const indexable = .*view\.verified/);
+  assert.doesNotMatch(tr, /const indexable = .*view\.verified/);
 });
-check("Türkçe indeks kararı ortak kapıyı kullanıyor", () => {
-  assert.match(tr, /hasSubstantivePlayerContent\(model\)/);
+check("yalnızca kimlik + biyografi (doğrulanmış olsa da) noindex; kesinleşmiş yeni transfer indeksli", () => {
+  assert.equal(playerPageIsIndexable({ model: thin }), false);
+  assert.equal(playerPageIsIndexable({ model: { ...thin, verified: true } }), false);
+  assert.equal(playerPageIsIndexable({ model: thin, hasRecentTransfer: true }), true);
+  assert.equal(playerPageIsIndexable({ model: { ...thin, seasonStats: { available: true } } }), true);
 });
 
 // --- 3. "Yalnızca doğrulanmış oyuncular" kuralı kalktı ---------------------
