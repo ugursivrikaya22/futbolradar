@@ -4,6 +4,7 @@ import { createRequire } from "node:module";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
 import {
   player360Description,
+  player360MetaDescription,
   player360FaqPage,
   player360Graph,
   player360H1,
@@ -398,6 +399,9 @@ function playerHreflangLinks(player, canonical) {
     <!-- hreflang:end -->`;
 }
 
+/** Koşu boyunca üretilen meta açıklamalar — benzersizlik denetimi için. */
+const seenMetaDescriptions = new Set();
+
 function pageHtml(player) {
   // TEK YETKİLİ KARAR. URL ve sayfa iskeleti korunur — 110 profilin bilgi
   // mimarisi bozulmaz. Değişen tek şey, doğrulanmamış kayıtta hangi
@@ -466,8 +470,10 @@ function pageHtml(player) {
     : player360Title(model, { locale: "tr" });
   // Meta her zaman kimdir niyetine uygun üretilir; cümle ortadan kesilmez.
   // Transfer kartı görünür kahraman bölümünde kalır, açıklamayı bölmez.
-  const description = player360Description(model, { locale: "tr" });
-  const lead = description;
+  // Görünür giriş paragrafı (lead) ile meta açıklaması AYRI: meta 150–160
+  // karakter, sayfaya özgü ve sayfalar arası benzersizdir (playerMeta.mjs).
+  const lead = player360Description(model, { locale: "tr" });
+  const description = player360MetaDescription(model, { seen: seenMetaDescriptions });
   const canonical = playerUrls.playerCanonicalUrl(player.id);
   // İNDEKS KARARI (ortak işlev, scripts/lib/playerIndexing.mjs): kesinleşmiş
   // transferi olan oyuncu ya da en az bir KAYNAKLI içerik bölümü (sezon,

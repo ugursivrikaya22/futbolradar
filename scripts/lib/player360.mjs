@@ -22,6 +22,7 @@
  */
 
 import { createRequire } from "node:module";
+import { playerMetaDescription, uniquePlayerMetaDescription } from "./playerMeta.mjs";
 
 const require = createRequire(import.meta.url);
 const { competitionLabel, t } = require("../../services/i18n.js");
@@ -1103,6 +1104,19 @@ export function player360Description(model, options = {}) {
     result = candidate;
   }
   return result;
+}
+
+/**
+ * TR META AÇIKLAMASI — 150–160 karakter, oyuncu adı + kulüp + mevki + öne
+ * çıkan istatistik (scripts/lib/playerMeta.mjs). `seen` verilirse sayfalar
+ * arası benzersizlik de sağlanır. Görünür "lead" metni `player360Description`
+ * olarak kalır; ikisi ayrı amaçlara hizmet eder.
+ */
+export function player360MetaDescription(model, options = {}) {
+  const deps = { careerClubList };
+  return options.seen
+    ? uniquePlayerMetaDescription(model, deps, options.seen)
+    : playerMetaDescription(model, deps);
 }
 
 /** SEO başlığı. TR'de "kimdir" kalıbı, ~60 karakter; uzun adlarda kuyruk kısalır. */
