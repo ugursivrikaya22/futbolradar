@@ -24980,3 +24980,36 @@ a.home-featured-column__note-link:focus-visible { outline: none; box-shadow: var
 @media (prefers-reduced-motion: reduce) {
   .result-card { transition: none; }
 }
+
+/* Yazı sonundaki yazar kutusu ve yazar sayfası biyografisi. */
+.column-author-box {
+  margin: 28px 0 0;
+  padding: 16px 18px;
+  border: 1px solid var(--line, rgba(127, 127, 127, 0.28));
+  border-radius: 12px;
+  display: grid;
+  gap: 4px;
+}
+.column-author-box-label,
+.column-author-box-role,
+.column-author-role {
+  font-size: 0.82rem;
+  opacity: 0.75;
+}
+.column-author-box-name {
+  font-weight: 700;
+  text-decoration: none;
+}
+.column-author-box p,
+.column-author-bio {
+  margin: 4px 0 0;
+  line-height: 1.55;
+}
+.column-author-links {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+}

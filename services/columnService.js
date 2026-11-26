@@ -28,6 +28,7 @@
  */
 
 const { t } = require("./i18n.js");
+const { resolveAuthor, validateAuthorForPublish } = require("./authorService.js");
 
 /** Yazı durumları. Sıra bir yaşam döngüsüdür. */
 const STATUSES = Object.freeze({
@@ -228,8 +229,10 @@ function hasEnglish(entry) {
 }
 
 /** Yazarın tüm yayımlanmış yazılarını listeleyen kalıcı sayfa yolu. */
-function authorPath(name) {
-  return `yazarlar/${slugify(name)}.html`;
+function authorPath(name, entry) {
+  // Kayıtlı yazarın slug'ı data/authors.json'dan gelir; kayıtsız ad eskisi gibi
+  // addan türetilir (yayımlanmış yazar sayfası adresleri değişmez).
+  return resolveAuthor({ ...(entry || {}), author: name }).path;
 }
 
 /** Vurgulu alıntı. Metin yoksa basılmaz; künye boş kalabilir. */
@@ -301,7 +304,8 @@ function presentColumn(entry, locale) {
     hasEnglish: hasEnglish(entry),
     title: text(source.title),
     author: text(entry.author),
-    authorPath: authorPath(entry.author),
+    authorProfile: resolveAuthor(entry),
+    authorPath: resolveAuthor(entry).path,
     date: text(entry.date),
     category,
     categoryLabel: categoryLabelFor(category, wanted),
@@ -402,6 +406,12 @@ function publishedColumns(store, options = {}) {
       continue;
     }
     if (text(entry.status) !== "published") continue;
+    // Yazar kapısı: kişi yazar kayıtlı ve biyografili olmalı.
+    const authorVerdict = validateAuthorForPublish(resolveAuthor(entry));
+    if (!authorVerdict.ok) {
+      rejected.push({ id: text(entry.id), errors: [authorVerdict.reason] });
+      continue;
+    }
     if (englishOnly && !hasEnglish(entry)) continue;
     columns.push(presentColumn(entry, options.locale));
   }
