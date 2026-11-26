@@ -15,6 +15,7 @@ import {
 } from "./lib/player360.mjs";
 import { turkishPlayer360 } from "./lib/player360English.mjs";
 import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
+import { playerNameNeedsReview } from "./lib/playerNameGate.mjs";
 import { hasSubstantivePlayerContent } from "./lib/playerIndexing.mjs";
 
 const root = process.cwd();
@@ -483,7 +484,9 @@ function pageHtml(player) {
   // kadro durumu, kupa) taşıyan sayfa indekslenir. Hiçbiri yoksa sayfa yalnızca
   // ad + mevkiden ibarettir: noindex,follow; `generate-static-seo-pages`
   // noindex sayfayı site haritasına zaten almaz.
-  const indexable = view.verified || Boolean(recentTransfer) || hasSubstantivePlayerContent(model);
+  // Ad sıra bozukluğu şüphesi taşıyorsa ("Sami Bircan Ahmet") ad düzelene ya da
+  // editör onaylayana kadar noindex: başlık, H1 ve kimdir cümlesi o adı basıyor.
+  const indexable = !playerNameNeedsReview(player, root) && (view.verified || Boolean(recentTransfer) || hasSubstantivePlayerContent(model));
   // Sıfır ya da tire basılmaz: gerçek bir ölçüm sanılabilir. Doğrulanmamış
   // kayıtta puan rozeti HİÇ çizilmez (aşağıda view.verified ile).
   //
