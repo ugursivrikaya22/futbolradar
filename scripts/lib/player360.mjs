@@ -149,6 +149,10 @@ function renderSeason(model, locale) {
   const heading = text("player360.season.heading", locale, name, model.season);
   const stats = model.seasonStats;
 
+  // Doğrulanmış sezon verisi yoksa bölüm HİÇ basılmaz: "henüz eşleşmedi"
+  // notu taşıyan boş bir başlık okuyucuya bilgi değil gürültü verir.
+  if (!stats.available) return "";
+
   if (stats.snapshot) {
     const cards = stats.metrics.map(row => {
       const value = row.available ? row.display : "—";
@@ -170,13 +174,6 @@ function renderSeason(model, locale) {
     </section>`;
   }
 
-  if (!stats.available) {
-    return `<section class="p360" aria-labelledby="p360-season-title" data-p360-section="season">
-        <div class="p360-head"><h2 id="p360-season-title">${escapeHtml(heading)}</h2></div>
-        ${emptyNote(text("player360.season.empty", locale, model.season))}
-      </section>`;
-  }
-
   const core = stats.core.map((row) => statCard(row.key, row.value, locale)).join("");
   const positional = stats.positional.length
     ? `<h3 class="p360-subhead">${escapeHtml(text("player360.season.positional", locale))}</h3>
@@ -191,6 +188,56 @@ function renderSeason(model, locale) {
         <div class="p360-stat-grid">${core}</div>
         ${positional}
         ${source}
+      </section>`;
+}
+
+// ── Özet şeridi ─────────────────────────────────────────────────────────────
+
+/**
+ * ÖZET ŞERİDİ — yaş, uyruk, güncel kulüp, sezon gol/asist/dakika, son haber.
+ *
+ * Yalnızca modelde DOĞRULANMIŞ olarak duran alanlar basılır; olmayan alan
+ * için kart, "Güncelleniyor" ya da sıfır basılmaz. Hiçbir alan yoksa şerit
+ * ve başlığı hiç çıkmaz. Kimlik kartıyla aynı model alanlarını okur, yeni
+ * bir veri kaynağı açmaz.
+ */
+function renderSummary(model, locale) {
+  const identity = model.identity || {};
+  const cards = [];
+  const card = (label, value) => cards.push(
+    `<div class="p360-stat"><span>${escapeHtml(label)}</span><b>${escapeHtml(value)}</b></div>`);
+
+  if (player360ValuePresent(identity.age)) card(text("player360.identity.age", locale), String(identity.age).trim());
+  if (player360ValuePresent(identity.nationality)) card(text("player360.identity.nationality", locale), String(identity.nationality).trim());
+  if (player360ValuePresent(identity.team)) card(text("player360.identity.club", locale), String(identity.team).trim());
+
+  const stats = model.seasonStats;
+  let hasSeasonCards = false;
+  if (stats && stats.available) {
+    const byKey = new Map((stats.core || []).map((row) => [row.key, row.value]));
+    for (const key of ["appearances", "goals", "assists", "minutes"]) {
+      if (!byKey.has(key)) continue;
+      card(text(`player360.stat.${key}`, locale), formatNumber(byKey.get(key), locale));
+      hasSeasonCards = true;
+    }
+  }
+
+  const latest = model.news && Array.isArray(model.news.general) ? model.news.general[0] : null;
+  const latestLine = latest && latest.href && latest.title
+    ? `<p class="p360-source">${escapeHtml(text("player360.summary.latestNews", locale))}: <a href="${escapeHtml(latest.href)}">${escapeHtml(latest.title)}</a></p>`
+    : "";
+
+  if (!cards.length && !latestLine) return "";
+
+  const heading = text("player360.summary.heading", locale, model.identity.name);
+  const season = hasSeasonCards
+    ? `<p class="p360-source">${escapeHtml(text("player360.summary.seasonNote", locale, stats.season || model.season || ""))}</p>`
+    : "";
+  return `<section class="p360 p360-summary" aria-labelledby="p360-summary-title" data-p360-section="summary">
+        <div class="p360-head"><h2 id="p360-summary-title">${escapeHtml(heading)}</h2></div>
+        <div class="p360-stat-grid">${cards.join("")}</div>
+        ${season}
+        ${latestLine}
       </section>`;
 }
 
@@ -523,12 +570,8 @@ function renderNews(model, locale) {
   const heading = text("player360.news.heading", locale, model.identity.name);
   const items = model.news.general;
 
-  if (!items.length) {
-    return `<section class="p360" aria-labelledby="p360-news-title" data-p360-section="news">
-        <div class="p360-head"><h2 id="p360-news-title">${escapeHtml(heading)}</h2></div>
-        ${emptyNote(text("player360.news.empty", locale))}
-      </section>`;
-  }
+  // İlişkilendirilmiş haber yoksa bölüm basılmaz (boş başlık yok).
+  if (!items.length) return "";
 
   const list = items.map((row) => {
     const date = formatDate(row.publishedAt, locale) || "";
@@ -581,6 +624,7 @@ export function renderPlayer360(model, options = {}) {
   const locale = options.locale === "en" ? "en" : "tr";
 
   return [
+    renderSummary(model, locale),
     renderIdentity(model, locale),
     renderSeason(model, locale),
     renderRegisteredEvidence(model, locale),
