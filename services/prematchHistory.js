@@ -5,7 +5,7 @@ module.exports = function getPrematch(match) {
   const key = [match.homeTeam,match.awayTeam,match.kickoff].join('|');
   if (cache.has(key)) return cache.get(key);
   if (!history) {
-    history = require('../data/slim/prematch-history.json');
+    history = require('../data/prematch-history-index.json');
   }
   const indices = new Set([...(history.teams[teamKey(match.homeTeam)] || []), ...(history.teams[teamKey(match.awayTeam)] || [])]);
   const data = build(match,[...indices].map(index=>history.matches[index]));
