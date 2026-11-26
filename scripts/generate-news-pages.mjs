@@ -527,6 +527,41 @@ if (!selectedId && !newsSitemapOnly) {
   writeDynamicRoutePairs("news", pairs);
 }
 
+/**
+ * ESKİ ÖZET KODLU ADRESLERİN DOSYALARINI TEMİZLE.
+ *
+ * Haber adresi okunur slug'a taşındığında (scripts/migrate-news-slugs.mjs)
+ * eski adresin sayfası artık üretilmez; ama önceki build'den kalan dosya
+ * yayında kalırsa aynı haber iki adreste durur. 301 middleware'de
+ * (middleware.js) olduğundan eski dosya zaten sunulmaz — burada yalnızca
+ * dağıtım paketinden çıkarılır. Yalnızca yönlendirme tablosunda adı geçen
+ * ve artık bir haber kaydına karşılık gelmeyen dosyalar silinir.
+ */
+function pruneMovedNewsPages(currentArticles) {
+  let redirects = {};
+  try {
+    redirects = JSON.parse(fs.readFileSync(path.join(root, "data", "news-slug-redirects.json"), "utf8")).redirects || {};
+  } catch {
+    return 0;
+  }
+  const live = new Set(currentArticles.map((article) => articleSlug(article)));
+  let removed = 0;
+  for (const oldSlug of Object.keys(redirects)) {
+    if (live.has(oldSlug)) continue;
+    for (const targetRoot of [root, path.join(root, "public")]) {
+      for (const rel of [`haber/${oldSlug}.html`, `en/news/${oldSlug}.html`]) {
+        const target = path.join(targetRoot, rel);
+        if (fs.existsSync(target)) {
+          fs.rmSync(target);
+          removed += 1;
+        }
+      }
+    }
+  }
+  return removed;
+}
+
+if (!selectedId && !newsSitemapOnly) pruneMovedNewsPages(articles);
 if (!selectedId && !newsSitemapOnly) updateSitemap(articles);
 const freshCount = selectedId ? 0 : updateNewsSitemap(articles);
 

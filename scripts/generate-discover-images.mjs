@@ -32,6 +32,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import {
+  ARTICLE_SECTIONS,
   DISCOVER_DIR,
   DISCOVER_HEIGHT,
   DISCOVER_WIDTH,
@@ -224,6 +225,27 @@ for (const page of listArticlePages(root, { includePublic: false })) {
     minSize: 38
   });
 }
+
+// ── Yetim kartlar ────────────────────────────────────────────────────────
+// Sayfası artık OLMAYAN yazıya özel kart silinir (ör. haber adresi
+// değişti). Sayfa duruyor ama noindex olduysa kart bırakılır: dönüşüm onu
+// kullanmaya devam eder, gereksiz dosya devinimi olmaz.
+let pruned = 0;
+for (const section of ARTICLE_SECTIONS) {
+  const dir = path.join(root, DISCOVER_DIR, section.kind);
+  if (!fs.existsSync(dir)) continue;
+  for (const name of fs.readdirSync(dir)) {
+    // `<slug>.jpg` ya da küçük eşi `<slug>-768.webp`.
+    const slug = name.endsWith(".jpg") ? name.slice(0, -4) : name.endsWith(`-${DISCOVER_SMALL_WIDTH}.webp`) ? name.slice(0, -`-${DISCOVER_SMALL_WIDTH}.webp`.length) : "";
+    if (!slug || fs.existsSync(path.join(root, section.dir, `${slug}.html`))) continue;
+    for (const base of [root, path.join(root, "public")]) {
+      fs.rmSync(path.join(base, DISCOVER_DIR, section.kind, name), { force: true });
+    }
+    delete manifest[`${DISCOVER_DIR}/${section.kind}/${name}`];
+    pruned += 1;
+  }
+}
+if (pruned) console.log(`discover-images: ${pruned} yetim kart dosyası silindi`);
 
 const pending = jobs.filter((job) => force
   || manifest[job.file] !== hashOf(job)

@@ -18,8 +18,8 @@
  *
  * YAYIMLANABİLİRLİK ÖLÇÜTÜ, SAYFA ÜRETİCİSİNİNKİYLE AYNI OLMAK ZORUNDA.
  * `scripts/generate-news-pages.mjs` bir haberin sayfasını yalnızca şu üç
- * koşulda yazar: geçerli slug, `status === "verified"`, ve en az bir dolu
- * paragraf. Ana sayfa bir habere bağlanıyorsa o haberin sayfası da yazılmış
+ * koşulda yazar: geçerli slug, `status === "verified"`, en az bir dolu
+ * paragraf ve (başlığı "resmen" diyorsa) resmî kaynak bağlantısı. Ana sayfa bir habere bağlanıyorsa o haberin sayfası da yazılmış
  * olmalı — yoksa bağlantı 404'e gider. Aynı üç koşul burada da uygulanır.
  *
  * ARŞİVLENMİŞ HABER SİLİNMEZ, YALNIZCA BAĞLANMAZ. `archived` bir kaydı
@@ -28,6 +28,7 @@
  */
 
 const { promotedNewsId } = require('./newsPriority.js');
+const { officialClaimCheck } = require('./officialClaimGate.js');
 
 const OWN_ORIGIN = "https://www.futbolradar.com/";
 
@@ -71,7 +72,10 @@ function hasOwnPage(article) {
     && hasSlugSource(article)
     && Boolean(text(article.title))
     && text(article.status).toLowerCase() === "verified"
-    && hasBody(article);
+    && hasBody(article)
+    // "Resmen" diyen başlık resmî kaynak bağlantısı olmadan yayımlanmaz
+    // (services/officialClaimGate.js).
+    && officialClaimCheck(article).ok;
 }
 
 /**

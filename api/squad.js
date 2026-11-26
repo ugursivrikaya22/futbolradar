@@ -1,4 +1,5 @@
 const { getProvider, mockProvider } = require("../services/providers");
+const { collapseDuplicates } = require("../services/duplicatePlayerService");
 const {
   DEFAULT_TIMEOUT_MS,
   enforceRateLimit,
@@ -37,6 +38,9 @@ module.exports = async function handler(req, res) {
     data = localData;
     source = mockProvider.source;
   }
+
+  // Sağlayıcı/yerel kaynak fark etmeksizin: tek kayıt, tam ad, Türkçe tek tip mevki.
+  data = collapseDuplicates(data);
 
   if (!validateOrSend(res, data, validateSquad)) {
     return;

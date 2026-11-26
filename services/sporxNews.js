@@ -70,6 +70,8 @@ const MILLI_TAKIM_HINTS = [
 
 const TRANSFER_HINTS = ["transfer", "bonservis", "kirali", "imza"];
 
+const { readableSlug } = require("./newsSlug.js");
+
 function text(value) {
   return String(value === null || value === undefined ? "" : value).trim();
 }
@@ -650,20 +652,6 @@ function jaccard(a, b) {
   return union === 0 ? 0 : shared / union;
 }
 
-/**
- * Sabit (deterministik) kısa özet — FNV-1a 32 bit. Kriptografik değil,
- * yalnızca aynı girdinin her koşuda aynı slug/id parçasını üretmesi için.
- */
-function stableDigest(value) {
-  let hash = 0x811c9dc5;
-  const str = String(value || "");
-  for (let index = 0; index < str.length; index += 1) {
-    hash ^= str.charCodeAt(index);
-    hash = Math.imul(hash, 0x01000193);
-  }
-  return (hash >>> 0).toString(16).padStart(8, "0");
-}
-
 function slugify(value) {
   return String(value || "")
     .normalize("NFD")
@@ -681,7 +669,7 @@ function slugify(value) {
  * hiçbir cümle olduğu gibi kopyalanmaz. Kaynak atfı `sources` alanında ve
  * gövde metninde ("Sporx'in haberine göre") açıkça yer alır.
  */
-function buildArticle({ candidate, classification, transfers = [], now = new Date() }) {
+function buildArticle({ candidate, classification, transfers = [], now = new Date(), existingSlugs = [] }) {
   const rawTitle = text(candidate.title);
   const haystackNormalized = normalizeText(`${rawTitle} ${text(candidate.summary)}`);
   const eventType = detectEventType(haystackNormalized);
@@ -716,13 +704,12 @@ function buildArticle({ candidate, classification, transfers = [], now = new Dat
   const summary = lead;
 
   const publishedAt = text(candidate.publishedAt) || now.toISOString();
-  // Sporx adresinden TÜRETİLEN sabit bir kısa özet — aynı Sporx haberi için
-  // slug her koşuda AYNI olur. `Date.now()` kullanılsaydı aynı Sporx
-  // adresi bir sebeple iki kez işlense bile (ör. sporx-seen.json elle
-  // sıfırlanırsa) her seferinde farklı, çakışma riski taşıyan bir slug
-  // üretilirdi (bkz. Copilot incelemesi).
-  const urlDigest = stableDigest(text(candidate.url) || rawTitle);
-  const slug = slugify(`${team}-${playerName || eventType}-${urlDigest}`).slice(0, 90);
+  // ADRES OKUNUR OLMALI: slug haberin Türkçe başlığından türetilir; eskiden
+  // takım + özne + kaynak adresinin özet kodu eklenirdi ("besiktas-adali-960ce1d5").
+  // Çakışmada yayın tarihi, sonra sıra numarası eklenir (services/newsSlug.js).
+  // Aynı Sporx adresi iki kez işlenmez (sporx-seen.json adrese göre tutar),
+  // dolayısıyla slug'ın kaynak adresine bağlı olması gerekmiyor.
+  const slug = readableSlug(title, { taken: existingSlugs, publishedAt });
 
   const tags = [...new Set([team, sourceName, PRIORITY_LABELS[classification.rank], playerName].filter(Boolean))];
 

@@ -1,4 +1,5 @@
 const { buildSeasonSnapshot } = require("../apiFootballPlayerMetrics.js");
+const { cleanProviderName } = require("../templateLeaks.js");
 const {
   APIFOOTBALL_API_KEY_ENV_NAMES,
   APIFOOTBALL_LEAGUE_ID_ENV_NAMES,
@@ -703,7 +704,8 @@ function normalizeFixture(item) {
       ? { leagueCountry: String(league.country) }
       : {}),
     round: roundNumber(league),
-    venue: (fixture.venue && fixture.venue.name) || null,
+    // Sağlayıcı apostrof yerine ters tırnak yazabiliyor ("York`s LNER ...").
+    venue: cleanProviderName(fixture.venue && fixture.venue.name),
     // Hakem adı sağlayıcı fikstür yükünde hazır geliyordu ama düşürülüyordu;
     // maç bilgi kartı (stadyum/hakem/saat) bu alanı okur. Açıklanmadıysa null.
     referee: fixture.referee || null,
@@ -815,7 +817,7 @@ function normalizeTeam(item) {
     logo: team.logo || null,
     league: "",
     country: team.country || "",
-    venue: venue.name || null,
+    venue: cleanProviderName(venue.name),
     coach: null,
     squadCount: null,
     momentum: null,
