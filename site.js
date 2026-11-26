@@ -770,6 +770,8 @@
       box.setAttribute("data-favourite-team", "");
     }
 
+    // Keep every selected team above the general homepage content.
+    main.insertBefore(box, main.firstChild);
     var teams = [];
     var picking = false;
 
@@ -808,7 +810,18 @@
       box.innerHTML = "";
       // Seçili hâl satırlar/haberler/bağlantılarla uzar; yer baştan ayrılır, seçici hâlinde serbest.
       box.style.minHeight = team && !picking ? "250px" : "";
-      if (team && !picking) renderChosen(team); else renderPicker();
+      if (team && !picking) {
+        var ids = favStore() ? favStore().getState().teams : [chosen];
+        ids.forEach(function(id) {
+          var selected = teams.find(function(item){return item.id === id;});
+          if (!selected) return;
+          var card = document.createElement('article');
+          card.setAttribute('data-favorite-id', id);
+          card.style.cssText = 'min-width:0;padding:12px 0;border-bottom:1px solid var(--border, #293849)';
+          box.appendChild(card);
+          renderChosen(selected, card);
+        });
+      } else renderPicker();
     }
 
     function renderPicker() {
@@ -858,7 +871,7 @@
       return a;
     }
 
-    function renderChosen(team) {
+    function renderChosen(team, box) {
       var title = document.createElement("span");
       title.className = "favourite-team__title";
       title.textContent = "⭐ " + s.title;
@@ -927,7 +940,7 @@
         list = list || [];
         var finished = null;
         list.forEach(function (m) {
-          if (m.status !== "FINISHED" || !(sameClub(m.homeTeam, team.name) || sameClub(m.awayTeam, team.name))) return;
+          if (!/^(FINISHED|FT|AET|PEN)$/.test(String(m.providerStatus || m.status).toUpperCase()) || !(sameClub(m.homeTeam, team.name) || sameClub(m.awayTeam, team.name))) return;
           var t = Date.parse(m.kickoff || "");
           if (isFinite(t) && (!finished || t > Date.parse(finished.kickoff))) finished = m;
         });
@@ -937,11 +950,15 @@
           rowsHost.appendChild(favRow(s.last,
             finished.homeTeam + " " + finished.score.home + "–" + finished.score.away + " " + finished.awayTeam, "", matchHref(finished)));
         }
-        if (upcoming.length) return;
+        if (upcoming.length && finished) return;
         fixturesOnce().then(function (rounds) {
           var all = [];
           (rounds || []).forEach(function (round) { (Array.isArray(round && round.matches) ? round.matches : []).forEach(function (m) { if (m && m.homeTeam && m.awayTeam && m.kickoff) all.push(m); }); });
-          showUpcoming(addUpcoming(all));
+          if (!upcoming.length) showUpcoming(addUpcoming(all));
+          if (!finished) {
+            var results = all.filter(function(m){return /^(FINISHED|FT|AET|PEN)$/.test(String(m.providerStatus || m.status).toUpperCase()) && (sameClub(m.homeTeam,team.name)||sameClub(m.awayTeam,team.name)) && m.score && Number.isFinite(m.score.home) && Number.isFinite(m.score.away);}).sort(function(a,b){return Date.parse(b.kickoff)-Date.parse(a.kickoff);});
+            if (results[0]) {var last = results[0];rowsHost.appendChild(favRow(s.last,last.homeTeam+' '+last.score.home+'–'+last.score.away+' '+last.awayTeam,'',matchHref(last)));}
+          }
         });
       });
 
@@ -5329,4 +5346,13 @@
       paint(data);
     })
     .catch(function () { /* iskelet kalır */ });
+})();
+
+// The public weekly board loads only when its homepage section approaches the viewport.
+(function(){
+  var host=document.querySelector('[data-weekly-predictors]');if(!host)return;
+  var started=false;
+  function load(){if(started)return;started=true;var script=document.createElement('script');script.src='/home-predictors.js';script.async=true;document.head.appendChild(script);}
+  if('IntersectionObserver' in window){var observer=new IntersectionObserver(function(entries){if(entries.some(function(entry){return entry.isIntersecting;})){observer.disconnect();load();}},{rootMargin:'100px'});observer.observe(host);}
+  else if('requestIdleCallback' in window)requestIdleCallback(load);else setTimeout(load,1500);
 })();
