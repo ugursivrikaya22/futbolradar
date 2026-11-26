@@ -8,6 +8,8 @@
     "test:fixtures": "node scripts/test-daily-fixture-reliability.mjs",
     "test:team-hubs": "node scripts/test-team-traffic-hubs.mjs",
     "generate:og-images": "node scripts/generate-og-images.mjs",
+    "test:hreflang-consistency": "node scripts/test-hreflang-consistency.mjs",
+    "audit:hreflang-live": "node scripts/audit-hreflang-live.mjs",
     "test:newsletter": "node --test tests/newsletter.test.cjs",
     "newsletter:dry-run": "node scripts/newsletter-dry-run.mjs",
     "test:match-focus": "node scripts/test-match-focus.mjs",
