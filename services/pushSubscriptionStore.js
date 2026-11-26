@@ -95,8 +95,13 @@ async function removeSubscription(endpoint) {
 /** Bir takımın tüm aboneleri — gol/maç başı bildirimi göndermeden önce okunur. */
 async function listByTeam(favoriteTeam) {
   const query = `${TABLE}?or=(favorite_team.eq.${encodeURIComponent(favoriteTeam)},favorite_teams.cs.{${encodeURIComponent(favoriteTeam)}})&select=endpoint,p256dh,auth,notification_types`;
-  const rows = await supabaseRequest(query, { method: "GET" });
-  return Array.isArray(rows) ? rows : [];
+  const rows = [];
+  for (let offset = 0; ; offset += 1000) {
+    const page = await supabaseRequest(`${query}&order=id&limit=1000&offset=${offset}`, {method:"GET"});
+    if (!Array.isArray(page)) throw new Error('Invalid push subscriber response');
+    rows.push(...page);
+    if (page.length < 1000) return rows;
+  }
 }
 
 /** Başarılı gönderim sonrası teşhis damgası (bkz. migrasyon `last_sent_at`). */
