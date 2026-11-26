@@ -27,6 +27,8 @@ const { resolvePlayerPhoto, playerPhotoAlt } = require("../services/playerPhotoS
 const { publicPlayerView, statsAreVerified, ratingIsVerified } = require("../services/cardCredibility.js");
 const { annotateDuplicates } = require("../services/duplicatePlayerService.js");
 const { absoluteUrl, hreflangOf } = require("../services/i18n.js");
+// Mevki etiketi TEK tablodan: sağlayıcı İngilizce verir ("Attacker"), sayfa Türkçe basar.
+const { positionLabelTr } = require("../services/playerLabels.js");
 // Kıyas eşleri ve adresleri TEK kaynaktan; kıyas sayfalarını üreten script
 // de aynı listeyi okuyor, böylece buradaki her bağlantının bir sayfası var.
 const { createComparisonSlugResolver, profileCompareCandidates } = require("../services/playerComparisonPairs.js");
@@ -224,14 +226,6 @@ function playerTeamMetaPhrase(player) {
 }
 
 /**
- * Meta açıklaması, doğrulanmamış kayıtlarda kulüp ve puan İDDİA ETMEZ.
- *
- * Önceki hâli "güncel takım Schalke 04 ... overall rating 81" gibi cümleler
- * üretiyordu ve bunlar arama sonuçlarında görünüyordu. Yapılandırılmış veri
- * ve meta açıklaması, görünür HTML'den daha tehlikeli: arama motoru bunları
- * olgu olarak yutar.
- */
-/**
  * Profil fotoğrafı — YALNIZCA lisanslı sağlayıcı barındırıcısından.
  *
  * resolvePlayerPhoto yalnızca media.api-sports.io adreslerini kabul ediyor;
@@ -256,23 +250,6 @@ function profileAvatarHtml(player) {
 
 // `hasSubstantivePlayerContent` (indeks kapısı) İngilizce üreticiyle ORTAK:
 // scripts/lib/playerIndexing.mjs.
-
-function playerDescription(player, view) {
-  if (view && !view.verified) {
-    const position = player.position ? `, mevki ${player.position}` : "";
-    return `${player.name}${position}. Güncel kulüp, performans ve piyasa verileri doğrulanmış ` +
-      "sağlayıcı kaydıyla eşleştiğinde bu sayfada yayımlanır.";
-  }
-  // Puan yalnızca KAPIDAN GEÇTİYSE cümleye girer. Kaydın kaynağının
-  // doğrulanmış olması, sağlayıcının göndermediği bir dereceyi
-  // doğrulamıyor; kadro senkronu derecelendirme döndürmüyor.
-  const fields = (view && view.fields) || {};
-  const rating = fields.overallRating || fields.aiRating || fields.rating;
-  const potential = fields.potentialRating;
-  const ratingPhrase = rating ? `, overall rating ${rating}` : "";
-  const potentialPhrase = potential ? `, potansiyel ${potential}` : "";
-  return `${player.name}; ${playerTeamMetaPhrase(player)}, mevki ${player.position}. Transfer geçmişi${ratingPhrase}${potentialPhrase} ve radar metrikleriyle FutbolRadar'da analiz edilir.`;
-}
 
 /**
  * Kıyas sayfalarını üreten script (generate-player-comparison-pages.mjs)
@@ -352,7 +329,7 @@ function transferHeroHtml(player, transfer, age) {
             <article><span>Eski kulüp</span><b>${escapeHtml(transfer.fromTeam)}</b></article>
             <article><span>Transfer tarihi</span><b>${escapeHtml(formatTransferDateTr(transfer.date))}</b></article>
             <article><span>Transfer bedeli</span><b>${escapeHtml(transferFeeLabel(transfer))}</b></article>
-            <article><span>Mevki</span><b>${escapeHtml(player.position || "Mevki bekleniyor")}</b></article>
+            <article><span>Mevki</span><b>${escapeHtml(positionLabelTr(player.position) || "Mevki bekleniyor")}</b></article>
             <article><span>Yaş</span><b>${escapeHtml(age)}</b></article>
           </div>
           ${statsBlock}
@@ -589,10 +566,10 @@ function pageHtml(player) {
             <p class="lead">${escapeHtml(lead)}</p>
           </div>
           ${view.verified
-            ? `<span class="hero-meta">Overall ${escapeHtml(overall)} · ${escapeHtml(player.position)} · ${escapeHtml(age)}</span>`
+            ? `<span class="hero-meta">Overall ${escapeHtml(overall)} · ${escapeHtml(positionLabelTr(player.position))} · ${escapeHtml(age)}</span>`
             // Doğrulanmamış kayıtta puan gösterilmez. Yaş ve mevki bağımsız
             // olarak güvenli bilgiler: kulüpten ve sezondan bağımsızlar.
-            : `<span class="hero-meta">${escapeHtml(player.position || "Mevki bekleniyor")} · ${escapeHtml(age)}</span>`}
+            : `<span class="hero-meta">${escapeHtml(positionLabelTr(player.position) || "Mevki bekleniyor")} · ${escapeHtml(age)}</span>`}
         </div>
       </section>
       ${renderPlayer360Kimdir(model, { locale: "tr" })}

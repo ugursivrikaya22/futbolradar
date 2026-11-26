@@ -12,7 +12,10 @@
  * değer HİÇ basılmaz (alan boş bırakılır). Özel adlar (kulüp, oyuncu)
  * çevrilmez. Sayı, tarih ve bağlantılara dokunulmaz.
  */
+import { createRequire } from "node:module";
 import { findTurkish } from "./turkish-detector.mjs";
+
+const { positionLabelTr } = createRequire(import.meta.url)("../../services/playerLabels.js");
 
 const POSITIONS = {
   "santrfor": "Centre-forward", "forvet": "Forward", "sol kanat": "Left winger", "sağ kanat": "Right winger",
@@ -127,15 +130,8 @@ export function englishPlayer360(model) {
 }
 
 /** İngilizce sağlayıcı etiketlerini Türkçe sayfada sunum karşılığıyla basar. Uydurma değil, mevcut sözlüğün tersidir; karşılığı yoksa değer olduğu gibi kalır. */
-const POSITIONS_TR = {
-  goalkeeper: "Kaleci", defender: "Defans", midfielder: "Orta saha", attacker: "Forvet",
-  forward: "Forvet", "centre-forward": "Santrfor", "center-forward": "Santrfor",
-  "left winger": "Sol kanat", "right winger": "Sağ kanat", winger: "Kanat",
-  "attacking midfielder": "Ofansif orta saha", "central midfielder": "Merkez orta saha",
-  "defensive midfielder": "Defansif orta saha", "centre-back": "Stoper", "center-back": "Stoper",
-  "right-back": "Sağ bek", "left-back": "Sol bek", "full-back": "Bek"
-};
-
+// Mevki karşılıkları TEK tablodan (services/playerLabels.js): hero, kimlik kartı,
+// başlık, meta ve schema.org aynı Türkçe etiketi basar.
 const COUNTRIES_TR = Object.fromEntries(Object.entries(COUNTRIES).map(([trName, enName]) => [key(enName), trName.charAt(0).toLocaleUpperCase("tr-TR") + trName.slice(1)]));
 // Elle düzeltilen özel adlar (baş harf / ı-i).
 Object.assign(COUNTRIES_TR, {
@@ -166,8 +162,8 @@ function fromDictionaryKeep(value, dictionary) {
 export function turkishPlayer360(model) {
   const identity = model && model.identity;
   if (identity) {
-    identity.position = fromDictionaryKeep(identity.position, POSITIONS_TR);
-    identity.secondaryPosition = fromDictionaryKeep(identity.secondaryPosition, POSITIONS_TR);
+    identity.position = positionLabelTr(identity.position);
+    identity.secondaryPosition = positionLabelTr(identity.secondaryPosition);
     identity.nationality = fromDictionaryKeep(identity.nationality, COUNTRIES_TR);
   }
   return model;

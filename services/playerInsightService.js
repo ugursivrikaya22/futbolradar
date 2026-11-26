@@ -9,6 +9,7 @@
  */
 
 const { PER90_BENCHMARKS, hasNumber, metricMap, round } = require("./playerMetricsService");
+const { positionLabelTr } = require("./playerLabels");
 
 const POSITION_LABELS = {
   goalkeeper: "kaleci",
@@ -393,7 +394,7 @@ function candidateSummary(candidate, reason, matchScore) {
     name: candidate.name,
     team: candidate.currentTeam || candidate.team || null,
     league: candidate.league || null,
-    position: candidate.position || null,
+    position: positionLabelTr(candidate.position) || null,
     positionGroup: candidate.positionGroup || null,
     age: candidate.computedAge || candidate.age || null,
     rating: playerRatingValue(candidate),
