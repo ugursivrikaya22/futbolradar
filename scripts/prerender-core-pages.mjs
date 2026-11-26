@@ -4,6 +4,7 @@ import { createRequire } from "node:module";
 import { liveTickerTrack } from "./lib/liveScoresTicker.mjs";
 import { renderHomeTicker } from "./lib/homeTicker.mjs";
 import { renderHomeMatchBanner, selectHomeMatchBannerSchedule } from "./lib/homeMatchBanner.mjs";
+import { renderHomeRecentResults } from "./lib/homeRecentResults.mjs";
 import { matchQuotesTickerBlock } from "./lib/matchQuotesTicker.mjs";
 import {
   fixtureCard as sharedFixtureCard,
@@ -132,6 +133,8 @@ const {
 } = require("../services/featuredMatchSelector.js");
 const { orderForDisplay } = require("../services/postMatchReportStore.js");
 const { renderQuickStats } = require("../services/homeQuickStats.js");
+// Ana sayfa tazelik kuralları (son sonuç ≤ 24 saat, öne çıkan haber ≤ 48 saat).
+const { isFreshFeatured } = require("../services/homeFreshness.js");
 const { buildDailyHeadlines } = require("../services/dailyHeadlines.js");
 const { isHomeFixture } = require("../services/homeFixtureVisibility.js");
 const { buildMatchShareText, renderShareBlock } = require("../services/shareText.js");
@@ -1705,8 +1708,12 @@ function newsStatusBadges(item) {
   return badges.join("");
 }
 
-function newsCardList(limit) {
-  return news.slice(0, limit || news.length).map((item) => {
+function newsCardList(limit, { freshOnly = false } = {}) {
+  // Ana sayfa vitrini yalnızca 48 saatten taze haberi gösterir; "Haberler"
+  // sayfasının tam listesi bu süzgeçten geçmez.
+  const nowMs = Date.now();
+  const pool = freshOnly ? news.filter((item) => isFreshFeatured(item.publishedAt, nowMs)) : news;
+  return pool.slice(0, limit || pool.length).map((item) => {
     const action = newsCardActionLabel(item);
     // Kart tamamen tıklanabilir: <a> gövdesi, iç içe link yok. Kaynağa çıkan
     // linkler `nofollow` taşır (services/sourceLinks.js ile aynı kural).
@@ -1719,7 +1726,7 @@ function newsCardList(limit) {
 }
 
 function newsCards(limit) {
-  return newsCardList(limit).join("");
+  return newsCardList(limit, { freshOnly: true }).join("");
 }
 
 /**
@@ -2123,6 +2130,15 @@ function homeMatchBannerSlot() {
   return renderHomeMatchBanner(selectHomeMatchBannerSchedule(JSON.parse(fs.readFileSync(file, "utf8"))), { base: "./" });
 }
 
+/** ANA SAYFA "SON SONUÇLAR" (services/homeFreshness.js, scripts/lib/homeRecentResults.mjs). */
+function homeRecentResultsSlot(nowMs = Date.now()) {
+  return renderHomeRecentResults(currentMatches(), {
+    nowMs,
+    href: matchDetailPath,
+    dateLabel: (match) => longDateLabel(match.kickoff)
+  });
+}
+
 function homeTickerSlot() {
   const { readTickerFile, selectHomeTickerItems } = require("../services/homeTicker.js");
   const { items, rejected } = selectHomeTickerItems(readTickerFile(path.join(root, "data", "ticker.json")));
@@ -2158,6 +2174,7 @@ writePage("index.html", {
   "match-quotes": matchQuotesTicker(),
   "home-ticker": homeTickerSlot(),
   "home-match-banner": homeMatchBannerSlot(),
+  "home-recent-results": homeRecentResultsSlot(),
   // "Bugünün Maçları" bölümünden yayın programı sayfasına iç bağlantı.
   // Önceden index.html'e elle yazılmıştı; kartın içeriğini istemci
   // yeniden çizdiğinde dokunmuyordu ama bir önceki elle-taşıma turunda bu
