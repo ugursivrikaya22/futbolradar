@@ -1,6 +1,7 @@
 const apiFootballProvider = require("./providers/apiFootballProvider");
 const { normalizeText } = require("./matchRadarService");
 const { repairMojibake } = require("./textEncodingRepair.js");
+const { pickUniqueVariant } = require("./playerNameMatching.js");
 
 const PARTIAL_SQUAD_THRESHOLD = 11;
 
@@ -158,6 +159,22 @@ function matchCanonicalPlayer(canonicalPlayers, providerPlayer, providerBirthDat
     });
     if (!idTaken && placeholderMatches.length === 1) {
       return { match: placeholderMatches[0], method: "name+team+placeholder-provider-id" };
+    }
+  }
+
+  // AD VARYASYONU: sağlayıcı "E. Elmalı" yazarken elle kayıt "Eren Elmalı"
+  // olabiliyor (baş harf, kısa/tek ad, ters sıra, aksan — playerNameMatching).
+  // Birebir ad şartı bu çifti hiç bağlamıyor, yanına ikinci kayıt açılıyordu.
+  // Kural placeholder eşleşmesiyle AYNI sıkılıkta: takım aynı, sağlayıcı kimliği
+  // başka kayıtta kullanılmıyor ve aday TEK. Birden çok aday varsa uydurulmaz.
+  if (providerTeam && providerPlayer.providerId && /^\d+$/.test(String(providerPlayer.providerId))) {
+    const idTaken = canonicalPlayers.some((player) => String(player.providerId || "") === String(providerPlayer.providerId));
+    if (!idTaken) {
+      const placeholders = canonicalPlayers.filter((player) => /^mock-/.test(String(player.providerId || "")));
+      const verdict = pickUniqueVariant({ name: providerPlayer.name, team: providerTeam }, placeholders);
+      if (verdict.match) {
+        return { match: verdict.match.player, method: "name-variant+team+placeholder-provider-id", nameMatch: verdict.match.method };
+      }
     }
   }
 
