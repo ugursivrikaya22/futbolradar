@@ -253,7 +253,9 @@ check("H1 oyuncunun tam adıyla başlar", () => {
 });
 
 check("H2 kalıbı ve tekilliği", () => {
-  const required = ["season", "matches", "availability", "transfers", "career", "news"];
+  // Sezon ve haber bölümü VERİ VARSA basılır, yoksa hiç (boş başlık yok);
+  // bu yüzden zorunlu listede değiller, koşullu denetim aşağıda.
+  const required = ["matches", "availability", "transfers", "career"];
 
   for (const file of generated.slice(0, 120)) {
     const html = readProfile(file);
@@ -267,14 +269,27 @@ check("H2 kalıbı ve tekilliği", () => {
     // Bölüm başlıkları oyuncunun adıyla başlar — uzun kuyruklu aramanın
     // sayfada birebir karşılığı.
     const seasonHeading = /<h2 id="p360-season-title">([^<]*)<\/h2>/.exec(html);
-    assert.ok(seasonHeading, `${file}: sezon başlığı okunamadı`);
-    assert.ok(seasonHeading[1].startsWith(displayNameOf(player)),
-      `${file}: sezon başlığı oyuncu adıyla başlamalı (${seasonHeading[1]})`);
+    assert.equal(html.includes('data-p360-section="season"'), Boolean(seasonHeading), `${file}: sezon bölümü ile başlığı birlikte olmalı`);
+    if (seasonHeading) {
+      assert.ok(seasonHeading[1].startsWith(displayNameOf(player)),
+        `${file}: sezon başlığı oyuncu adıyla başlamalı (${seasonHeading[1]})`);
+    }
+    // Depodaki `futbolcu/*.html` derleme öncesi bayat bir anlık görüntü olabilir;
+    // boş-bölüm kuralı yalnızca bu üreteç sürümüyle üretilmiş sayfada (özet
+    // şeridi işareti var) denetlenir. Taze derlemede bütün sayfalar buna girer.
+    if (html.includes('data-p360-section="summary"')) {
+      assert.ok(!html.includes("henüz doğrulanmış bir kaynakla eşleşmedi"), `${file}: boş sezon notu basılmış`);
+      assert.ok(!html.includes("güncel haber bulunmuyor"), `${file}: boş haber notu basılmış`);
+    }
 
     // Aynı bölüm iki kez basılmaz: kart katmanı çakışanları atlar.
-    for (const key of ["identity", "season", "matches", "career"]) {
+    for (const key of ["identity", "matches", "career"]) {
       const occurrences = html.split(`data-p360-section="${key}"`).length - 1;
       assert.equal(occurrences, 1, `${file}: ${key} bölümü ${occurrences} kez basılmış`);
+    }
+    for (const key of ["season", "news", "summary"]) {
+      const occurrences = html.split(`data-p360-section="${key}"`).length - 1;
+      assert.ok(occurrences <= 1, `${file}: ${key} bölümü ${occurrences} kez basılmış`);
     }
     assert.ok(!html.includes("<h2>Sezon İstatistikleri</h2>"), `${file}: kart katmanı sezon bölümünü tekrarlıyor`);
     assert.ok(!html.includes("<h2>Kariyer Geçmişi</h2>"), `${file}: kart katmanı kariyer bölümünü tekrarlıyor`);
