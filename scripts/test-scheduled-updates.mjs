@@ -440,7 +440,7 @@ assert.doesNotMatch(workflow, /cron: "\d+ \* \* \* \*"/);
 // Beş dakikada bir koşu hiçbir koşulda kabul edilmiyor: sağlayıcı kotası ve
 // Actions dakikası bu sıklığı kaldırmıyor.
 assert.doesNotMatch(workflow, /\*\/5/);
-assert.match(workflow, /group: futbolradar-production-update/);
+assert.match(workflow, /group: site-yuku/);
 assert.match(workflow, /FUTBOLRADAR_AUTOMATION_TOKEN/);
 // Koşu türü artık "Plan" adımında, kalıcı defter ve gerçek saatten karara
 // bağlanıyor (scripts/plan-scheduled-update.mjs → services/operationsPolicy.js).
