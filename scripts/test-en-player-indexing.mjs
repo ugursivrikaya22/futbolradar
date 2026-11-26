@@ -71,10 +71,11 @@ check("İngilizce üretici ortak kapıyı içe aktarıyor, yerelde tanımlamıyo
   assert.doesNotMatch(en, /function hasSubstantivePlayerContent|function playerPageIsIndexable/);
 });
 check("iki üretici de indeks kararını ortak kapıdan veriyor; `verified` tek başına gerekçe değil", () => {
-  assert.match(en, /const indexable = playerPageIsIndexable\(\{ model \}\);/);
-  assert.match(tr, /const indexable = playerPageIsIndexable\(\{ model, hasRecentTransfer: Boolean\(recentTransfer\) \}\);/);
-  assert.doesNotMatch(en, /const indexable = view\.verified/);
-  assert.doesNotMatch(tr, /const indexable = view\.verified/);
+  // Ortak içerik kapısı + ad-inceleme kapısı (playerNameNeedsReview) birlikte.
+  assert.match(en, /const indexable = !playerNameNeedsReview\(player, root\) && playerPageIsIndexable\(\{ model \}\);/);
+  assert.match(tr, /const indexable = !playerNameNeedsReview\(player, root\) && playerPageIsIndexable\(\{ model, hasRecentTransfer: Boolean\(recentTransfer\) \}\);/);
+  assert.doesNotMatch(en, /const indexable = .*view\.verified/);
+  assert.doesNotMatch(tr, /const indexable = .*view\.verified/);
 });
 check("yalnızca kimlik + biyografi (doğrulanmış olsa da) noindex; kesinleşmiş yeni transfer indeksli", () => {
   assert.equal(playerPageIsIndexable({ model: thin }), false);

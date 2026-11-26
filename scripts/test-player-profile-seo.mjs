@@ -17,6 +17,7 @@ import {
   player360H1,
   player360Person,
   player360Title,
+  player360TransferTitle,
   player360ValuePresent,
   renderPlayer360,
   renderPlayer360Kimdir
@@ -335,6 +336,26 @@ function testKimdirSkipsPendingAndUnverifiedFields() {
   assert.ok(source.includes("ROBOTS_NOINDEX_FOLLOW"));
 }
 
+function testTransferTitle() {
+  const model = (name) => ({ identity: { name } });
+  // Batrakov kalıbı: kulüp adı + "Transferi ve İstatistikleri" + marka.
+  assert.equal(
+    player360TransferTitle(model("Aleksey Batrakov"), "Galatasaray", { locale: "tr" }),
+    "Aleksey Batrakov Galatasaray Transferi ve İstatistikleri | FutbolRadar"
+  );
+  // Uzun ad + uzun kulüp: önce marka, sonra "ve İstatistikleri" düşer; kulüp adı KALIR.
+  const long = player360TransferTitle(model("Mohammed Abdelmoneim Ahmed"), "Corendon Alanyaspor", { locale: "tr" });
+  assert.ok(long.includes("Corendon Alanyaspor Transferi"), long);
+  assert.ok(long.length <= 70 || !long.includes(" | "), long);
+  // Kulüp bilinmiyorsa genel "kimdir" başlığına dönülür (başlığa "undefined" sızmaz).
+  const noTeam = player360TransferTitle(model("Test Oyuncu"), "", { locale: "tr" });
+  assert.ok(/kimdir/i.test(noTeam) && !/undefined/.test(noTeam), noTeam);
+  // Üretici yalnızca kesinleşmiş (recentTransfer) oyuncuda bu başlığı kullanır.
+  const generator = fs.readFileSync(path.join(process.cwd(), "scripts", "generate-player-profile-pages.mjs"), "utf8");
+  assert.ok(/recentTransfer\s*\?\s*player360TransferTitle\(/.test(generator));
+  assert.ok(/:\s*player360Title\(model/.test(generator), "transferi olmayanlar mevcut başlık biçiminde kalmalı");
+}
+
 const tests = [
   testOfficialSourcesAreAllowed,
   testOfficialMatcherHitsKnownPlayers,
@@ -348,7 +369,8 @@ const tests = [
   testNoindexRuleStillInGenerator,
   testKimdirTitleH1AndBreadcrumb,
   testKimdirBioAndFaqMatchSchema,
-  testKimdirSkipsPendingAndUnverifiedFields
+  testKimdirSkipsPendingAndUnverifiedFields,
+  testTransferTitle
 ];
 
 for (const test of tests) test();
