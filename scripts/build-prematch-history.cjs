@@ -9,8 +9,8 @@ for(const row of (archived.records||[]).map(r=>r.match).concat(Array.isArray(mat
  const key=[row.homeTeam,row.awayTeam,row.kickoff].join('|');if(seen.has(key))continue;seen.add(key);
  rows.push({homeTeam:row.homeTeam,awayTeam:row.awayTeam,kickoff:row.kickoff,status:'FINISHED',score:{home:row.score.home,away:row.score.away}});
 }
-fs.mkdirSync(path.join(root,'data/slim'),{recursive:true});
+fs.mkdirSync(path.join(root,'data'),{recursive:true});
 const {teamKey}=require('../prematch-stats');
 const teams={};rows.forEach((row,index)=>{for(const name of [row.homeTeam,row.awayTeam]){const key=teamKey(name);(teams[key]||(teams[key]=[])).push(index);}});
-fs.writeFileSync(path.join(root,'data/slim/prematch-history.json'),JSON.stringify({matches:rows,teams})+'\n');
-console.log('Compact pre-match history: '+rows.length+' results, '+fs.statSync(path.join(root,'data/slim/prematch-history.json')).size+' bytes.');
+fs.writeFileSync(path.join(root,'data/prematch-history-index.json'),JSON.stringify({matches:rows,teams})+'\n');
+console.log('Compact pre-match history: '+rows.length+' results, '+fs.statSync(path.join(root,'data/prematch-history-index.json')).size+' bytes.');
