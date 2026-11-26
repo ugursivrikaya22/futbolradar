@@ -11,7 +11,7 @@
  *     yalnızca sağlayıcı DAHA İLERİ bir durum bildirdiğinde DOM'a dokunur.
  *     Skoru olmayan bir "canlı" iddiası çizilmez; bitmiş sayfa geri gitmez.
  *   • Yoklama yalnızca gerektiğinde: başlamaya bir saatten çok varsa hiç
- *     istek atılmaz; canlıyken 45 sn, bitince durur; sekme arka plandayken
+ *     istek atılmaz; canlıyken 30 sn, bitince durur; sekme arka plandayken
  *     bekler. Böylece sağlayıcı kotası ve sayfa hızı korunur.
  *   • Başlık (document.title) canlı/bitiş hâline göre güncellenir; H1 ve
  *     canonical değişmez — URL kalıcıdır.
@@ -62,7 +62,8 @@
     return Math.min(Math.max(seconds, 15), 600) * 1000;
   }
 
-  var LIVE_POLL_MS = pollMs("data-msp-poll-live", 45);
+  var LIVE_POLL_MS = Math.min(pollMs("data-msp-poll-live", 30), 30000);
+  var inFlight = false;
   var PRE_POLL_MS = pollMs("data-msp-poll-pre", 120);
   var GRACE_MS = 150 * 60 * 1000;
   var LIVE_CODES = { LIVE: 1, HALFTIME: 1, INTERRUPTED: 1, "1H": 1, "2H": 1, HT: 1, ET: 1, BT: 1, P: 1, IN_PLAY: 1, PAUSED: 1, SUSP: 1, INT: 1 };
@@ -284,7 +285,7 @@
     var pulseSignature = pulse && pulse.pulse
       ? [pulse.pulse.home, pulse.pulse.away, pulse.window ? pulse.window.toMinute : "", (pulse.momentum && pulse.momentum.segments || []).length].join(",")
       : "";
-    var signature = [status, score.home, score.away, detail.minute, (detail.events || []).length, (detail.statistics || []).length, pulseSignature].join("|");
+    var signature = JSON.stringify([status, score, detail.minute, detail.events || [], detail.statistics || [], pulse || null]);
     var changed = signature !== lastSignature;
     lastSignature = signature;
     if (!changed) return;
@@ -399,6 +400,7 @@
 
   function tick() {
     timer = null;
+    if (inFlight || finished) return;
     if (document.hidden) { schedule(LIVE_POLL_MS); return; }
     var now = Date.now();
     if (now < kickoffMs - 5 * 60 * 1000) { schedule(Math.min(kickoffMs - 5 * 60 * 1000 - now, PRE_POLL_MS)); return; }
@@ -406,6 +408,7 @@
     // üretiliyor (services/radarPulseBuilder.js); istek dili taşımazsa
     // sunucu Türkçe varsayar ve İNGİLİZCE sayfada Türkçe bir cümle çıkar.
     // Sayfa dilini yalnızca bu istemci biliyor, bu yüzden burada ekleniyor.
+    inFlight = true;
     fetch("/api/match-detail?" + query + "&locale=" + encodeURIComponent(locale), { cache: "no-store" })
       .then(function (response) { if (!response.ok) throw new Error("http " + response.status); return response.json(); })
       .then(function (payload) {
@@ -419,7 +422,8 @@
         var stale = status === "scheduled" && now - kickoffMs > GRACE_MS;
         schedule(stale ? 15 * 60 * 1000 : status === "scheduled" ? PRE_POLL_MS : LIVE_POLL_MS);
       })
-      .catch(function () { schedule(LIVE_POLL_MS * 2); });
+      .catch(function () { schedule(LIVE_POLL_MS * 2); })
+      .finally(function () { inFlight = false; });
   }
 
   /* ------------------------------------------------------------------ */
