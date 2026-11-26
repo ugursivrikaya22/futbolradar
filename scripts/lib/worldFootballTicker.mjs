@@ -14,6 +14,7 @@ import { parseRss } from "../sync-football-news.mjs";
 const require = createRequire(import.meta.url);
 const { isAllowedSourceUrl } = require("../../services/sourceLinks.js");
 const { validateTickerItem } = require("../../services/newsTicker.js");
+const { nationLabelTr } = require("../../services/displayLabels.js");
 
 export const TRANSLATE_URL_ENV = "FUTBOLRADAR_TICKER_TRANSLATE_URL";
 export const FRESHNESS_MS = 48 * 60 * 60 * 1000;
@@ -336,7 +337,9 @@ export function apiFootballScoreItems(matches, options = {}) {
     rows.push({
       id: `score-${id}`,
       label: live ? (locale === "en" ? "Live" : "Canlı") : (locale === "en" ? "Full time" : "Sonuç"),
-      text: `${home} ${Number(score.home)}-${Number(score.away)} ${away}`,
+      text: locale === "en"
+        ? `${home} ${Number(score.home)}-${Number(score.away)} ${away}`
+        : `${nationLabelTr(home)} ${Number(score.home)}-${Number(score.away)} ${nationLabelTr(away)}`,
       href: locale === "en" ? `en/live-football-scores.html#${id}` : `canli-skor.html#${id}`,
       at: new Date(kickoff).toISOString(),
       source: "match",

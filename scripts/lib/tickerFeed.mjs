@@ -58,6 +58,7 @@ const {
 } = require("../../services/newsTicker.js");
 
 const { promotedNewsId } = require('../../services/newsPriority.js');
+const { nationLabelTr } = require('../../services/displayLabels.js');
 const { newsHref } = require('../../services/newsFeed.js');
 const root = process.cwd();
 
@@ -197,7 +198,7 @@ function matchItems(now) {
     if (live && hasScore(match)) {
       items.push({
         label: "Canlı",
-        text: `${match.homeTeam} ${match.score.home}-${match.score.away} ${match.awayTeam}`,
+        text: `${nationLabelTr(match.homeTeam)} ${match.score.home}-${match.score.away} ${nationLabelTr(match.awayTeam)}`,
         href: `canli-skor.html#${match.id}`,
         at: stamp,
         source: "match",
@@ -206,7 +207,7 @@ function matchItems(now) {
     } else if (finished && hasScore(match)) {
       items.push({
         label: "Sonuç",
-        text: `${match.homeTeam} ${match.score.home}-${match.score.away} ${match.awayTeam}`,
+        text: `${nationLabelTr(match.homeTeam)} ${match.score.home}-${match.score.away} ${nationLabelTr(match.awayTeam)}`,
         href: match.matchPage || match.analysisPage || reportByMatch.get(match.id) || `canli-skor.html#${match.id}`,
         at: stamp,
         source: "match",

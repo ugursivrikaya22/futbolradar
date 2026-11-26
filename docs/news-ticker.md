@@ -277,3 +277,19 @@ Geçersiz kayıt **silinmez**, raporlanır ve dosyada bırakılır; betik 1 ile
 | `scripts/test-news-ticker.mjs` | Güven modeli, çelişki reddi, çekince zorunluluğu, raf ömrü, `expiresAt`, son dakika penceresi, editoryal sıra, tekleştirme, şablon rozeti, gerçek veri dosyasının geçerliliği |
 | `scripts/test-ticker-feed.mjs` | Kaynak birleştirme, kalabalık sınırı, yinelenen haber yokluğu, sıra, gündem kotası, tazelik rozeti, veri kesintisinde yedek koruma |
 | `scripts/test-ticker-refresh.mjs` | Otomatik bakım: bayat kayıt düşürme, son dakika sönümü, `news.json` aynası, uydurma yasağı, kuru koşu |
+
+## Metin dili ve kısaltma (kompakt bant)
+
+- **Takım adı dili.** Maç öğelerinde (`Canlı` / `Sonuç`) millî takım adları
+  Türkçe basılır: `Italy 3-1 Türkiye` değil `İtalya 3-1 Türkiye`. Çeviri
+  `services/displayLabels.js` → `nationLabelTr()`; yalnızca bilinen ülke adını
+  çevirir, kulüp ve tanınmayan adlara dokunmaz. İngilizce bant kayıttaki adı
+  korur.
+- **Kısaltma kelime sınırında.** Kompakt (iç sayfa) bantta başlık
+  `COMPACT_TICKER_TEXT_LIMIT` (90) karakteri aşarsa `shortenTickerText()`
+  kelime sınırında keser ve "…" koyar; tam metin `aria-label`'da (istemci
+  veride `fullText`) kalır. CSS yalnızca başlığı (`.news-ticker-text`)
+  `line-clamp: 1` ile kırpar; etiket, güven rozeti ve kaynak adı asla
+  kırpılmaz. 720px altında kompakt bant ilk öğeyi gösterir ve kaynak adını
+  gizler (kaynak `title`/`aria-label`'da durur). Kayan tam bant
+  (ana sayfa, haberler) kısaltılmaz.

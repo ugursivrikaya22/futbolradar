@@ -172,7 +172,7 @@ try {
     assert.equal(feed.schemaVersion, 1);
     assert.ok(feed.tr.items.length >= 1 && feed.tr.items.length <= 3);
     const unescape = (value) => value.replace(/&#0?39;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
-    assert.ok(unescape(before["index.html"]).includes(feed.tr.items[0].text), "ana sayfa bandı ile veri dosyası aynı ilk öğeyi taşır");
+    assert.ok(unescape(before["index.html"]).includes(feed.tr.items[0].fullText || feed.tr.items[0].text), "ana sayfa bandı ile veri dosyası aynı ilk öğeyi taşır");
   });
 
   test("uçtan uca: ikinci koşu hiçbir dosyayı değiştirmez (idempotan)", () => {
