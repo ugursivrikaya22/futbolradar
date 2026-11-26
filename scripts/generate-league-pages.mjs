@@ -129,6 +129,8 @@ function resultsSectionHtml(matches) {
 
 function standingsSectionHtml(standingsEntry, competition) {
   if (!standingsEntry || !Array.isArray(standingsEntry.table) || !standingsEntry.table.length) return "";
+  const groups = [...new Set(standingsEntry.table.map(row => row.group).filter(Boolean))];
+  if (groups.length > 1) return groups.map(group => '<h2>' + escapeHtml(group) + '</h2>' + standingsSectionHtml({...standingsEntry, table:standingsEntry.table.filter(row=>row.group===group).map(row=>({...row,group:null}))}, competition)).join('');
   const rows = standingsEntry.table.map((row) => {
     const href = standingsTeamHref(row, { locale: "tr", from: "lig" });
     const name = href
@@ -192,9 +194,10 @@ function transferRadarLinkHtml(competition) {
   return `<p><a class="section-link" href="../transfer-radari.html#lig-${tab}">${escapeHtml(competition.name)} transferleri: Transfer Radarı</a></p>`;
 }
 
-function leaguePageHtml(competition, { upcoming, results, standingsEntry }) {
-  const url = `${DOMAIN}/lig/${competition.id}.html`;
-  const title = `${competition.name} — Fikstür, Sonuçlar ve Puan Durumu | FutbolRadar`;
+export function leaguePageHtml(competition, { upcoming, results, standingsEntry, view = "overview" }) {
+  const url = view === "overview" ? `${DOMAIN}/lig/${competition.id}.html` : `${DOMAIN}/lig/${competition.id}/${view}.html`;
+  const label = {fikstur:"Fikstür", "canli-skor":"Canlı Skor", "puan-durumu":"Puan Durumu"}[view] || "Fikstür, Sonuçlar ve Puan Durumu";
+  const title = `${competition.name} — ${label} | FutbolRadar`;
   const description = `${competition.name} güncel fikstür, maç sonuçları${standingsEntry ? " ve puan durumu" : ""}. Doğrulanmış veriler FutbolRadar'da.`;
 
   const jsonLd = {
@@ -205,7 +208,7 @@ function leaguePageHtml(competition, { upcoming, results, standingsEntry }) {
     url
   };
 
-  return `<!doctype html>
+  const html = `<!doctype html>
 <html lang="tr">
   <head>
     <meta charset="utf-8" />
@@ -224,6 +227,7 @@ function leaguePageHtml(competition, { upcoming, results, standingsEntry }) {
     <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="../site.webmanifest" />
     <link rel="stylesheet" href="../page.css" />
+    <style>.league-page .table-scroll{max-width:100%;overflow-x:auto}.league-page .standings-table{width:100%;min-width:520px;border-collapse:collapse;text-align:left}.league-page .standings-table th,.league-page .standings-table td{padding:12px 10px;border-bottom:1px solid #dceae5}.league-page [data-league-table] h2{margin-top:28px}</style>
     <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
   </head>
   <body class="subpage league-page">
@@ -233,24 +237,27 @@ function leaguePageHtml(competition, { upcoming, results, standingsEntry }) {
 
       <header class="hero league-page-hero">
         <span class="eyebrow">${escapeHtml(competition.country)}</span>
-        <h1>${escapeHtml(competition.name)}</h1>
+        <h1>${escapeHtml(competition.name)}${view === "overview" ? "" : " · " + label}</h1>
+        ${["1-lig","tff-2-lig","premier-league","la-liga","serie-a","bundesliga","ligue-1"].includes(competition.id) ? `<nav class="favourite-team__links" aria-label="Lig sayfaları">${["fikstur","canli-skor","puan-durumu"].map(v => `<a href="/lig/${competition.id}/${v}.html" ${v===view?'aria-current="page"':""}>${({fikstur:"Fikstür","canli-skor":"Canlı skor","puan-durumu":"Puan durumu"})[v]}</a>`).join("")}</nav>` : ""}
         <p><a class="section-link" href="../bugunun-maclari.html?league=${escapeHtml(competition.id)}">Tüm ${escapeHtml(competition.name)} maçlarını gör</a></p>
         ${transferRadarLinkHtml(competition)}
       </header>
 
-      <section class="league-page-section">
-        <h2>Bugün ve yaklaşan maçlar</h2>
-        ${upcomingSectionHtml(upcoming)}
-      </section>
+      ${view === "puan-durumu" ? "" : `<section class="league-page-section">
+        <h2>${view === "canli-skor" ? "Canlı maçlar" : "Bugün ve yaklaşan maçlar"}</h2>
+        <div ${view === "canli-skor" ? `data-league-live="${competition.id}" data-provider-league="${competition.providers.apiFootball}"` : ""}>${upcomingSectionHtml(upcoming)}</div>
+      </section>`}
 
-      ${resultsSectionHtml(results)}
-      ${standingsSectionHtml(standingsEntry, competition)}
+      ${view === "overview" || view === "fikstur" ? resultsSectionHtml(results) : ""}
+      ${view === "overview" ? standingsSectionHtml(standingsEntry, competition) : view === "puan-durumu" ? `<div data-league-table="${competition.id}">${standingsSectionHtml(standingsEntry, competition) || "<p>Puan durumu yükleniyor…</p>"}</div>` : ""}
     </main>
     ${siteFooter({ base: "../" })}
     <script src="../site.js" defer></script>
+    ${view === "canli-skor" || view === "puan-durumu" ? '<script src="/league-live.js" defer></script>' : ""}
   </body>
 </html>
 `;
+  return view === "overview" ? html : html.replaceAll('="../', '="../../');
 }
 
 function sitemapEntry(competition, freshness) {
