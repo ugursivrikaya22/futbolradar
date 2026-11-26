@@ -9,6 +9,8 @@ const { getPlayers, formatMarketValueEur } = require("../services/playerService.
 const { publicPlayerView } = require("../services/cardCredibility.js");
 const { buildPlayerProfile } = require("../services/playerProfileService.js");
 const { createPlayerUrlResolver } = require("../services/playerUrl.js");
+const { positionLabelTr } = require("../services/playerLabels.js");
+const { localizePlayers, localizeTransfer } = require("../services/turkishNames.js");
 
 /**
  * Profil sayfası artık sabit bir dizinde değil: tam adı bilinen oyuncu
@@ -25,8 +27,8 @@ const playerUrls = createPlayerUrlResolver((() => {
   }
 })());
 const playerProfileView = require("../player-profile.js");
-const players = getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8")));
-const transfers = JSON.parse(fs.readFileSync(path.join(root, "data", "transfers.json"), "utf8"));
+const players = localizePlayers(getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"))));
+const transfers = JSON.parse(fs.readFileSync(path.join(root, "data", "transfers.json"), "utf8")).map(localizeTransfer);
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -42,7 +44,7 @@ function rating(player) {
 }
 
 function team(player) {
-  return player.currentTeam || player.team || "Takim bilgisi yakinda";
+  return player.currentTeam || player.team || "Takım bilgisi yakında";
 }
 
 /**
@@ -69,7 +71,7 @@ function playerCard(player, rootPrefix = "../") {
 
   if (!view.verified) {
     return `<article class="card player-detail-card" data-card="player" data-player="${escapeHtml(player.id)}" data-player-verified="false">
-    <div class="card-head"><div><span class="card-kicker">${escapeHtml(player.position || "Mevki bekleniyor")}</span><h2>${escapeHtml(player.name)}</h2></div></div>
+    <div class="card-head"><div><span class="card-kicker">${escapeHtml(positionLabelTr(player.position) || "Mevki bekleniyor")}</span><h2>${escapeHtml(player.name)}</h2></div></div>
     <div class="metric-grid compact"><span>Yaş <b>${escapeHtml(age)}</b></span></div>
     <p>Güncel kulüp, performans ve piyasa verileri doğrulanmış sağlayıcı kaydıyla eşleştiğinde yayımlanır.</p>
     <a class="detail-link" href="${escapeHtml(playerCardHref(player, rootPrefix))}">Oyuncu profilini aç</a>
@@ -90,7 +92,7 @@ function playerCard(player, rootPrefix = "../") {
     : (view.fields.marketValue || null);
   const clubValue = view.fields.currentTeam || view.fields.team;
 
-  const kicker = [clubValue, player.position || "Mevki bekleniyor"].filter(Boolean).join(" · ");
+  const kicker = [clubValue, positionLabelTr(player.position) || "Mevki bekleniyor"].filter(Boolean).join(" · ");
   const badge = ratingValue
     ? `<strong class="big-value player-rating-badge">${escapeHtml(ratingValue)}</strong>`
     : "";
@@ -232,7 +234,7 @@ for (const slug of ["forvetler", "kaleciler", "defanslar", "orta-sahalar", "genc
   const selected = players.filter(filter).sort((a, b) => Number(rating(b)) - Number(rating(a)));
   const content = selected.length
     ? selected.map((player) => playerCard(player, "../")).join("\n")
-    : `<article class="data-empty"><strong>Bu listede oyuncu bulunamadi</strong><span>Yeni ve doğrulanmış oyuncu verileri geldikçe liste genişleyecek.</span></article>`;
+    : `<article class="data-empty"><strong>Bu listede oyuncu bulunamadı</strong><span>Yeni ve doğrulanmış oyuncu verileri geldikçe liste genişleyecek.</span></article>`;
   replaceFile(`oyuncular/${slug}.html`, (html) => html
     .replace(/<span class="hero-meta" data-landing-count>[^<]*<\/span>/, `<span class="hero-meta" data-landing-count>${selected.length} oyuncu</span>`)
     .replace(/<section class="grid" data-api-section="player-seo-landing"[\s\S]*?<\/section>/, `<section class="grid" data-api-section="player-seo-landing" data-api-target="player-seo-landing" data-player-landing="${slug}">${content}</section>`));
@@ -252,7 +254,7 @@ for (const slug of [
   const shouldIndex = selected.length >= 2;
   const content = selected.length
     ? selected.map((player) => playerCard(player, "./")).join("\n")
-    : `<article class="data-empty"><strong>Bu listede oyuncu bulunamadi</strong><span>Yeterli oyuncu verisi olustugunda sayfa genisleyecek.</span></article>`;
+    : `<article class="data-empty"><strong>Bu listede oyuncu bulunamadı</strong><span>Yeterli oyuncu verisi oluştuğunda sayfa genişleyecek.</span></article>`;
 
   replaceFile(`${slug}.html`, (html) => {
     const withContent = html

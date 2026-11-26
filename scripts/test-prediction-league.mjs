@@ -274,7 +274,7 @@ function call(handler, { method = "GET", url = "/api/prediction-league", headers
   assert.equal(board.status, 200);
   assert.match(board.headers["cache-control"] + board.headers["cdn-cache-control"], /s-maxage=300/);
   assert.equal(board.headers["set-cookie"], undefined, "önbellekli yanıt çerez set etmez");
-  assert.deepEqual(Object.keys(board.json.data.rows[0]).sort(), ["exact", "nickname", "outcome", "points", "predicted", "rank"], "sıralamada başka hiçbir alan yok");
+  assert.deepEqual(Object.keys(board.json.data.rows[0]).sort(), ["badges", "exact", "nickname", "outcome", "points", "predicted", "rank"], "sıralamada başka hiçbir alan yok");
   assert.equal(board.json.data.rows[0].nickname, "Kaan_61");
   const flat = JSON.stringify(board.json);
   for (const secret of ["recovery", "ipHash", "secret", "player", cookieA.split("=")[1]]) assert.ok(!flat.toLowerCase().includes(secret.toLowerCase()), `sıralamada '${secret}' sızmış`);
@@ -399,3 +399,6 @@ function call(handler, { method = "GET", url = "/api/prediction-league", headers
 }
 
 console.log("prediction-league: tamam");
+
+assert.deepEqual(scoring.weeklyBadges({rank:1,points:15,exact:3}), ["Haftanın lideri","Haftanın nişancısı"]);
+assert.deepEqual(scoring.weeklyBadges({rank:1,points:0,exact:0}), []);

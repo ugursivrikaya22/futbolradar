@@ -146,6 +146,7 @@ module.exports = async function handler(req, res) {
   if (detail) {
     detail.quotes = quotesForMatch(detail.id, managerQuoteStore);
     attachProbability(detail);
+    detail.preMatch = require("../services/prematchHistory")(detail);
   }
 
   // RADAR NABZI — SAĞLAYICIYA FAZLADAN İSTEK ATMADAN.
