@@ -359,7 +359,7 @@ test('workflow: dependencies and Playwright follow the planned type, not the fir
 
 test('workflow: shared write lock is kept and critical failures reach the final result', () => {
   const wf = fs.readFileSync('.github/workflows/match-analysis.yml', 'utf8').replace(/\r\n/g, '\n');
-  assert.match(wf, /group: futbolradar-production-update\r?\n\s+cancel-in-progress: false/);
+  assert.match(wf, /group: site-yuku\r?\n\s+cancel-in-progress: false/);
   assert.equal((wf.match(/continue-on-error: true/g) || []).length, 1, 'only the pipeline step defers its failure');
   assert.match(wf, /name: Fail workflow after status capture\n\s+if: always\(\) && steps\.update\.outcome == 'failure'[\s\S]*?run: exit 1/);
   assert.doesNotMatch(wf, /\|\|\s*true|exit 0/);
@@ -368,7 +368,7 @@ test('workflow: shared write lock is kept and critical failures reach the final 
   const health = fs.readFileSync('.github/workflows/daily-health-check.yml', 'utf8');
   assert.doesNotMatch(health, /continue-on-error|\|\|\s*true|exit 0/);
   const other = ['broadcast-schedule', 'english-news', 'sporx-news-discovery', 'trabzonspor-post-match-column']
-    .every(n => /group: futbolradar-production-update/.test(fs.readFileSync(`.github/workflows/${n}.yml`, 'utf8')));
+    .every(n => /group: site-yuku/.test(fs.readFileSync(`.github/workflows/${n}.yml`, 'utf8')));
   assert(other, 'every production writer shares the lock');
 });
 
