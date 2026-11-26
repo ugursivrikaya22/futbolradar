@@ -17,6 +17,10 @@
  *     ("Omer" → "Ömer" mi, "Omer" mi?). Yalnızca doğruluğu bilinen adlar
  *     eklenir; adres (slug) ve kayıt kimliği bu tablodan ETKİLENMEZ.
  *   • Tanınmayan ad OLDUĞU GİBİ döner; uydurma yazım yok.
+ *
+ * Yarışma ve saha adları ("Türkiye Kupasi", "Ilce Stadi") AYRI bir tablodadır:
+ * scripts/lib/turkishNames.mjs (PROVIDER_NAME_FIXES). Bu dosya yalnızca kulüp
+ * ve oyuncu adlarının tablosudur.
  */
 
 /** ASCII kelime (küçük harf) → doğru yazım. */
