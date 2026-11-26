@@ -9,6 +9,7 @@ import {
   player360H1,
   player360Person,
   player360Title,
+  player360TransferTitle,
   renderPlayer360,
   renderPlayer360Kimdir
 } from "./lib/player360.mjs";
@@ -469,19 +470,8 @@ function pageHtml(player) {
   // o hafta arama "Osimhen Galatasaray transferi" biçiminde geliyor ve
   // kulüp adını taşıyan başlık o niyetin birebir karşılığı. İstisna dar
   // tutuluyor (46 kayıt), çünkü genel kalıp daha geniş bir niyeti kapsıyor.
-  const displayName = model.identity.name;
   const title = recentTransfer
-    ? (function transferTitle() {
-        const brand = " | FutbolRadar";
-        const team = recentTransfer.toTeam;
-        const variants = [
-          `${displayName} Kimdir? ${team} Transferi${brand}`,
-          `${displayName} Kimdir? ${team}${brand}`,
-          `${displayName} Kimdir?${brand}`,
-          `${displayName} Kimdir?`
-        ];
-        return variants.find((row) => row.length <= 60) || variants[variants.length - 1];
-      }())
+    ? player360TransferTitle(model, recentTransfer.toTeam, { locale: "tr" })
     : player360Title(model, { locale: "tr" });
   // Meta her zaman kimdir niyetine uygun üretilir; cümle ortadan kesilmez.
   // Transfer kartı görünür kahraman bölümünde kalır, açıklamayı bölmez.
