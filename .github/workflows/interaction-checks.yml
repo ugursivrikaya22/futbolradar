@@ -7,8 +7,8 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: interactions-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  group: site-yuku
+  cancel-in-progress: false
 jobs:
   production:
     runs-on: ubuntu-latest
