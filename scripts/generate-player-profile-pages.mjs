@@ -14,7 +14,7 @@ import {
 } from "./lib/player360.mjs";
 import { turkishPlayer360 } from "./lib/player360English.mjs";
 import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
-import { hasSubstantivePlayerContent } from "./lib/playerIndexing.mjs";
+import { playerPageIsIndexable } from "./lib/playerIndexing.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -469,12 +469,13 @@ function pageHtml(player) {
   const description = player360Description(model, { locale: "tr" });
   const lead = description;
   const canonical = playerUrls.playerCanonicalUrl(player.id);
-  // İNDEKS KARARI: doğrulanmış oyuncu, kesinleşmiş transferi olan oyuncu ya da
-  // en az bir KAYNAKLI içerik bölümü (sezon, maçlar, kariyer, transfer, haber,
-  // kadro durumu, kupa) taşıyan sayfa indekslenir. Hiçbiri yoksa sayfa yalnızca
-  // ad + mevkiden ibarettir: noindex,follow; `generate-static-seo-pages`
+  // İNDEKS KARARI (ortak işlev, scripts/lib/playerIndexing.mjs): kesinleşmiş
+  // transferi olan oyuncu ya da en az bir KAYNAKLI içerik bölümü (sezon,
+  // maçlar, kariyer, transfer, haber, kadro durumu, kupa) taşıyan sayfa
+  // indekslenir. `verified` tek başına yetmez: yalnızca kimlik + biyografi
+  // olan sayfa ince içeriktir, noindex,follow; `generate-static-seo-pages`
   // noindex sayfayı site haritasına zaten almaz.
-  const indexable = view.verified || Boolean(recentTransfer) || hasSubstantivePlayerContent(model);
+  const indexable = playerPageIsIndexable({ model, hasRecentTransfer: Boolean(recentTransfer) });
   // Sıfır ya da tire basılmaz: gerçek bir ölçüm sanılabilir. Doğrulanmamış
   // kayıtta puan rozeti HİÇ çizilmez (aşağıda view.verified ile).
   //
