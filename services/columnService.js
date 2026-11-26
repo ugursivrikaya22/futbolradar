@@ -95,6 +95,32 @@ function text(value) {
   return String(value === null || value === undefined ? "" : value).trim();
 }
 
+/**
+ * DİPNOT İŞARETLERİNİ AYIKLA: `[1]`, `[2][3]`, `[1, 2]`.
+ *
+ * Gövdede metin içi dipnot işareti BASILMAZ; okur cümlenin ortasında numara
+ * görmez. Kaynaklar yazının sonunda "Kaynaklar" başlığı altında, bağlantılı
+ * liste olarak durur. `[metin](hedef.html)` iç bağlantıları işaret DEĞİLDİR:
+ * yalnızca yalın rakam köşeli parantezi (ve hemen ardından `(` gelmeyen)
+ * silinir. İşaretin önündeki boşluk da gider; "söz [1]." → "söz."
+ */
+function stripCitationMarkers(value) {
+  const input = text(value);
+  const marker = /[ \t]*\[\d+(?:\s*[,–-]\s*\d+)*\](?!\()/g;
+  if (!marker.test(input)) return input;
+  // Yalnızca işaret silinen satırda noktalama öncesi boşluk toplanır;
+  // işaretsiz metne dokunulmaz.
+  return input
+    .replace(marker, "")
+    .replace(/[ \t]+([.,;:!?])/g, "$1")
+    .trim();
+}
+
+/** Kaynak etiketi başındaki "[1] " numarası: liste zaten sıralı. */
+function stripSourceLabelNumber(value) {
+  return text(value).replace(/^\[\d+\]\s*/, "");
+}
+
 function slugify(value) {
   return text(value)
     .toLocaleLowerCase("tr")
@@ -338,20 +364,20 @@ function presentColumn(entry, locale) {
     stats: presentStats(source.stats),
     matchCard: presentMatchCard(source.matchCard),
     keywords: presentKeywords(source.keywords),
-    body: Array.isArray(source.body) ? source.body.map(text).filter(Boolean) : [],
+    body: Array.isArray(source.body) ? source.body.map(stripCitationMarkers).filter(Boolean) : [],
     // GÜNCELLEME NOTLARI — süren bir gündemi izleyen yazılar için.
     //
     // Gövde yayımlandığı gibi kalır; yeni gelişme gövdeyi yeniden yazmak
     // yerine üstte tarihli bir notla eklenir. Okuyucu neyin sonradan
     // eklendiğini görür. En yeni not en üstte.
     updates: (Array.isArray(source.updates) ? source.updates : [])
-      .map((row) => ({ date: text(row && row.date), text: text(row && row.text) }))
+      .map((row) => ({ date: text(row && row.date), text: stripCitationMarkers(row && row.text) }))
       .filter((row) => row.text && !Number.isNaN(Date.parse(row.date)))
       .sort((left, right) => right.date.localeCompare(left.date)),
     // Kaynak künyesi. Dış bağlantı politikası (services/sourceLinks.js)
     // burada da geçerli: beyaz liste testi data/columns.json'u tarıyor.
     sources: (Array.isArray(source.sources) ? source.sources : [])
-      .map((row) => ({ label: text(row && row.label), url: text(row && row.url) }))
+      .map((row) => ({ label: stripSourceLabelNumber(row && row.label), url: text(row && row.url) }))
       .filter((row) => row.label && /^https:\/\//.test(row.url)),
     path: columnPath(entry, wanted),
     // Karşı dilin adresi: hreflang ve dil değiştirme bağlantısı bunu okur.
@@ -446,5 +472,6 @@ module.exports = {
   presentColumn,
   publishedColumns,
   slugify,
+  stripCitationMarkers,
   validateColumn
 };

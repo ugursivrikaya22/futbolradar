@@ -91,11 +91,9 @@ function inlineText(value, base = "", sources = []) {
     /\[([^\]]+)\]\(((?:\.\.\/)*)([a-zA-Z0-9][a-zA-Z0-9_\-./]*\.html(?:#[a-zA-Z0-9_-]+)?)\)/g,
     (match, label, relativePrefix, href) => `<a href="${relativePrefix || base}${canonicalTarget(href)}">${label}</a>`
   );
-  return linked.replace(/\[(\d+)\](?!\()/g, (marker, number) => {
-    const source = sources[Number(number) - 1];
-    if (!source || !/^https:\/\//.test(source.url)) return marker;
-    return `<a href="${escapeHtml(source.url)}" target="_blank" rel="${SOURCE_LINK_REL}" aria-label="${escapeHtml(source.label)}">${marker}</a>`;
-  });
+  // Metin içi [1] dipnot işaretleri presentColumn'da ayıklanır; kaynaklar
+  // yazının sonundaki "Kaynaklar" bölümünde bağlantılı listelenir.
+  return linked;
 }
 
 function writeGeneratedFile(file, contents) {
