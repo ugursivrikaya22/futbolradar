@@ -128,7 +128,9 @@ async function main() {
       candidate: { ...candidate, publishedAt },
       classification,
       transfers: transferRows,
-      now
+      now,
+      // Okunur slug çakışmasını önlemek için yayımlı + bu koşuda üretilen adresler.
+      existingSlugs: new Set([...news.map((item) => item.slug || item.id), ...newArticles.map((item) => item.slug)])
     });
     // Öznesiz şablon haberi (takım adı + olay türü dışında bilgi yok)
     // yayımlanmaz ama adres "görüldü" sayılır; gerekçe services/sporxNews.js
