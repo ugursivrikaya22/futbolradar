@@ -29,6 +29,7 @@ const { annotateDuplicates } = require("../services/duplicatePlayerService.js");
 const { absoluteUrl, hreflangOf } = require("../services/i18n.js");
 // Mevki etiketi TEK tablodan: sağlayıcı İngilizce verir ("Attacker"), sayfa Türkçe basar.
 const { positionLabelTr } = require("../services/playerLabels.js");
+const { localizePlayers, localizeTransfer, personDisplayName } = require("../services/turkishNames.js");
 // Kıyas eşleri ve adresleri TEK kaynaktan; kıyas sayfalarını üreten script
 // de aynı listeyi okuyor, böylece buradaki her bağlantının bir sayfası var.
 const { createComparisonSlugResolver, profileCompareCandidates } = require("../services/playerComparisonPairs.js");
@@ -39,12 +40,15 @@ const { withStoredRatings } = require("../services/playerRatingService.js");
 const { playerRatingCardHtml, ratingAdditionalProperties, ratingUpdatedAt } = require("../services/playerRatingView.js");
 const { formatFreshnessDate } = require("../services/freshnessService.js");
 // `readJson` bir fonksiyon bildirimi olduğu için burada zaten çağrılabilir.
-const players = withStoredRatings(
+// Kulüp ve ad yazımı TEK tablodan (services/turkishNames.js): sağlayıcının
+// ASCII "Besiktas"ı sayfada "Beşiktaş" olur. Kimlik ve adres değişmez.
+const players = localizePlayers(withStoredRatings(
   annotateDuplicates(getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8")))),
   readJson("data/player-ratings.json", { players: {} })
-);
+));
 const confirmedTransfers = JSON.parse(fs.readFileSync(path.join(root, "data", "transfers.json"), "utf8"))
-  .filter((transfer) => transfer.status === "confirmed");
+  .filter((transfer) => transfer.status === "confirmed")
+  .map(localizeTransfer);
 const transferWindows = (JSON.parse(fs.readFileSync(path.join(root, "data", "transfer-window.json"), "utf8")).windows || []);
 
 
@@ -427,7 +431,7 @@ function pageHtml(player) {
     matches: matchRecords,
     archive: archiveRecords,
     squadStatuses,
-    displayName: playerUrls.playerDisplayName(player),
+    displayName: personDisplayName(playerUrls.playerDisplayName(player)),
     comparisonSlugFor: slugForPair,
     basePrefix: "../",
     routes: {
