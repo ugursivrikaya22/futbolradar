@@ -13,6 +13,7 @@ import { siteFooter, siteHeader } from "./lib/layout.mjs";
 import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
 import { ROBOTS_INDEX } from "./lib/robots.mjs";
 import { RICH_TEAM_PAGES } from "./lib/richTeamPages.mjs";
+import { filterUpcoming } from "./lib/upcoming.mjs";
 
 const require = createRequire(import.meta.url);
 const { isAllowedSourceUrl, sourceLinkAttrs } = require("../services/sourceLinks.js");
@@ -150,7 +151,7 @@ export function buildPage(data, entry) {
 
   const main = `
           <nav class="evergreen-link-grid" aria-label="Sayfa bölümleri"><a href="#kupalar">Kupalar</a><a href="#tarihce">Tarihçe</a><a href="#kadro">Kadro</a><a href="#istatistikler">İstatistikler</a><a href="#son-maclar">Son maçlar</a>${faqs.length ? `<a href="#sss">SSS</a>` : ""}</nav>
-          ${(data.upcoming || []).map((m) => `<p>Sıradaki maç: <strong>${esc(m.home)} - ${esc(m.away)}</strong> · ${esc(m.competition)} · <time datetime="${m.date}T${m.time || "00:00"}:00+03:00">${esc(trDate(m.date))}${m.time ? ` · ${esc(m.time)} TSİ` : ""}</time> <span class="tp-sources">Kaynak: ${srcLinks(data, m.source)}</span></p>`).join("")}
+          ${filterUpcoming(data.upcoming, (m) => m.date).map((m) => `<p>Sıradaki maç: <strong>${esc(m.home)} - ${esc(m.away)}</strong> · ${esc(m.competition)} · <time datetime="${m.date}T${m.time || "00:00"}:00+03:00">${esc(trDate(m.date))}${m.time ? ` · ${esc(m.time)} TSİ` : ""}</time> <span class="tp-sources">Kaynak: ${srcLinks(data, m.source)}</span></p>`).join("")}
           <section class="evergreen-section" aria-labelledby="kupalar"><h2 id="kupalar">Kupa başarıları</h2>
             <p>${esc(data.honoursTotal.text)} <span class="tp-sources">Kaynak: ${srcLinks(data, data.honoursTotal.source)}</span></p>
             <ul class="tp-honours">${data.honours.map((h) => `<li><strong>${h.count}</strong>${esc(h.name)}<small>Son: ${esc(h.lastWon)}</small></li>`).join("")}</ul>
