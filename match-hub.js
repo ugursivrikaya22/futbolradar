@@ -981,7 +981,7 @@
     broadcast: function (detail) { return broadcastHtml(detail); },
     standings: function (detail) { return standingsShellHtml(detail); },
     news: function () { return newsShellHtml(); },
-    summary: function (detail) { return summaryHtml(detail); },
+    summary: function (detail) { return summaryHtml(detail) + (window.FutbolRadarPrematch ? window.FutbolRadarPrematch.html(detail.preMatch, document.documentElement.lang) : ""); },
     share: function (detail) { return shareHtml(detail); }
   };
 
