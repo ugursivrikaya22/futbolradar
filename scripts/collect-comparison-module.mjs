@@ -12,6 +12,7 @@
  */
 import fs from "node:fs";
 import path from "node:path";
+import { fixProviderTurkishName } from "./lib/turkishNames.mjs";
 
 const root = process.cwd();
 const OUT_DIR = path.join(root, "data", "comparison-module", "players");
@@ -127,7 +128,7 @@ async function competitionOf(id) {
   await sleep(40);
   try {
     const data = (await getJson(`${API}/competition/${encodeURIComponent(key)}`)).data;
-    const record = { id: key, name: data.name || null };
+    const record = { id: key, name: fixProviderTurkishName(data.name || null) };
     competitionCache.set(key, record);
     return record;
   } catch {
