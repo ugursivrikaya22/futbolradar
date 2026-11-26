@@ -177,6 +177,10 @@ export const POSTPROCESS_CHAIN = [
   // ve damga adımından ÖNCE.
   { id: "home-poll", script: "inject-home-poll.mjs", args: [], timeoutMinutes: 5 },
   { id: "motm-poll", script: "inject-motm-poll.mjs", args: [], timeoutMinutes: 5 },
+  // Şablondan sızan artıklar (ters tırnak, "${...}", "undefined", etiketsiz
+  // "Veri kapsamı `") görünür metinden temizlenir; meta kısaltmasından ÖNCE,
+  // böylece açıklama onarılmış metinden kesilir. İdempotent.
+  { id: "template-leaks", script: "clean-template-leaks.mjs", args: [], timeoutMinutes: 8 },
   // Meta uzunlukları üreticiler ne yazarsa yazsın son sözü burada bulur;
   // damga adımından ÖNCE koşmalı (içeriği değiştirir).
   { id: "normalize-meta", script: "normalize-meta.mjs", args: [], timeoutMinutes: 5 },
