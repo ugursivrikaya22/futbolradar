@@ -9,11 +9,13 @@ import {
   player360H1,
   player360Person,
   player360Title,
+  player360TransferTitle,
   renderPlayer360,
   renderPlayer360Kimdir
 } from "./lib/player360.mjs";
 import { turkishPlayer360 } from "./lib/player360English.mjs";
 import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
+import { playerNameNeedsReview } from "./lib/playerNameGate.mjs";
 import { hasSubstantivePlayerContent } from "./lib/playerIndexing.mjs";
 
 const root = process.cwd();
@@ -446,19 +448,8 @@ function pageHtml(player) {
   // o hafta arama "Osimhen Galatasaray transferi" biçiminde geliyor ve
   // kulüp adını taşıyan başlık o niyetin birebir karşılığı. İstisna dar
   // tutuluyor (46 kayıt), çünkü genel kalıp daha geniş bir niyeti kapsıyor.
-  const displayName = model.identity.name;
   const title = recentTransfer
-    ? (function transferTitle() {
-        const brand = " | FutbolRadar";
-        const team = recentTransfer.toTeam;
-        const variants = [
-          `${displayName} Kimdir? ${team} Transferi${brand}`,
-          `${displayName} Kimdir? ${team}${brand}`,
-          `${displayName} Kimdir?${brand}`,
-          `${displayName} Kimdir?`
-        ];
-        return variants.find((row) => row.length <= 60) || variants[variants.length - 1];
-      }())
+    ? player360TransferTitle(model, recentTransfer.toTeam, { locale: "tr" })
     : player360Title(model, { locale: "tr" });
   // Meta her zaman kimdir niyetine uygun üretilir; cümle ortadan kesilmez.
   // Transfer kartı görünür kahraman bölümünde kalır, açıklamayı bölmez.
@@ -470,7 +461,9 @@ function pageHtml(player) {
   // kadro durumu, kupa) taşıyan sayfa indekslenir. Hiçbiri yoksa sayfa yalnızca
   // ad + mevkiden ibarettir: noindex,follow; `generate-static-seo-pages`
   // noindex sayfayı site haritasına zaten almaz.
-  const indexable = view.verified || Boolean(recentTransfer) || hasSubstantivePlayerContent(model);
+  // Ad sıra bozukluğu şüphesi taşıyorsa ("Sami Bircan Ahmet") ad düzelene ya da
+  // editör onaylayana kadar noindex: başlık, H1 ve kimdir cümlesi o adı basıyor.
+  const indexable = !playerNameNeedsReview(player, root) && (view.verified || Boolean(recentTransfer) || hasSubstantivePlayerContent(model));
   // Sıfır ya da tire basılmaz: gerçek bir ölçüm sanılabilir. Doğrulanmamış
   // kayıtta puan rozeti HİÇ çizilmez (aşağıda view.verified ile).
   //
