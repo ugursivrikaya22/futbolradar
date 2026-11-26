@@ -181,38 +181,6 @@
 <!-- prerender:home-match-banner:start -->
 
 <!-- prerender:home-match-banner:end -->
-        <section class="container section" id="one-cikan-mac" aria-labelledby="one-cikan-mac-title">
-          <div class="section-head">
-            <div class="section-title">
-              <span class="section-kicker">Şampiyonlar Ligi · bu akşam</span>
-              <h2 id="one-cikan-mac-title">Shakhtar Donetsk–Fenerbahçe</h2>
-              <p>25 Kasım Çarşamba 23.00 TSİ · Stamford Bridge · TRT 1. Saat, stat ve kanal TRT 1 ile Fenerbahçe kaynaklarından alındı.</p>
-            </div>
-            <a class="section-link" href="./fenerbahce-avrupa-maclari.html">Fenerbahçe Avrupa maçları</a>
-          </div>
-          <article class="card demand-match-card featured-headline-match">
-            <dl class="trend-mini-stats">
-              <div><dt>Turnuva</dt><dd>UEFA Şampiyonlar Ligi, 5. hafta</dd></div>
-              <div><dt>Başlama</dt><dd>23:00 TSİ</dd></div>
-              <div><dt>Kanal</dt><dd>TRT 1</dd></div>
-              <div><dt>Stat</dt><dd>Stamford Bridge</dd></div>
-            </dl>
-            <div class="home-match-command-actions">
-              <a class="button primary" href="./canli-skor.html">Canlı skor</a>
-              <a class="button secondary" href="./fenerbahce-maclari.html">Fenerbahçe maçları ve maç önü</a>
-              <a class="button secondary" href="https://www.trt1.com.tr/tv/haber-spor/shaktar-donetsk-fenerbahce-or-uefa-sampiyonlar-ligi-grup-maclari" target="_blank" rel="nofollow noopener noreferrer">Yayın bilgisi (TRT 1)</a>
-            </div>
-            <div class="featured-headline-related">
-              <h3>İlgili haberler</h3>
-              <ul>
-                <li><a href="https://www.fenerbahce.org/haberler/futbol/2026/11/hazirliklar-suruyor" target="_blank" rel="nofollow noopener noreferrer">Fenerbahçe, Shakhtar Donetsk maçı hazırlıklarının İstanbul etabını tamamladı; son çalışma TSİ 21.30'da Stamford Bridge'de</a> <span>Kaynak: Fenerbahçe</span></li>
-                <li><a href="https://www.sabah.com.tr/spor/fenerbahce/shakhtar-donetsk-ceosu-serhii-palkin-sabah-spora-konustu-statlariniz-harika-turkiyede-oynamak-isteriz-7708079" target="_blank" rel="nofollow noopener noreferrer">Shakhtar CEO'su Serhii Palkin: "Seneye iç saha maçlarımız için Türkiye'den bir stat seçebiliriz."</a> <span>Kaynak: Sabah</span></li>
-              </ul>
-              <p class="featured-headline-note">Bu maça ait köşe yazısı henüz yayımlanmadı; yayımlanınca burada listelenecek.</p>
-            </div>
-          </article>
-        </section>
-
         <section class="container hero" id="hero-canli-skor">
           <div>
             <span class="eyebrow">⚽ FutbolRadar</span>
@@ -523,6 +491,11 @@
           </div>
         </section>
 
+<!-- Son sonuçlar: oynanmış maç en fazla 24 saat kalır (services/homeFreshness.js).
+     Bölüm derlemede basılır; boşsa hiç basılmaz, süresi dolan kart sayfa açıkken de düşer. -->
+<!-- prerender:home-recent-results:start -->
+<!-- prerender:home-recent-results:end -->
+
         <section class="container section broadcast-box" id="bugunun-mac-yayinlari" aria-labelledby="broadcast-box-title">
           <div class="section-head"><div class="section-title"><span class="section-kicker">Yayın rehberi</span><h2 id="broadcast-box-title">Bugünün Maç Yayınları</h2><p>Bugünün öncelikli maçları ve yayıncı kanalları. Yalnızca kanal bilgisi verilir; yayın bağlantısı yoktur.</p></div><a class="section-link" href="./bugun-hangi-mac-hangi-kanalda.html">Bugün hangi maç hangi kanalda?</a></div>
           <div class="card broadcast-box-card">
@@ -694,7 +667,7 @@
         </section>
 
 
-        <section class="container section home-news" id="futbol-gundemi" aria-labelledby="news-title">
+        <section class="container section home-news" id="futbol-gundemi" aria-labelledby="news-title" data-api-section="news-preview" data-empty-hide>
           <div class="section-head">
             <div class="section-title">
               <span class="section-kicker">Doğrulanmış Futbol Gündemi</span>
@@ -739,6 +712,12 @@
 <!-- prerender:home-featured-column-note:end -->
           </aside>
         </section>
+
+<!-- Öne çıkan haber/yazı 48 saatten eskiyse düşer (services/homeFreshness.js). Sayfa derlendikten sonra
+     önbellekten geldiyse bile süresi dolan vitrin kartı kaldırılır; boşalan bölüm gizlenir. -->
+<script>(function(){var MAX=48*3600000,now=Date.now();
+var fc=document.querySelector("[data-featured-column]");if(fc){var a=fc.querySelector("[data-expires]");if(a&&Date.parse(a.getAttribute("data-expires"))<=now)fc.hidden=true}
+var ns=document.getElementById("futbol-gundemi");if(ns){var left=0;Array.prototype.forEach.call(ns.querySelectorAll(".news-card"),function(c){var t=c.querySelector("time[datetime]");var ms=t?Date.parse(t.getAttribute("datetime")):NaN;if(isFinite(ms)&&now-ms>=MAX){c.parentNode.removeChild(c)}else{left++}});if(!left)ns.hidden=true}})();</script>
 
         <!-- Son köşe yazıları ana içeriğin altında. style="order:0", mobilde page.css içindeki #radar-yorumu { order:-2 } kuralını ezer; blok canlı skorun yanına çekilmez. -->
         <section class="container section section-columns" id="radar-yorumu" style="order:0" aria-labelledby="radar-yorumu-title" data-api-section="columns" data-empty-hide>
