@@ -1490,6 +1490,8 @@ function pageHtml(entry, locale, options) {
    * Sekme kabuğu yalnızca onları sarar; hiçbir bölüm taşınmaz ya da
    * silinmez, böylece eski derin bağlantılar çalışmaya devam eder.
    */
+  const preMatchData = require('../prematch-stats.js').build(entry, finishedPool);
+  sections.push(require('../prematch-stats.js').html(preMatchData, locale));
   const aiCtx = { ...ctx, shortDate, sourceLabel: aiSourceDisplay ? `${aiSourceDisplay.icon} ${aiSourceDisplay.title}` : null };
   if (editorial && locale === "tr") {
     // Dosya türü kayıtta köşe bloğu yalnızca BU MAÇA bağlı yayımlanmış yazıları listeler.
