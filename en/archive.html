@@ -25,43 +25,10 @@
     <meta name="twitter:title" content="Turkish Football Archive | FutbolRadar" />
     <meta name="twitter:description" content="Season by season match archive, archived squads and sourced managerial spells from Turkish football." />
     <meta name="twitter:image" content="https://www.futbolradar.com/assets/og-image.png" />
-    <link rel="stylesheet" href="../page.css?v=c68d3b47" />
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="../site.webmanifest" />
+    <link rel="stylesheet" href="../page.css" />
     <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"CollectionPage","@id":"https://www.futbolradar.com/en/archive.html","url":"https://www.futbolradar.com/en/archive.html","name":"Turkish Football Archive | FutbolRadar","description":"Season by season match archive, archived squads and sourced managerial spells from Turkish football.","inLanguage":"en","isPartOf":{"@type":"WebSite","name":"FutbolRadar","url":"https://www.futbolradar.com/"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.futbolradar.com/en"},{"@type":"ListItem","position":2,"name":"Turkish Football Archive","item":"https://www.futbolradar.com/en/archive.html"}]}]}</script>
-  <!-- favicon:start -->
-<link rel="icon" href="/favicon.ico" sizes="any" />
-<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
-<link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
-<link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png" />
-<link rel="icon" type="image/png" sizes="512x512" href="/favicon-512x512.png" />
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-<link rel="manifest" href="/site.webmanifest" />
-<!-- favicon:end -->
-  <!-- pwa:start -->
-<meta name="mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="default" />
-<meta name="apple-mobile-web-app-title" content="FutbolRadar" />
-<meta name="fr-vapid-public-key" content="" />
-<script defer src="/pwa.js?v=9b0e6386"></script>
-<!-- pwa:end -->
-    <script data-futbolradar-theme>
-    (function () {
-      try {
-        var stored = window.localStorage.getItem("futbolradar-theme");
-        if (stored === "dark" || stored === "light") {
-          document.documentElement.setAttribute("data-theme", stored);
-        }
-      } catch (error) {
-        /* localStorage kapalıysa sistem tercihi geçerli kalır. */
-      }
-    })();
-  </script>
-  <!-- preconnect:start -->
-<link rel="preconnect" href="https://media.api-sports.io" crossorigin />
-<link rel="dns-prefetch" href="https://media.api-sports.io" />
-<!-- preconnect:end -->
-  <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
   </head>
   <body class="subpage">
     <header class="topbar topbar-premium" data-shared-layout="header">
@@ -93,17 +60,6 @@
         </nav>
       </div>
     </header>
-      <!-- shared-layout:ticker:start --><div class="news-ticker news-ticker-compact" data-shared-layout="ticker" data-ticker-source="ticker-feed" data-ticker-mode="compact" data-ticker-render="client" data-ticker-src="../data/ticker-feed.json" data-ticker-base="../" data-ticker-locale="en" aria-label="Breaking football headlines">
-      <div class="container-wide news-ticker-inner">
-        <span class="news-ticker-badge">Headlines</span>
-        <div class="news-ticker-viewport">
-          <div class="news-ticker-track">
-            <div class="news-ticker-group"><a class="news-ticker-item" href="../en/news.html"><span>Latest football news</span></a></div>
-          </div>
-        </div>
-        <a class="news-ticker-all" href="../en/news.html">View all</a>
-      </div>
-    </div><!-- shared-layout:ticker:end -->
     <main class="container">
       <section class="hero">
         <div class="hero-row">
@@ -121,9 +77,9 @@
             <span class="card-kicker">Season</span>
             <h3>2026-2027</h3>
             <p>11186 recorded matches, written to the season they belong to.</p>
-            <a class="detail-link" href="../arsiv.html" hreflang="tr">Open the archive (TR)</a>
+            <a class="detail-link" href="./archive/season-2026-2027.html">Open the season archive</a>
           </article></div>
-        <p class="muted-copy">A finished match is written to the season it belongs to and stays there. Season pages themselves are published in Turkish; the links say so before you click.</p>
+        <p class="muted-copy">A finished match is written to the season it belongs to and stays there. Each season page lists its matches, team records, archived squads and head-coach spells.</p>
       </section>
       <section class="data-panel" aria-labelledby="en-archive-what-title">
         <h2 class="panel-title" id="en-archive-what-title">What the archive keeps</h2>
@@ -137,6 +93,7 @@
         <div><span>Time zone</span><b>All times are shown in Türkiye time (UTC+3).</b></div>
         <div><span>Data policy</span><b>Compiled from official sources — never generated.</b></div>
       </section>
+      
     </main>
     <footer class="footer footer-premium" data-shared-layout="footer">
       <div class="container-wide footer-grid">
@@ -157,7 +114,10 @@
           <h2>Data</h2>
           <div class="footer-col-links"><a href="../en/matches.html">Match Calendar</a><a href="../en/player-radar.html">Player Radar</a><a href="../en/momentum.html">Momentum</a><a href="../en/top-scorers.html">Top Scorers</a><a href="../en/news.html">News</a><a href="../en/polls.html">Polls</a><a href="../en/turkey-national-team.html">Türkiye National Team</a></div>
         </div>
-        
+        <div class="footer-col">
+          <h2>Company</h2>
+          <div class="footer-col-links"><a href="../en/about.html">About</a><a href="../en/contact.html">Contact</a><a href="../en/data-note.html">Data Policy</a><a href="../en/privacy.html">Privacy</a><a href="../en/terms.html">Terms of Use</a></div>
+        </div>
       </div>
       <div class="container-wide footer-bottom">
         <span>© 2026 FutbolRadar · Live scores and football statistics</span>
@@ -184,7 +144,7 @@
       </nav>
     </footer>
     
-    <script src="../site.js?v=4e6aaa62" defer></script>
-    <script src="../app-lite.js?v=05175725" defer></script>
+    <script src="../site.js" defer></script>
+    <script src="/en-live-scores.js" defer></script>
   </body>
 </html>
