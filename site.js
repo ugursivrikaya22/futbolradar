@@ -5272,10 +5272,12 @@
     if (item.confidenceBadge) {
       a.appendChild(make("span", "news-ticker-confidence is-" + String(item.confidence || "rumour").replace(/[^a-z0-9_-]/gi, ""), item.confidenceBadge));
     }
-    a.appendChild(make("span", "", item.text));
+    a.appendChild(make("span", "news-ticker-text", item.text));
     if (who) a.appendChild(make("span", "news-ticker-source", who));
-    var spoken = item.confidenceBadge ? item.confidenceBadge + ": " + item.text : item.text;
-    if (who || item.confidenceBadge) a.setAttribute("aria-label", spoken + (who ? " — " + (document.documentElement.lang === "en" ? "source" : "kaynak") + ": " + who : ""));
+    // Başlık sunucuda kelime sınırında kısaltılmış olabilir; tam metin okunur.
+    var fullText = typeof item.fullText === "string" && item.fullText ? item.fullText : item.text;
+    var spoken = item.confidenceBadge ? item.confidenceBadge + ": " + fullText : fullText;
+    if (who || item.confidenceBadge || fullText !== item.text) a.setAttribute("aria-label", spoken + (who ? " — " + (document.documentElement.lang === "en" ? "source" : "kaynak") + ": " + who : ""));
     if (who) a.setAttribute("title", (document.documentElement.lang === "en" ? "Source: " : "Kaynak: ") + who);
     return a;
   }

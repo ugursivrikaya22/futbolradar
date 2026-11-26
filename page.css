@@ -12113,14 +12113,41 @@ body .container {
 }
 
 .news-ticker-compact .news-ticker-item {
-  flex: 1 1 auto;
+  /* Eşit pay, ama doğal genişliği aşmadan: kısa öğe ("Italy 3-1 Türkiye")
+     içeriği kadar yer alır, artan yer uzun başlıklara kalır. */
+  flex: 1 1 0;
+  max-width: max-content;
   min-width: 0;
   overflow: hidden;
 }
 
-.news-ticker-compact .news-ticker-item > span {
+/* Kompakt bantta KIRPILAN ŞEY YALNIZCA BAŞLIK olabilir, ve kelime
+   sınırında. Eskiden öğenin tamamı `overflow: hidden` ile karakter
+   sınırında kesiliyordu: "Italy 3", "iddiaya gö", dar ekranda etiketin
+   kendisi "S" / "Transfer i". Etiket, güven rozeti, dil işareti ve kaynak
+   `.news-ticker-item > *` kuralıyla küçülmez; başlık kalan yeri alır ve
+   `line-clamp: 1` satırı kelime sınırında bölüp "…" koyar. */
+.news-ticker-compact .news-ticker-item > .news-ticker-text {
+  flex: 0 1 auto;
+  min-width: 3ch;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  white-space: normal;
   overflow: hidden;
-  text-overflow: ellipsis;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+}
+
+/* Dar ekranda üç öğe yan yana sığmaz; ilk öğe tam genişliği alır, kalanlar
+   gizlenir (aynı haberler "Tümü" ve haber sayfasında duruyor). */
+@media (max-width: 720px) {
+  .news-ticker-compact .news-ticker-item + .news-ticker-sep,
+  .news-ticker-compact .news-ticker-sep + .news-ticker-item { display: none; }
+  /* Kaynak adı title ve aria-label'da duruyor; dar şeritte başlığa yer aç. */
+  .news-ticker-compact .news-ticker-source { display: none; }
 }
 
 /* Homepage-only live scores strip: independent from the Son Dakika ticker. */

@@ -305,6 +305,48 @@ function nationLabel(name, locale) {
   return NATION_LABELS_EN[fold(value)] || value;
 }
 
+/**
+ * MİLLÎ TAKIM ADININ TÜRKÇE SUNUMU (nationLabel'in tersi).
+ *
+ * Bazı sağlayıcı kayıtları ülke adını İngilizce taşıyor ("Italy", "Türkiye"
+ * karşısında "Italy 3-1 Türkiye"). Türkçe yüzeyde ("Son Dakika" bandı) iki
+ * takım adı aynı dilde olmalı. Anahtarlar İNGİLİZCE adın küçük harfli biçimi,
+ * değerler Türkçe yazımı.
+ *
+ * Yalnızca bilinen ülke adı çevrilir; tanınmayan ad (kulüpler dahil) OLDUĞU
+ * GİBİ döner. Türkçe yazım zaten geliyorsa dokunulmaz.
+ */
+const NATION_LABELS_TR = {
+  "turkey": "Türkiye", "italy": "İtalya", "belgium": "Belçika", "france": "Fransa",
+  "spain": "İspanya", "germany": "Almanya", "netherlands": "Hollanda", "holland": "Hollanda",
+  "portugal": "Portekiz", "england": "İngiltere", "greece": "Yunanistan", "croatia": "Hırvatistan",
+  "serbia": "Sırbistan", "switzerland": "İsviçre", "sweden": "İsveç", "denmark": "Danimarka",
+  "norway": "Norveç", "poland": "Polonya", "hungary": "Macaristan", "austria": "Avusturya",
+  "czechia": "Çekya", "czech republic": "Çekya", "romania": "Romanya", "bulgaria": "Bulgaristan",
+  "ukraine": "Ukrayna", "iceland": "İzlanda", "georgia": "Gürcistan", "wales": "Galler",
+  "scotland": "İskoçya", "ireland": "İrlanda", "republic of ireland": "İrlanda",
+  "northern ireland": "Kuzey İrlanda", "slovakia": "Slovakya", "slovenia": "Slovenya",
+  "albania": "Arnavutluk", "kosovo": "Kosova", "north macedonia": "Kuzey Makedonya",
+  "bosnia and herzegovina": "Bosna-Hersek", "bosnia": "Bosna-Hersek", "montenegro": "Karadağ",
+  "israel": "İsrail", "azerbaijan": "Azerbaycan", "armenia": "Ermenistan", "kazakhstan": "Kazakistan",
+  "finland": "Finlandiya", "luxembourg": "Lüksemburg", "cyprus": "Kıbrıs", "latvia": "Letonya",
+  "lithuania": "Litvanya", "estonia": "Estonya", "moldova": "Moldova", "belarus": "Belarus",
+  "brazil": "Brezilya", "argentina": "Arjantin", "uruguay": "Uruguay", "colombia": "Kolombiya",
+  "chile": "Şili", "mexico": "Meksika", "usa": "ABD", "united states": "ABD", "canada": "Kanada",
+  "japan": "Japonya", "south korea": "Güney Kore", "korea republic": "Güney Kore",
+  "saudi arabia": "Suudi Arabistan", "morocco": "Fas", "senegal": "Senegal", "egypt": "Mısır",
+  "nigeria": "Nijerya", "algeria": "Cezayir", "tunisia": "Tunus", "australia": "Avustralya",
+  "iran": "İran", "qatar": "Katar", "cameroon": "Kamerun", "ivory coast": "Fildişi Sahili",
+  "china": "Çin"
+};
+
+/** @param {string} name kayıttaki takım adı (İngilizce ya da Türkçe) */
+function nationLabelTr(name) {
+  const value = String(name === null || name === undefined ? "" : name).trim();
+  if (!value) return value;
+  return NATION_LABELS_TR[value.toLocaleLowerCase("en-US")] || value;
+}
+
 function asciiKey(value) {
   return String(value || "").toLocaleLowerCase("tr-TR")
     .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
@@ -348,6 +390,7 @@ module.exports = {
   broadcastLabel,
   nationKey,
   nationLabel,
+  nationLabelTr,
   sourceNoteLabel,
   dateRangeLabel,
   dateTimeLabel,

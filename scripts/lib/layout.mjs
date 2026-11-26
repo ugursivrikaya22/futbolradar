@@ -317,6 +317,36 @@ function localizeAttribution(value, locale) {
 }
 
 /**
+ * Kompakt bantta tek öğenin gösterilen en fazla uzunluğu (karakter). Daha
+ * uzun başlık KELİME SINIRINDA kısaltılır; tam metin aria-label'da kalır.
+ * Eskiden başlık CSS ile karakter sınırında kesiliyordu ("iddiaya gö").
+ */
+export const COMPACT_TICKER_TEXT_LIMIT = 90;
+
+/**
+ * Metni `limit` karakteri aşmayacak şekilde, KELİME SINIRINDA kısaltır ve
+ * sonuna "…" koyar. Kısaltma sonrası dangling noktalama (", ; : - –) ve
+ * boşluk temizlenir; tek bir uzun sözcük sınırı aşıyorsa o sözcük kesilmez,
+ * ondan önceki sözcüklerde durulur (ilk sözcük bile sığmıyorsa tamamı döner).
+ * Sınırı aşmayan metin DEĞİŞMEDEN döner.
+ */
+export function shortenTickerText(value, limit = COMPACT_TICKER_TEXT_LIMIT) {
+  const text = String(value ?? "").replace(/\s+/g, " ").trim();
+  if (text.length <= limit) return text;
+  const words = text.split(" ");
+  let out = "";
+  for (const word of words) {
+    const next = out ? `${out} ${word}` : word;
+    // "…" için bir karakter pay bırak.
+    if (next.length > limit - 1) break;
+    out = next;
+  }
+  if (!out) return text;
+  out = out.replace(/[\s,;:\-–—]+$/u, "");
+  return `${out}…`;
+}
+
+/**
  * İstemci bandı için paylaşılan veri yükü. Sunucudaki `newsTicker` ile AYNI
  * bağlantı kuralını (`resolveTickerHref`) ve aynı kompakt öğe sınırını
  * kullanır; yalnızca sayfaya göre değişen önek (`base`) burada YOKTUR —
@@ -337,7 +367,9 @@ export function tickerFeedPayload({ tr, en } = {}) {
       items: rows.map((item) => {
         const { href, external } = resolveTickerHref(item.href, allHref);
         const attribution = localizeAttribution(item.publisher || item.sourceName || "", locale);
-        const out = { href, text: String(item.text || "") };
+        const fullText = String(item.text || "");
+        const out = { href, text: shortenTickerText(fullText) };
+        if (out.text !== fullText) out.fullText = fullText;
         if (external) out.external = true;
         if (item.label) out.label = String(item.label);
         if (item.confidenceBadge) {
@@ -416,12 +448,15 @@ export function newsTicker(options = {}) {
     // arkasındaki kurumu hiçbir yerde göremiyordu. Yayıncı adı artık hem
     // ekran okuyucuya hem de fareyle üzerine gelene gösteriliyor.
     const attribution = localizeAttribution(item.publisher || item.sourceName || "", locale);
+    // Kompakt bantta başlık kelime sınırında kısaltılır; ekran okuyucu ve
+    // arama için tam metin aria-label'da kalır.
+    const shownText = compact ? shortenTickerText(item.text) : item.text;
     const ariaText = item.confidenceBadge
       ? `${item.confidenceBadge}: ${item.text}`
       : item.text;
     const sourceWord = locale === "en" ? "source" : "kaynak";
     const sourceTitle = locale === "en" ? "Source" : "Kaynak";
-    const aria = attribution || item.confidenceBadge
+    const aria = attribution || item.confidenceBadge || shownText !== item.text
       ? ` aria-label="${escapeHtml(`${ariaText}${attribution ? ` — ${sourceWord}: ${attribution}` : ""}`)}"`
       : "";
     const title = attribution ? ` title="${escapeHtml(`${sourceTitle}: ${attribution}`)}"` : "";
@@ -434,7 +469,7 @@ export function newsTicker(options = {}) {
       ? `<span class="news-ticker-source">${escapeHtml(attribution)}</span>`
       : "";
 
-    return `<a class="news-ticker-item" href="${escapeHtml(href)}"${rel}${aria}${title}>${langMark}${label}${confidence}<span>${escapeHtml(item.text)}</span>${sourceMark}</a>`;
+    return `<a class="news-ticker-item" href="${escapeHtml(href)}"${rel}${aria}${title}>${langMark}${label}${confidence}<span class="news-ticker-text">${escapeHtml(shownText)}</span>${sourceMark}</a>`;
   };
 
   const track = items.map(renderItem).join('<span class="news-ticker-sep" aria-hidden="true"></span>');
