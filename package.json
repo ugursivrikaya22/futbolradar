@@ -14,6 +14,7 @@
     "generate:og-images": "node scripts/generate-og-images.mjs",
     "test:turkish-characters": "node scripts/test-turkish-characters.mjs && node scripts/test-legacy-report-cleanup.mjs && node scripts/test-player-name-review.mjs",
     "test:newsletter": "node --test tests/newsletter.test.cjs",
+    "test:player-name-matching": "node scripts/test-player-name-matching.mjs",
     "newsletter:dry-run": "node scripts/newsletter-dry-run.mjs",
     "test:match-focus": "node scripts/test-match-focus.mjs",
     "test:live-score-widget": "node scripts/test-live-score-widget.mjs",

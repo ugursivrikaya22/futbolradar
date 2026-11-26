@@ -124,7 +124,7 @@ function reconcileSquadPlayer(canonicalPlayers, squadPlayer, team) {
   // Yer tutucu (`mock-…`) kimlik ad + takım + kimlik eşsizliğiyle doğrulandıysa
   // gerçek API-Football kimliği bağlanır; diğer elle doğrulanmış alanlar
   // korunur. Bu, lider tablosu satırlarının profile bağlanmasını sağlar.
-  if (resolution.method === "name+team+placeholder-provider-id" && squadPlayer.providerId) {
+  if ((resolution.method === "name+team+placeholder-provider-id" || resolution.method === "name-variant+team+placeholder-provider-id") && squadPlayer.providerId) {
     merged.providerId = String(squadPlayer.providerId);
     if (merged.source && typeof merged.source === "object") {
       merged.source = { ...merged.source, providerId: String(squadPlayer.providerId) };
