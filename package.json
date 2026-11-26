@@ -211,7 +211,9 @@
     "test:organic-growth:browser": "node scripts/test-organic-growth-browser.cjs",
     "test:rich-team-pages": "node scripts/test-rich-team-pages.mjs",
     "test:match-editorial": "node scripts/test-match-editorial.mjs",
-    "test:match-dossier": "node scripts/test-match-dossier.mjs"
+    "test:match-dossier": "node scripts/test-match-dossier.mjs",
+    "push:worker": "node scripts/run-push-worker.cjs",
+    "test:push-preferences": "node --test tests/push-preferences.test.cjs"
   },
   "devDependencies": {
     "@types/node": "^22.20.1",

@@ -67,7 +67,7 @@ async function supabaseRequest(pathname, options = {}) {
  * takımını değiştirdiğinde yeni satır açmak yerine mevcut satır güncellenir
  * (bkz. migrasyon dosyasındaki gerekçe).
  */
-async function saveSubscription({ endpoint, p256dh, auth, favoriteTeam, userAgent }) {
+async function saveSubscription({ endpoint, p256dh, auth, favoriteTeam, favoriteTeams, notificationTypes, userAgent }) {
   await supabaseRequest(`${TABLE}?on_conflict=endpoint`, {
     method: "POST",
     headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
@@ -76,6 +76,8 @@ async function saveSubscription({ endpoint, p256dh, auth, favoriteTeam, userAgen
       p256dh,
       auth,
       favorite_team: favoriteTeam,
+      favorite_teams: favoriteTeams || [favoriteTeam],
+      notification_types: require("./pushPreferences").normalizeTypes(notificationTypes),
       user_agent: userAgent ? String(userAgent).slice(0, 300) : null,
       updated_at: new Date().toISOString()
     })
@@ -92,7 +94,7 @@ async function removeSubscription(endpoint) {
 
 /** Bir takımın tüm aboneleri — gol/maç başı bildirimi göndermeden önce okunur. */
 async function listByTeam(favoriteTeam) {
-  const query = `${TABLE}?favorite_team=eq.${encodeURIComponent(favoriteTeam)}&select=endpoint,p256dh,auth`;
+  const query = `${TABLE}?or=(favorite_team.eq.${encodeURIComponent(favoriteTeam)},favorite_teams.cs.{${encodeURIComponent(favoriteTeam)}})&select=endpoint,p256dh,auth,notification_types`;
   const rows = await supabaseRequest(query, { method: "GET" });
   return Array.isArray(rows) ? rows : [];
 }
@@ -106,7 +108,17 @@ async function markSent(endpoint) {
   });
 }
 
+async function listAll() {
+  const rows = [];
+  for (let offset = 0; ; offset += 1000) {
+    const page = await supabaseRequest(`${TABLE}?select=favorite_team,favorite_teams&order=id&limit=1000&offset=${offset}`, {method:"GET"});
+    rows.push(...page);
+    if (page.length < 1000) return rows;
+  }
+}
+
 module.exports = {
+  listAll,
   TABLE,
   configurationHint,
   isConfigured,
