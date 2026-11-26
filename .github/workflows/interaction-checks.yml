@@ -49,7 +49,9 @@ jobs:
         run: node scripts/ci-gate.mjs
   production:
     needs: gate
-    if: needs.gate.outputs.run == 'true'
+    # KAPALI-HATA: kapı işinin kendisi başarısız olursa (checkout/setup altyapı
+    # hatası) CI sessizce atlanmasın; yalnızca kapı BAŞARILI ve "atla" derse atlanır.
+    if: ${{ !cancelled() && (needs.gate.result != 'success' || needs.gate.outputs.run == 'true') }}
     runs-on: ubuntu-latest
     # The build regenerates the whole site (match pages, both news feeds,
     # every English page) and then runs verify-production with three
