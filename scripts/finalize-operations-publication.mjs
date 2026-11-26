@@ -18,12 +18,29 @@ export function finalize(ledger,{runId,outcome,commit,now=new Date().toISOString
   if(lastVerifiedFull!==undefined) result.lastVerifiedFull=lastVerifiedFull;
   return result;
 }
+export async function settleFullLock(ledger, {key, startedAt, runId, outcome, now=new Date().toISOString(), store=createRequire(import.meta.url)('../services/cron/runStore.js')}) {
+  if(!key && !startedAt) return;
+  if(!/^full:\d{4}-\d{2}-\d{2}$/.test(key||'') || !startedAt) throw new Error('Incomplete full cron lock ownership');
+  const record=ledger?.lastUpdate;
+  const verified=outcome==='success' && String(record?.id)===String(runId) && record?.dedupeKey===key
+    && Boolean(record.publication) && policy.assessCompletion(record).verified;
+  const updated=await store.updateOwnedRun({
+    key,runner:'github-actions',startedAt,patch:{status:verified?'complete':'failed',finished_at:now}
+  });
+  if(!updated) throw new Error('Could not finalize the owned full cron lock');
+  if(!verified && outcome==='success') throw new Error('Full cron fallback had no verified completion');
+}
 if(process.argv[1]&&pathToFileURL(path.resolve(process.argv[1])).href===import.meta.url) {
   const file='outputs/operations/update-status.json';
+  let updated;
   if(fs.existsSync(file)) {
     const ledger=JSON.parse(fs.readFileSync(file,'utf8'));
-    const updated=finalize(ledger,{runId:process.env.GITHUB_RUN_ID,outcome:process.env.PUBLICATION_OUTCOME,commit:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim()});
+    updated=finalize(ledger,{runId:process.env.GITHUB_RUN_ID,outcome:process.env.PUBLICATION_OUTCOME,commit:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim()});
     fs.writeFileSync(file,JSON.stringify(updated,null,2)+'\n');
     if(process.env.GITHUB_STEP_SUMMARY) fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,`\nPublication: **${updated.lastUpdate?.publication?.state||'unchanged'}**\n`);
   }
+  await settleFullLock(updated,{
+    key:process.env.FULL_LOCK_KEY,startedAt:process.env.FULL_LOCK_STARTED_AT,
+    runId:process.env.GITHUB_RUN_ID,outcome:process.env.PUBLICATION_OUTCOME
+  });
 }

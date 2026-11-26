@@ -259,7 +259,13 @@ export async function runChunk({
   pipeline = pipeline || await loadPipeline();
   runProcess = runProcess || pipeline.runProcess;
   const cursor = { stage: "init", index: 0, steps: [], records: [], changedFiles: [], providerReady: null, circuit: null, inFlight: null, ...(row.cursor || {}) };
-  const save = async (patch = {}) => store.updateRun({ key, request: req, patch: { cursor, invocations: (row.invocations || 0) + 1, ...patch } });
+  const save = async (patch = {}) => {
+    const saved = await store.updateOwnedRun({
+      key, runner: "vercel", startedAt: row.started_at, request: req,
+      patch: { cursor, invocations: (row.invocations || 0) + 1, ...patch }
+    });
+    if (!saved) throw new Error("Vercel no longer owns the running cron lock");
+  };
 
   const ctx = await prepare({ key, log });
   const readJson = (rel, fallback) => { try { return JSON.parse(fs.readFileSync(path.join(ctx.workdir, rel), "utf8")); } catch { return fallback; } };
@@ -339,7 +345,10 @@ export async function runChunk({
     if (providerCode && operationsPolicy.STOP_CODES.has(providerCode)) { cursor.circuit = providerCode; mode = "protected"; }
     cursor.records.push({ id: spec.id, kind: spec.kind, required: spec.required, status: result.ok ? "success" : "failed", durationMs: result.durationMs, attempts: tries, timedOut: Boolean(result.timedOut), providerCode, error: result.ok ? null : String(result.error || "").slice(0, 300) });
 
-    for (const change of detectChanges(ctx)) {
+    const changes = detectChanges(ctx);
+    // Recheck ownership after the child exits before persisting any artifacts.
+    if (changes.length && type === "full") await save();
+    for (const change of changes) {
       await upload({ relPath: change.relPath, buffer: change.buffer, lineage: change.lineage, key, request: req });
       if (!cursor.changedFiles.includes(change.relPath)) cursor.changedFiles.push(change.relPath);
     }

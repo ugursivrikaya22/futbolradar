@@ -47,6 +47,35 @@ async function acquireRun({ key, type, runner, request = defaultRequest() }) {
   return { acquired: false, row: await getRun({ key, request }) };
 }
 
+/** Take over only a terminal failed Vercel full-day row; concurrent PATCHes cannot both win. */
+async function claimGithubFullRun({ key, request = defaultRequest(), now = () => new Date() }) {
+  if (!/^full:\d{4}-\d{2}-\d{2}$/.test(key)) throw new Error("Expected a full-day lock key");
+  const claim = await acquireRun({ key, type: "full", runner: "github-actions", request });
+  if (claim.acquired || claim.row?.runner !== "vercel" || claim.row?.status !== "failed" || !claim.row.finished_at) return claim;
+  const timestamp = now().toISOString();
+  const rows = await request(`cron_runs?run_key=eq.${encodeURIComponent(key)}&type=eq.full&runner=eq.vercel&status=eq.failed&finished_at=eq.${encodeURIComponent(claim.row.finished_at)}`, {
+    method: "PATCH",
+    headers: { Prefer: "return=representation" },
+    body: JSON.stringify({
+      runner: "github-actions", status: "running", cursor: {}, changed: false, invocations: 0,
+      started_at: timestamp, heartbeat_at: timestamp, finished_at: null, deploy_requested_at: null, deploy_result: null
+    })
+  });
+  if (Array.isArray(rows) && rows.length === 1) return { acquired: true, reclaimed: true, row: rows[0] };
+  return { acquired: false, row: await getRun({ key, request }) };
+}
+
+/** A late runner must never update a completed row or the new owner's row. */
+async function updateOwnedRun({ key, runner, startedAt, patch, request = defaultRequest() }) {
+  if (!startedAt || !["vercel", "github-actions"].includes(runner)) throw new Error("Shared lock ownership is required");
+  const rows = await request(`cron_runs?run_key=eq.${encodeURIComponent(key)}&runner=eq.${runner}&status=eq.running&started_at=eq.${encodeURIComponent(startedAt)}`, {
+    method: "PATCH",
+    headers: { Prefer: "return=representation" },
+    body: JSON.stringify({ ...patch, heartbeat_at: new Date().toISOString() })
+  });
+  return Array.isArray(rows) && rows.length === 1;
+}
+
 async function getRun({ key, request = defaultRequest() }) {
   const rows = await request(`cron_runs?select=*&run_key=eq.${encodeURIComponent(key)}&limit=1`, { method: "GET" });
   return Array.isArray(rows) && rows.length ? rows[0] : null;
@@ -165,6 +194,7 @@ function nextLineage(artifact) {
 
 module.exports = {
   acquireRun,
+  claimGithubFullRun,
   artifactDecision,
   assertDataPath,
   decodeContent,
@@ -181,5 +211,6 @@ module.exports = {
   readArtifact,
   runKey,
   sha256,
+  updateOwnedRun,
   updateRun
 };
