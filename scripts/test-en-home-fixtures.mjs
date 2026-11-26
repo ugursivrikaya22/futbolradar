@@ -35,6 +35,13 @@ try {
   await page.clock.fastForward(60001);
   await page.locator('[data-fixture-id]').first().waitFor({ state: 'detached' });
   assert.match(await page.locator('[data-home-only]').innerText(), /completed results/);
+  // The counters follow the same "most advanced state wins" rule as the cards:
+  // once the provider reports FT, a row whose own status still says LIVE or
+  // SCHEDULED is finished — it is neither live nor upcoming any more.
+  assert.equal(await page.locator('.quick-stat:has-text("Finished") b').innerText(), '4');
+  assert.equal(await page.locator('.quick-stat:has-text("Total") b').innerText(), '4');
+  assert.equal(await page.locator('.quick-stat:has-text("Live")').count(), 0);
+  assert.equal(await page.locator('.quick-stat:has-text("Upcoming")').count(), 0);
   rows = Array.from({ length: 20 }, (_, i) => ({ ...base, id: 'future-' + i }));
   await page.reload();
   await page.locator('[data-fixture-id]').first().waitFor();

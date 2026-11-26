@@ -10,8 +10,9 @@
  *   • Kanonik URL kendi sayfasını göstermiyor.
  *   • hreflang üçlüsü eksik ya da tek yönlü.
  *   • İngilizce sayfada Türkçe arayüz metni kalmış.
- *   • İnce içerik: doğrulanmamış bir oyuncu ya da veri kanıtı olmayan bir
- *     takım/maç EN tarafında sayfa almış.
+ *   • İnce içerik: veri kanıtı olmayan bir takım/maç EN tarafında sayfa almış.
+ *     (Oyuncu için kural değişti: Türkçe profili olan HER oyuncunun EN sayfası
+ *     vardır; ince içerikli olanı noindex kalır ve site haritasında yer almaz.)
  *   • Site haritasında kopya URL ya da eksik dinamik girdi.
  *   • Dil kutusu (TR ↔ EN) karşılığa gitmiyor.
  *
@@ -29,9 +30,21 @@ const { publicPlayerView } = require("../services/cardCredibility.js");
 const { getPlayers } = require("../services/playerService.js");
 const { annotateDuplicates } = require("../services/duplicatePlayerService.js");
 const { createPlayerUrlResolver } = require("../services/playerUrl.js");
+import { englishProfilePlayers } from "./lib/englishPlayerProfiles.mjs";
 
 const root = process.cwd();
 const failures = [];
+
+/** Adres çözücü: taşınan oyuncuda tam ad slug'ı, taşınmayanda kimlik. */
+function loadPlayerUrls() {
+  return createPlayerUrlResolver((() => {
+    try {
+      return JSON.parse(fs.readFileSync(path.join(root, "data", "player-url-slugs.json"), "utf8"));
+    } catch {
+      return { entries: [], aliases: [] };
+    }
+  })());
+}
 
 /** Hafta numaralı maç sayfası: `en/match/…-2026-2027-r05.html`. */
 function isRoundPage(relative) {
@@ -79,19 +92,25 @@ const playerPairs = dynamicRoutePairs("player");
 {
   check("takım eşlemesi dört öncelikli kulübü kapsıyor", teamPairs.length === 4, `${teamPairs.length}`);
   check("maç eşlemesi TR /mac/ ile aynı büyüklükte", matchPairs.length > 0, `${matchPairs.length}`);
-  check("oyuncu eşlemesi yalnızca doğrulanmış kayıtları kapsıyor", playerPairs.length > 0, `${playerPairs.length}`);
+  check("oyuncu eşlemesi Türkçe profili olan her oyuncuyu kapsıyor", playerPairs.length > 0, `${playerPairs.length}`);
 
-  // KOPYA KAYIT İNGİLİZCE SAYFA ALMAZ.
+  // KOPYA KAYIT İNGİLİZCE SAYFA ALMAZ; DOĞRULANMAMIŞ KAYIT ALIR.
+  //
+  // "Yalnızca doğrulanmış oyuncular" kuralı KALKTI: Türkçe profili diskte olan
+  // her kanonik oyuncunun İngilizce sayfası var. İnce içerik kuralı sayfanın
+  // varlığını değil indekslenmesini belirler (aşağıda, bölüm 8).
   //
   // Aynı gerçek oyuncunun iki kaydı varsa adres kanonik kayda ait; kopya
   // kayda ikinci bir İngilizce sayfa açmak aynı oyuncuyu iki URL'de
-  // yayımlamak olurdu. Bu yüzden beklenen sayı "doğrulanmış kayıt" değil,
-  // "doğrulanmış KANONİK kayıt".
+  // yayımlamak olurdu. Beklenen sayı, üreticiyle AYNI seçici
+  // (englishProfilePlayers) ve aynı uygunluk süzgeciyle hesaplanır.
   const players = annotateDuplicates(getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"))));
-  const verifiedCount = players
-    .filter((player) => publicPlayerView(player).verified && !player.isDuplicate).length;
-  check("oyuncu sayısı yayın kapısıyla birebir eşleşiyor", playerPairs.length === verifiedCount,
-    `eşleme=${playerPairs.length} kapı=${verifiedCount}`);
+  const playerUrls = loadPlayerUrls();
+  const expectedCount = englishProfilePlayers(players, playerUrls, publicPlayerView, { includeUnverified: true })
+    .filter((player) => publicPlayerView(player).verified
+      || fs.existsSync(path.join(root, playerUrls.playerPagePath(player.id)))).length;
+  check("oyuncu sayısı Türkçe profil sayısıyla birebir eşleşiyor", playerPairs.length === expectedCount,
+    `eşleme=${playerPairs.length} beklenen=${expectedCount}`);
 }
 
 // --- 2. Örneklem: takımların TAMAMI, maç/oyuncu için deterministik alt küme -
@@ -222,26 +241,44 @@ for (const pair of playerSample) {
   }
 }
 
-// --- 8. İnce içerik yasağı: doğrulanmamış oyuncuya EN sayfa açılmamış ------
+// --- 8. Doğrulanmamış oyuncu: sayfa VAR, ince içerik indekslenmez ------------
 {
   // Dosya adı artık kimlik değil, adres slug'ı (tam adı bilinen oyuncuda
   // "victor-osimhen"). Kimlikten dosya adı türeten bir kontrol, taşınan
-  // oyuncuları hiç denetlemez; slug ise kopya kaydın kanoniğine çözüldüğü
-  // için "doğrulanmamış kayıt kendi sayfasını almış mı" sorusunu doğru
-  // sorar — kanoniği doğrulanmışsa o sayfa ona aittir, sızıntı değildir.
+  // oyuncuları hiç denetlemez; slug ise kopya kaydın kanoniğine çözüldüğü için
+  // doğru soruyu sorar.
   const players = annotateDuplicates(getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"))));
-  const playerUrls = createPlayerUrlResolver((() => {
-    try {
-      return JSON.parse(fs.readFileSync(path.join(root, "data", "player-url-slugs.json"), "utf8"));
-    } catch {
-      return { entries: [], aliases: [] };
-    }
-  })());
+  const playerUrls = loadPlayerUrls();
+  const hasTurkishPage = (player) => fs.existsSync(path.join(root, playerUrls.playerPagePath(player.id)));
   const unverified = players
-    .filter((player) => !publicPlayerView(player).verified && playerUrls.resolveId(player.id) === player.id)
+    .filter((player) => !publicPlayerView(player).verified && playerUrls.resolveId(player.id) === player.id && hasTurkishPage(player))
     .slice(0, 20);
-  const leaked = unverified.filter((player) => fs.existsSync(path.join(root, playerUrls.enPlayerPagePath(player.id))));
-  check("doğrulanmamış oyuncular EN sayfası almamış", !leaked.length, leaked.map((player) => player.id).join(", "));
+
+  // (a) Kural kalktı: Türkçe profili olan doğrulanmamış oyuncunun EN sayfası var.
+  const missing = unverified.filter((player) => !fs.existsSync(path.join(root, playerUrls.enPlayerPagePath(player.id))));
+  check("Türkçe profili olan doğrulanmamış oyuncunun da EN sayfası var", !missing.length, missing.map((player) => player.id).join(", "));
+
+  // (b) İnce içerik kuralı indekslenmeyi belirler: noindex sayfa site haritasında yok.
+  const sitemap = read("sitemap.xml") || "";
+  const noindexInSitemap = playerPairs
+    .map((pair) => pair.en)
+    .filter((relative) => {
+      const html = read(relative);
+      return html && /<meta name="robots" content="noindex/.test(html)
+        && (sitemap.includes(`<loc>${absoluteUrl(relative)}</loc>`) || sitemap.includes(`<loc>${absoluteUrl(relative.replace(/\.html$/, ""))}</loc>`));
+    });
+  check("noindex EN oyuncu sayfası site haritasında yok", !noindexInSitemap.length, noindexInSitemap.slice(0, 5).join(", "));
+
+  // (c) İndeks kararı Türkçeyle AYNI kapıdan (scripts/lib/playerIndexing.mjs):
+  // Türkçe profili indekslenen oyuncunun İngilizcesi `noindex` kalmaz.
+  const isIndexable = (html) => !/<meta name="robots" content="noindex/.test(html);
+  const diverged = playerPairs.filter((pair) => {
+    const tr = read(pair.tr);
+    const en = read(pair.en);
+    return tr && en && isIndexable(tr) && !isIndexable(en);
+  }).map((pair) => pair.en);
+  check("Türkçesi indekslenen oyuncunun İngilizcesi de indekslenebilir", !diverged.length,
+    `${diverged.length} çift: ${diverged.slice(0, 5).join(", ")}`);
 }
 
 if (failures.length) {

@@ -175,6 +175,23 @@ function isThinLeague({ upcoming, results, standingsEntry }) {
   return !upcoming.length && !results.length && !standingsEntry;
 }
 
+// Transfer Radarı (transfer-radari.html) sekmesi olan ligler:
+// lig sayfası ilgili sekmeye iç bağlantı verir.
+const TRANSFER_RADAR_TABS = Object.freeze({
+  "super-lig": "super-lig",
+  "premier-league": "premier-lig",
+  "la-liga": "la-liga",
+  "serie-a": "serie-a",
+  bundesliga: "bundesliga",
+  "ligue-1": "ligue-1"
+});
+
+function transferRadarLinkHtml(competition) {
+  const tab = TRANSFER_RADAR_TABS[competition.id];
+  if (!tab) return "";
+  return `<p><a class="section-link" href="../transfer-radari.html#lig-${tab}">${escapeHtml(competition.name)} transferleri: Transfer Radarı</a></p>`;
+}
+
 function leaguePageHtml(competition, { upcoming, results, standingsEntry }) {
   const url = `${DOMAIN}/lig/${competition.id}.html`;
   const title = `${competition.name} — Fikstür, Sonuçlar ve Puan Durumu | FutbolRadar`;
@@ -218,6 +235,7 @@ function leaguePageHtml(competition, { upcoming, results, standingsEntry }) {
         <span class="eyebrow">${escapeHtml(competition.country)}</span>
         <h1>${escapeHtml(competition.name)}</h1>
         <p><a class="section-link" href="../bugunun-maclari.html?league=${escapeHtml(competition.id)}">Tüm ${escapeHtml(competition.name)} maçlarını gör</a></p>
+        ${transferRadarLinkHtml(competition)}
       </header>
 
       <section class="league-page-section">
