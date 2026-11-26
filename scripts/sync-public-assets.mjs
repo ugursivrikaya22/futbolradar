@@ -49,6 +49,7 @@ for (const file of [
   "match-hub.css",
   "match-hub-core.js",
   "match-center.js",
+  "lineup-live.js",
   "match-center-plus.js",
   "match-center-plus.css",
   "home-ticker.css",
