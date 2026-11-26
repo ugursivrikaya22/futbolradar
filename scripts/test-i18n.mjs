@@ -306,8 +306,11 @@ for (const route of ROUTES) {
   const deep = read(deepPlayerPage);
   const deepEn = counterpartPath(deepPlayerPage, "en");
   if (deep && deepEn) {
+    // İki biçim de geçerli: üretici göreli (`../en/...`) yazar; derlemedeki
+    // `lang-switch` adımı (sync-lang-switch.mjs) kök-mutlak (`/en/...`) yazar —
+    // `/en` eğik çizgisiz sunulduğundan göreli yol orada güvenilir değildir.
     check("karşılığı olan oyuncu sayfası kendi İngilizcesine gider",
-      deep.includes(`class="lang-switch" href="../${deepEn}"`),
+      deep.includes(`class="lang-switch" href="../${deepEn}"`) || deep.includes(`class="lang-switch" href="/${deepEn}"`),
       (deep.match(/class="lang-switch" href="[^"]*"/) || [])[0]);
   }
 }
