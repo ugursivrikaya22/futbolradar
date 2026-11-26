@@ -22,6 +22,7 @@ import { matchQuotesTickerBlock } from "./lib/matchQuotesTicker.mjs";
 import { createFreshnessTracker } from "./lib/sitemapFreshness.mjs";
 import { ROBOTS_INDEX, ROBOTS_META_RE, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
 import { repairPlayerLinks, repairReportJsonLd } from "./lib/reportSchemaRepair.mjs";
+import { stripEmptyReportSections } from "./lib/legacyReportCleanup.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -732,7 +733,9 @@ function applyCoverageRuleToExistingPages() {
       // Robots satırı + eski üretici sürümlerinden kalan şema hataları
       // (EventCompleted, boş address, yazarsız Article): bu döngü yalnızca
       // son pencereyi yeniden yazan üreticinin ulaşamadığı sayfalara dokunur.
-      const next = repairPlayerLinks(repairReportJsonLd(html.replace(ROBOTS_META_RE, replacement)), playerLink);
+      // Eski üreticiden kalan boş bölümler ("veri sağlayıcı sunmadı" kartı,
+      // "N/5 bölüm doğrulanmış" sayacı) başlıklarıyla birlikte sökülür.
+      const next = stripEmptyReportSections(repairPlayerLinks(repairReportJsonLd(html.replace(ROBOTS_META_RE, replacement)), playerLink));
       if (next !== html) fs.writeFileSync(target, next, "utf8");
     }
   }
