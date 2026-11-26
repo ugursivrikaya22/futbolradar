@@ -439,4 +439,27 @@ console.log("broadcast-schedule");
   console.log("  ok  eski bugün sayfası yeni sayfaya kalıcı yönlendiriliyor (kural, harita, iç bağlantılar)");
 }
 
-console.log("broadcast-schedule OK (13 bölüm)");
+// ── 14. ÜST MENÜ KAYDI ────────────────────────────────────────────────────
+//
+// Sayfa yalnızca ana sayfa kutusundan değil, her sayfada görünen ortak
+// menüden de bulunmalı. Menü `services/i18n.js#NAV_KEYS`ten beslenir ve
+// `apply-shared-layout` ile tüm sayfalara basılır. İngilizce karşılığı yok:
+// bu yüzden yalnızca TR menüsünde olması beklenir (EN'e Türkçe sayfaya giden
+// sessiz bir öğe eklenmez).
+{
+  const NEW_FILE = "bugun-hangi-mac-hangi-kanalda.html";
+  const { NAV_KEYS } = require("../services/i18n.js");
+  const trNav = [...NAV_KEYS.tr.primary, ...NAV_KEYS.tr.secondary];
+  const entry = trNav.find((item) => item.href === NEW_FILE);
+  assert.ok(entry, "TR menüsünde Hangi Kanalda öğesi olmalı");
+  assert.equal(entry.key, "nav.broadcastToday");
+  const enNav = [...NAV_KEYS.en.primary, ...NAV_KEYS.en.secondary];
+  assert.ok(!enNav.some((item) => item.href === NEW_FILE), "EN menüsü Türkçe yayın sayfasına bağlanmaz");
+  for (const locale of ["tr", "en"]) {
+    const dict = JSON.parse(fs.readFileSync(path.join(root, "locales", `${locale}.json`), "utf8"));
+    assert.ok(String(dict["nav.broadcastToday"] || "").trim(), `${locale}.json: nav.broadcastToday etiketi olmalı`);
+  }
+  console.log("  ok  Hangi Kanalda sayfası TR üst menüsünde");
+}
+
+console.log("broadcast-schedule OK (14 bölüm)");
