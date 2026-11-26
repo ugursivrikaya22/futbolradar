@@ -119,7 +119,7 @@
     if (!rows.length) { body.innerHTML = '<tr><td colspan="5">Bu dönemde henüz puanlanmış tahmin yok. İlk puanı sen kazan!</td></tr>'; return; }
     body.innerHTML = rows.map(function (row) {
       var mine = state.me && state.me.nickname === row.nickname ? ' class="is-me"' : "";
-      return "<tr" + mine + "><td>" + row.rank + "</td><th scope=\"row\">" + escapeHtml(row.nickname) + "</th><td><strong>" + row.points + "</strong></td><td>" + row.exact + "</td><td>" + row.predicted + "</td></tr>";
+      return "<tr" + mine + "><td>" + row.rank + "</td><th scope=\"row\">" + escapeHtml(row.nickname) + (row.badges || []).map(function(badge){return '<small style="display:block">'+escapeHtml(badge)+'</small>';}).join("") + "</th><td><strong>" + row.points + "</strong></td><td>" + row.exact + "</td><td>" + row.predicted + "</td></tr>";
     }).join("");
   }
   function loadBoard(period) {
