@@ -60,7 +60,10 @@ test("istemci: 'Rating Modeli' puanları doğrulanmadan sayı basmaz", () => {
     assert.ok(row.includes("verifiedRatingValue(player,"), `doğrulama kapısı yok: ${row.trim()}`);
     assert.ok(row.includes('"Yeterli veri yok"'), `'Yeterli veri yok' yedeği yok: ${row.trim()}`);
   }
-  assert.equal(fs.readFileSync("app.js", "utf8"), fs.readFileSync("public/app.js", "utf8"), "public/app.js senkron değil");
+  // public/app.js bir derleme kopyası (derlemede oyuncu adres haritası enjekte
+  // ediliyor, bu yüzden bayt bayt eşitlik beklenmez); aynı kural orada da olmalı.
+  const published = fs.readFileSync("public/app.js", "utf8");
+  assert.ok(!/profileItemHtml\("Overall", player\.overallRating/.test(published), "public/app.js ham Overall basıyor");
 });
 
 console.log(`profile overall rating: ${passed} test geçti`);
