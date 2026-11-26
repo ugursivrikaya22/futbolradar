@@ -161,6 +161,20 @@ function fromDictionaryKeep(value, dictionary) {
   return dictionary[key(value)] || value;
 }
 
+/**
+ * Sağlayıcının İngilizce transfer türleri Türkçe sayfada Türkçe basılır.
+ * Karşılığı olmayan değer olduğu gibi kalır (para tutarları, "Bonservis" vb.).
+ */
+const TRANSFER_TYPES_TR = {
+  loan: "Kiralık", "back from loan": "Kiralıktan dönüş", "return from loan": "Kiralıktan dönüş",
+  transfer: "Transfer", free: "Serbest transfer", "free transfer": "Serbest transfer",
+  swap: "Takas", "free agent": "Serbest oyuncu"
+};
+export function transferTypeTr(value) {
+  if (value === null || value === undefined) return value;
+  return TRANSFER_TYPES_TR[key(value)] || value;
+}
+
 export function turkishPlayer360(model) {
   const identity = model && model.identity;
   if (identity) {
@@ -174,10 +188,14 @@ export function turkishPlayer360(model) {
   for (const row of rows) {
     row.fromTeam = clubDisplayName(row.fromTeam);
     row.toTeam = clubDisplayName(row.toTeam);
+    row.type = transferTypeTr(row.type);
   }
   const career = model && model.career;
   if (career) {
-    for (const stint of Array.isArray(career.stints) ? career.stints : []) stint.club = clubDisplayName(stint.club);
+    for (const stint of Array.isArray(career.stints) ? career.stints : []) {
+      stint.club = clubDisplayName(stint.club);
+      stint.type = transferTypeTr(stint.type);
+    }
     if (Array.isArray(career.formerTeams)) career.formerTeams = career.formerTeams.map(clubDisplayName);
   }
   return model;
