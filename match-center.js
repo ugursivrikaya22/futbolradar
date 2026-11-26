@@ -265,8 +265,24 @@
       .replace("{as}", String(detail.score.away));
   }
 
+  var lineupLoading = false, latestLineupDetail = null;
+  function updateLineups(detail) {
+    if (!Array.isArray(detail.lineups) || !detail.lineups.length) return;
+    latestLineupDetail = detail;
+    if (window.FutbolRadarLineupLive) {window.FutbolRadarLineupLive.render(root, detail, {locale:locale});return;}
+    if (lineupLoading) return;
+    lineupLoading = true;
+    var script = document.createElement('script');script.src='/lineup-live.js';script.async=true;
+    script.onload=function(){lineupLoading=false;if(window.FutbolRadarLineupLive)window.FutbolRadarLineupLive.render(root,latestLineupDetail,{locale:locale});};
+    script.onerror=function(){lineupLoading=false;};document.head.appendChild(script);
+  }
+
   function render(detail) {
+    updateLineups(detail);
     var status = statusOf(detail);
+    if (status !== 'scheduled') {
+      root.querySelectorAll('[data-msp-lineups] .is-probable').forEach(function(badge){var article=badge.closest('article');if(article)article.remove();});
+    }
     var score = detail && detail.score;
     var hasScore = score && isNumber(score.home) && isNumber(score.away);
     var hero = root.querySelector("[data-msp-hero]");
@@ -403,7 +419,7 @@
     if (inFlight || finished) return;
     if (document.hidden) { schedule(LIVE_POLL_MS); return; }
     var now = Date.now();
-    if (now < kickoffMs - 5 * 60 * 1000) { schedule(Math.min(kickoffMs - 5 * 60 * 1000 - now, PRE_POLL_MS)); return; }
+    if (now < kickoffMs - 90 * 60 * 1000) { schedule(Math.min(kickoffMs - 90 * 60 * 1000 - now, PRE_POLL_MS)); return; }
     // DİL SUNUCUYA SÖYLENİR. "Son 10 dakika" yorumu sunucuda, şablondan
     // üretiliyor (services/radarPulseBuilder.js); istek dili taşımazsa
     // sunucu Türkçe varsayar ve İNGİLİZCE sayfada Türkçe bir cümle çıkar.
@@ -544,10 +560,10 @@
   if (!pollable) return;
 
   var untilKickoff = kickoffMs - Date.now();
-  if (untilKickoff > 60 * 60 * 1000) {
+  if (untilKickoff > 90 * 60 * 1000) {
     // Uzak maç: hiç istek atma; okuyucu sayfayı açık bırakırsa başlamaya
     // 5 dakika kala tek zamanlayıcı kurulur (24 saat üstü kurulmaz).
-    if (untilKickoff < 24 * 60 * 60 * 1000) schedule(untilKickoff - 5 * 60 * 1000);
+    if (untilKickoff < 24 * 60 * 60 * 1000) schedule(untilKickoff - 90 * 60 * 1000);
     return;
   }
   schedule(250);
