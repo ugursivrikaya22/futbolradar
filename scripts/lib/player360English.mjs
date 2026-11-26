@@ -15,7 +15,9 @@
 import { createRequire } from "node:module";
 import { findTurkish } from "./turkish-detector.mjs";
 
-const { positionLabelTr } = createRequire(import.meta.url)("../../services/playerLabels.js");
+const requireFromHere = createRequire(import.meta.url);
+const { positionLabelTr } = requireFromHere("../../services/playerLabels.js");
+const { clubDisplayName } = requireFromHere("../../services/turkishNames.js");
 
 const POSITIONS = {
   "santrfor": "Centre-forward", "forvet": "Forward", "sol kanat": "Left winger", "sağ kanat": "Right winger",
@@ -159,12 +161,42 @@ function fromDictionaryKeep(value, dictionary) {
   return dictionary[key(value)] || value;
 }
 
+/**
+ * Sağlayıcının İngilizce transfer türleri Türkçe sayfada Türkçe basılır.
+ * Karşılığı olmayan değer olduğu gibi kalır (para tutarları, "Bonservis" vb.).
+ */
+const TRANSFER_TYPES_TR = {
+  loan: "Kiralık", "back from loan": "Kiralıktan dönüş", "return from loan": "Kiralıktan dönüş",
+  transfer: "Transfer", free: "Serbest transfer", "free transfer": "Serbest transfer",
+  swap: "Takas", "free agent": "Serbest oyuncu"
+};
+export function transferTypeTr(value) {
+  if (value === null || value === undefined) return value;
+  return TRANSFER_TYPES_TR[key(value)] || value;
+}
+
 export function turkishPlayer360(model) {
   const identity = model && model.identity;
   if (identity) {
     identity.position = positionLabelTr(identity.position);
     identity.secondaryPosition = positionLabelTr(identity.secondaryPosition);
     identity.nationality = fromDictionaryKeep(identity.nationality, COUNTRIES_TR);
+    identity.team = clubDisplayName(identity.team);
+  }
+  // Kulüp yazımı modelde de tek tablodan: sağlayıcı satırları ASCII gelebilir.
+  const rows = model && model.transfers && Array.isArray(model.transfers.rows) ? model.transfers.rows : [];
+  for (const row of rows) {
+    row.fromTeam = clubDisplayName(row.fromTeam);
+    row.toTeam = clubDisplayName(row.toTeam);
+    row.type = transferTypeTr(row.type);
+  }
+  const career = model && model.career;
+  if (career) {
+    for (const stint of Array.isArray(career.stints) ? career.stints : []) {
+      stint.club = clubDisplayName(stint.club);
+      stint.type = transferTypeTr(stint.type);
+    }
+    if (Array.isArray(career.formerTeams)) career.formerTeams = career.formerTeams.map(clubDisplayName);
   }
   return model;
 }

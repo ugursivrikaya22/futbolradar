@@ -4,6 +4,7 @@ import { createRequire } from "node:module";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
 import {
   player360Description,
+  player360MetaDescription,
   player360FaqPage,
   player360Graph,
   player360H1,
@@ -16,7 +17,7 @@ import {
 import { turkishPlayer360 } from "./lib/player360English.mjs";
 import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
 import { playerNameNeedsReview } from "./lib/playerNameGate.mjs";
-import { hasSubstantivePlayerContent } from "./lib/playerIndexing.mjs";
+import { playerPageIsIndexable } from "./lib/playerIndexing.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -29,6 +30,7 @@ const { annotateDuplicates } = require("../services/duplicatePlayerService.js");
 const { absoluteUrl, hreflangOf } = require("../services/i18n.js");
 // Mevki etiketi TEK tablodan: sağlayıcı İngilizce verir ("Attacker"), sayfa Türkçe basar.
 const { positionLabelTr } = require("../services/playerLabels.js");
+const { localizePlayers, localizeTransfer, personDisplayName } = require("../services/turkishNames.js");
 // Kıyas eşleri ve adresleri TEK kaynaktan; kıyas sayfalarını üreten script
 // de aynı listeyi okuyor, böylece buradaki her bağlantının bir sayfası var.
 const { createComparisonSlugResolver, profileCompareCandidates } = require("../services/playerComparisonPairs.js");
@@ -39,12 +41,15 @@ const { withStoredRatings } = require("../services/playerRatingService.js");
 const { playerRatingCardHtml, ratingAdditionalProperties, ratingUpdatedAt } = require("../services/playerRatingView.js");
 const { formatFreshnessDate } = require("../services/freshnessService.js");
 // `readJson` bir fonksiyon bildirimi olduğu için burada zaten çağrılabilir.
-const players = withStoredRatings(
+// Kulüp ve ad yazımı TEK tablodan (services/turkishNames.js): sağlayıcının
+// ASCII "Besiktas"ı sayfada "Beşiktaş" olur. Kimlik ve adres değişmez.
+const players = localizePlayers(withStoredRatings(
   annotateDuplicates(getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8")))),
   readJson("data/player-ratings.json", { players: {} })
-);
+));
 const confirmedTransfers = JSON.parse(fs.readFileSync(path.join(root, "data", "transfers.json"), "utf8"))
-  .filter((transfer) => transfer.status === "confirmed");
+  .filter((transfer) => transfer.status === "confirmed")
+  .map(localizeTransfer);
 const transferWindows = (JSON.parse(fs.readFileSync(path.join(root, "data", "transfer-window.json"), "utf8")).windows || []);
 
 
@@ -396,6 +401,9 @@ function playerHreflangLinks(player, canonical) {
     <!-- hreflang:end -->`;
 }
 
+/** Koşu boyunca üretilen meta açıklamalar — benzersizlik denetimi için. */
+const seenMetaDescriptions = new Set();
+
 function pageHtml(player) {
   // TEK YETKİLİ KARAR. URL ve sayfa iskeleti korunur — 110 profilin bilgi
   // mimarisi bozulmaz. Değişen tek şey, doğrulanmamış kayıtta hangi
@@ -427,7 +435,7 @@ function pageHtml(player) {
     matches: matchRecords,
     archive: archiveRecords,
     squadStatuses,
-    displayName: playerUrls.playerDisplayName(player),
+    displayName: personDisplayName(playerUrls.playerDisplayName(player)),
     comparisonSlugFor: slugForPair,
     basePrefix: "../",
     routes: {
@@ -453,17 +461,20 @@ function pageHtml(player) {
     : player360Title(model, { locale: "tr" });
   // Meta her zaman kimdir niyetine uygun üretilir; cümle ortadan kesilmez.
   // Transfer kartı görünür kahraman bölümünde kalır, açıklamayı bölmez.
-  const description = player360Description(model, { locale: "tr" });
-  const lead = description;
+  // Görünür giriş paragrafı (lead) ile meta açıklaması AYRI: meta 150–160
+  // karakter, sayfaya özgü ve sayfalar arası benzersizdir (playerMeta.mjs).
+  const lead = player360Description(model, { locale: "tr" });
+  const description = player360MetaDescription(model, { seen: seenMetaDescriptions });
   const canonical = playerUrls.playerCanonicalUrl(player.id);
-  // İNDEKS KARARI: doğrulanmış oyuncu, kesinleşmiş transferi olan oyuncu ya da
-  // en az bir KAYNAKLI içerik bölümü (sezon, maçlar, kariyer, transfer, haber,
-  // kadro durumu, kupa) taşıyan sayfa indekslenir. Hiçbiri yoksa sayfa yalnızca
-  // ad + mevkiden ibarettir: noindex,follow; `generate-static-seo-pages`
+  // İNDEKS KARARI (ortak işlev, scripts/lib/playerIndexing.mjs): kesinleşmiş
+  // transferi olan oyuncu ya da en az bir KAYNAKLI içerik bölümü (sezon,
+  // maçlar, kariyer, transfer, haber, kadro durumu, kupa) taşıyan sayfa
+  // indekslenir. `verified` tek başına yetmez: yalnızca kimlik + biyografi
+  // olan sayfa ince içeriktir, noindex,follow; `generate-static-seo-pages`
   // noindex sayfayı site haritasına zaten almaz.
   // Ad sıra bozukluğu şüphesi taşıyorsa ("Sami Bircan Ahmet") ad düzelene ya da
   // editör onaylayana kadar noindex: başlık, H1 ve kimdir cümlesi o adı basıyor.
-  const indexable = !playerNameNeedsReview(player, root) && (view.verified || Boolean(recentTransfer) || hasSubstantivePlayerContent(model));
+  const indexable = !playerNameNeedsReview(player, root) && playerPageIsIndexable({ model, hasRecentTransfer: Boolean(recentTransfer) });
   // Sıfır ya da tire basılmaz: gerçek bir ölçüm sanılabilir. Doğrulanmamış
   // kayıtta puan rozeti HİÇ çizilmez (aşağıda view.verified ile).
   //

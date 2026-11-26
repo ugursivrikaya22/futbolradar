@@ -22,12 +22,15 @@
  */
 
 import { createRequire } from "node:module";
+import { playerMetaDescription, uniquePlayerMetaDescription } from "./playerMeta.mjs";
 
 const require = createRequire(import.meta.url);
 const { competitionLabel, t } = require("../../services/i18n.js");
 // Veride Türkçe hazır metin olarak duran künye satırları.
 const { sourceNoteLabel } = require("../../services/displayLabels.js");
 const { isAllowedSourceUrl, hostOf } = require("../../services/sourceLinks.js");
+// Kulüp kimliği yazımdan bağımsız tek anahtardan (services/turkishNames.js).
+const { clubKey } = require("../../services/turkishNames.js");
 
 export function escapeHtml(value) {
   return String(value ?? "")
@@ -147,6 +150,10 @@ function renderSeason(model, locale) {
   const heading = text("player360.season.heading", locale, name, model.season);
   const stats = model.seasonStats;
 
+  // Doğrulanmış sezon verisi yoksa bölüm HİÇ basılmaz: "henüz eşleşmedi"
+  // notu taşıyan boş bir başlık okuyucuya bilgi değil gürültü verir.
+  if (!stats.available) return "";
+
   if (stats.snapshot) {
     const cards = stats.metrics.map(row => {
       const value = row.available ? row.display : "—";
@@ -168,13 +175,6 @@ function renderSeason(model, locale) {
     </section>`;
   }
 
-  if (!stats.available) {
-    return `<section class="p360" aria-labelledby="p360-season-title" data-p360-section="season">
-        <div class="p360-head"><h2 id="p360-season-title">${escapeHtml(heading)}</h2></div>
-        ${emptyNote(text("player360.season.empty", locale, model.season))}
-      </section>`;
-  }
-
   const core = stats.core.map((row) => statCard(row.key, row.value, locale)).join("");
   const positional = stats.positional.length
     ? `<h3 class="p360-subhead">${escapeHtml(text("player360.season.positional", locale))}</h3>
@@ -189,6 +189,56 @@ function renderSeason(model, locale) {
         <div class="p360-stat-grid">${core}</div>
         ${positional}
         ${source}
+      </section>`;
+}
+
+// ── Özet şeridi ─────────────────────────────────────────────────────────────
+
+/**
+ * ÖZET ŞERİDİ — yaş, uyruk, güncel kulüp, sezon gol/asist/dakika, son haber.
+ *
+ * Yalnızca modelde DOĞRULANMIŞ olarak duran alanlar basılır; olmayan alan
+ * için kart, "Güncelleniyor" ya da sıfır basılmaz. Hiçbir alan yoksa şerit
+ * ve başlığı hiç çıkmaz. Kimlik kartıyla aynı model alanlarını okur, yeni
+ * bir veri kaynağı açmaz.
+ */
+function renderSummary(model, locale) {
+  const identity = model.identity || {};
+  const cards = [];
+  const card = (label, value) => cards.push(
+    `<div class="p360-stat"><span>${escapeHtml(label)}</span><b>${escapeHtml(value)}</b></div>`);
+
+  if (player360ValuePresent(identity.age)) card(text("player360.identity.age", locale), String(identity.age).trim());
+  if (player360ValuePresent(identity.nationality)) card(text("player360.identity.nationality", locale), String(identity.nationality).trim());
+  if (player360ValuePresent(identity.team)) card(text("player360.identity.club", locale), String(identity.team).trim());
+
+  const stats = model.seasonStats;
+  let hasSeasonCards = false;
+  if (stats && stats.available) {
+    const byKey = new Map((stats.core || []).map((row) => [row.key, row.value]));
+    for (const key of ["appearances", "goals", "assists", "minutes"]) {
+      if (!byKey.has(key)) continue;
+      card(text(`player360.stat.${key}`, locale), formatNumber(byKey.get(key), locale));
+      hasSeasonCards = true;
+    }
+  }
+
+  const latest = model.news && Array.isArray(model.news.general) ? model.news.general[0] : null;
+  const latestLine = latest && latest.href && latest.title
+    ? `<p class="p360-source">${escapeHtml(text("player360.summary.latestNews", locale))}: <a href="${escapeHtml(latest.href)}">${escapeHtml(latest.title)}</a></p>`
+    : "";
+
+  if (!cards.length && !latestLine) return "";
+
+  const heading = text("player360.summary.heading", locale, model.identity.name);
+  const season = hasSeasonCards
+    ? `<p class="p360-source">${escapeHtml(text("player360.summary.seasonNote", locale, stats.season || model.season || ""))}</p>`
+    : "";
+  return `<section class="p360 p360-summary" aria-labelledby="p360-summary-title" data-p360-section="summary">
+        <div class="p360-head"><h2 id="p360-summary-title">${escapeHtml(heading)}</h2></div>
+        <div class="p360-stat-grid">${cards.join("")}</div>
+        ${season}
+        ${latestLine}
       </section>`;
 }
 
@@ -479,12 +529,21 @@ function renderCareer(model, locale) {
         </div>`
     : "";
 
+  // Kulüp yolu: tek bakışta kronoloji, gidip dönen kulübün dönemleri ve kiralıklar.
+  const path = model.career.stints.length > 1
+    ? careerClubList(model.career.stints, { locale })
+    : [];
+  const pathLine = path.length > 1
+    ? `<p class="p360-source" data-p360="career-path">${escapeHtml(text("player360.career.path", locale))}: ${escapeHtml(path.join(", "))}</p>`
+    : "";
+
   const former = model.career.formerTeams.length
     ? `<p class="p360-source">${escapeHtml(text("player360.career.formerTeams", locale))}: ${escapeHtml(model.career.formerTeams.join(", "))}</p>`
     : "";
 
   return `<section class="p360" aria-labelledby="p360-career-title" data-p360-section="career">
         <div class="p360-head"><h2 id="p360-career-title">${escapeHtml(heading)}</h2></div>
+        ${pathLine}
         ${table}
         ${former}
       </section>`;
@@ -512,12 +571,8 @@ function renderNews(model, locale) {
   const heading = text("player360.news.heading", locale, model.identity.name);
   const items = model.news.general;
 
-  if (!items.length) {
-    return `<section class="p360" aria-labelledby="p360-news-title" data-p360-section="news">
-        <div class="p360-head"><h2 id="p360-news-title">${escapeHtml(heading)}</h2></div>
-        ${emptyNote(text("player360.news.empty", locale))}
-      </section>`;
-  }
+  // İlişkilendirilmiş haber yoksa bölüm basılmaz (boş başlık yok).
+  if (!items.length) return "";
 
   const list = items.map((row) => {
     const date = formatDate(row.publishedAt, locale) || "";
@@ -570,6 +625,7 @@ export function renderPlayer360(model, options = {}) {
   const locale = options.locale === "en" ? "en" : "tr";
 
   return [
+    renderSummary(model, locale),
     renderIdentity(model, locale),
     renderSeason(model, locale),
     renderRegisteredEvidence(model, locale),
@@ -625,28 +681,67 @@ export function player360KimdirSources(model) {
   return [source];
 }
 
-function foldClubName(value) {
-  return String(value || "")
-    .trim()
-    .toLocaleLowerCase("tr-TR")
-    .normalize("NFD")
-    .replace(/\p{M}/gu, "")
-    .replace(/[^a-z0-9]+/g, "");
+function yearOf(value) {
+  const match = /^(\d{4})/.exec(String(value || ""));
+  return match ? match[1] : null;
 }
 
-function uniqueClubs(stints, exceptName) {
-  const seen = new Set();
-  const clubs = [];
-  const skip = exceptName ? foldClubName(exceptName) : "";
-  for (const stint of Array.isArray(stints) ? stints : []) {
-    if (!stint || !player360ValuePresent(stint.club)) continue;
-    const key = foldClubName(stint.club);
-    if (!key || (skip && key === skip)) continue;
-    if (seen.has(key)) continue;
-    seen.add(key);
-    clubs.push(String(stint.club).trim());
+/**
+ * KARİYER KULÜP LİSTESİ — dönem ve kiralık bilgisiyle.
+ *
+ * Kronolojik sırada, kulüp kimliği yazımdan bağımsız (`clubKey`). Bir kulüp
+ * listede BİRDEN FAZLA kez geçiyorsa (gidip dönen oyuncu) her geçişin dönemi
+ * yazılır ki okuyucu iki "Galatasaray"ı ayırt edebilsin; tek geçişte dönem
+ * yazılmaz (gürültü). Kiralık dönem her zaman işaretlenir.
+ *
+ *   Galatasaray (2017–2021), Leicester (kiralık), Galatasaray
+ *
+ * `excludeCurrent`: son, açık uçlu dönem şu anki kulüpse listeden çıkar
+ * ("Daha önce …" cümlesi için); yine de tekrar sayımına girer. Dönemi
+ * bilinmeyen (tarihsiz) kayıt için dönem uydurulmaz.
+ */
+export function careerClubList(stints, options = {}) {
+  const locale = options.locale === "en" ? "en" : "tr";
+  const loanLabel = locale === "en" ? "loan" : "kiralık";
+  const rows = (Array.isArray(stints) ? stints : [])
+    .filter((stint) => stint && player360ValuePresent(stint.club))
+    .slice()
+    .reverse(); // model en yeni dönemi başa koyar; burada kronolojik.
+
+  const currentKey = options.currentTeam ? clubKey(options.currentTeam) : "";
+  const counts = new Map();
+  // Aynı kulüp kayıtta farklı yazımlarla geçebilir ("İstanbul Başakşehir" / "Başakşehir");
+  // listede ilk görülen yazım kullanılır ki bir kulüp tek adla görünsün.
+  const spelling = new Map();
+  for (const row of rows) {
+    const key = clubKey(row.club);
+    counts.set(key, (counts.get(key) || 0) + 1);
+    if (!spelling.has(key)) spelling.set(key, String(row.club).trim());
   }
-  return clubs;
+
+  let visible = rows;
+  const last = rows.at(-1);
+  if (options.excludeCurrent && last && !last.leftAt && currentKey && clubKey(last.club) === currentKey) {
+    visible = rows.slice(0, -1);
+  }
+
+  return visible.map((row) => {
+    const parts = [];
+    const open = !row.leftAt;
+    if ((counts.get(clubKey(row.club)) || 0) > 1 && !open) {
+      const from = yearOf(row.joinedAt);
+      const to = yearOf(row.leftAt);
+      if (from && to) parts.push(from === to ? from : `${from}–${to}`);
+      else if (from) parts.push(`${from}–`);
+    }
+    if (row.loan) parts.push(loanLabel);
+    const club = spelling.get(clubKey(row.club));
+    return parts.length ? `${club} (${parts.join(", ")})` : club;
+  });
+}
+
+function uniqueClubs(stints, exceptName, locale) {
+  return careerClubList(stints, { locale, currentTeam: exceptName, excludeCurrent: true });
 }
 
 function formatDateLong(value, locale) {
@@ -700,7 +795,7 @@ export function player360Bio(model, options = {}) {
       sentences.push(extras.length ? `${name}, ${team} formasıyla oynamaktadır (${extras.join(", ")}).` : `${bits[0]}.`);
     }
 
-    const clubs = uniqueClubs(model && model.career && model.career.stints, team);
+    const clubs = uniqueClubs(model && model.career && model.career.stints, team, locale);
     if (clubs.length) {
       sentences.push(clubs.length === 1
         ? `Daha önce ${clubs[0]} forması giydi.`
@@ -725,7 +820,7 @@ export function player360Bio(model, options = {}) {
         : `${name} plays for ${team}.`);
     }
 
-    const clubs = uniqueClubs(model && model.career && model.career.stints, team);
+    const clubs = uniqueClubs(model && model.career && model.career.stints, team, locale);
     if (clubs.length) {
       sentences.push(clubs.length === 1
         ? `Previous club: ${clubs[0]}.`
@@ -950,9 +1045,10 @@ export function player360Description(model, options = {}) {
     if (bio.sentences.length) {
       return joinDescription([`${name} kimdir? ${bio.sentences[0]}`], tail, DESCRIPTION_LIMIT);
     }
-    return joinDescription([
-      `${name} kimdir? Kulüp, sezon istatistikleri ve piyasa verileri doğrulanmış sağlayıcı kaydıyla eşleştiğinde yayımlanır; tahmini değer gösterilmez`
-    ], tail, DESCRIPTION_LIMIT);
+    // Doğrulanmış veri yoksa meta açıklama YER TUTUCU vaat etmez ("yayımlanır",
+    // "tahmini değer gösterilmez" gibi cümleler arama sonucunda görünüyordu).
+    // Böyle sayfa zaten noindex'tir (scripts/lib/playerIndexing.mjs).
+    return joinDescription([`${name} kimdir?`], tail, DESCRIPTION_LIMIT);
   }
 
   const parts = [];
@@ -999,10 +1095,6 @@ export function player360Description(model, options = {}) {
     parts.push(`career clubs: ${clubs}`);
   }
 
-  if (parts.length === 1) {
-    parts.push("club, season statistics and market data are published once they match a verified provider record — estimates are never shown");
-  }
-
   let used = [];
   let result = `${parts[0]} — ${tail}`;
   for (const part of parts) {
@@ -1012,6 +1104,19 @@ export function player360Description(model, options = {}) {
     result = candidate;
   }
   return result;
+}
+
+/**
+ * TR META AÇIKLAMASI — 150–160 karakter, oyuncu adı + kulüp + mevki + öne
+ * çıkan istatistik (scripts/lib/playerMeta.mjs). `seen` verilirse sayfalar
+ * arası benzersizlik de sağlanır. Görünür "lead" metni `player360Description`
+ * olarak kalır; ikisi ayrı amaçlara hizmet eder.
+ */
+export function player360MetaDescription(model, options = {}) {
+  const deps = { careerClubList };
+  return options.seen
+    ? uniquePlayerMetaDescription(model, deps, options.seen)
+    : playerMetaDescription(model, deps);
 }
 
 /** SEO başlığı. TR'de "kimdir" kalıbı, ~60 karakter; uzun adlarda kuyruk kısalır. */

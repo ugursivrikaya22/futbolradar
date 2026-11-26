@@ -26,7 +26,9 @@ on:
         description: "Kaç gün ileri taransın (varsayılan 2 = bugün + yarın)"
         required: false
         default: "2"
-
+concurrency:
+  group: site-yuku
+  cancel-in-progress: false
 permissions:
   contents: write
 

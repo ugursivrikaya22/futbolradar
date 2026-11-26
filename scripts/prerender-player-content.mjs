@@ -10,6 +10,7 @@ const { publicPlayerView } = require("../services/cardCredibility.js");
 const { buildPlayerProfile } = require("../services/playerProfileService.js");
 const { createPlayerUrlResolver } = require("../services/playerUrl.js");
 const { positionLabelTr } = require("../services/playerLabels.js");
+const { localizePlayers, localizeTransfer } = require("../services/turkishNames.js");
 
 /**
  * Profil sayfası artık sabit bir dizinde değil: tam adı bilinen oyuncu
@@ -26,8 +27,8 @@ const playerUrls = createPlayerUrlResolver((() => {
   }
 })());
 const playerProfileView = require("../player-profile.js");
-const players = getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8")));
-const transfers = JSON.parse(fs.readFileSync(path.join(root, "data", "transfers.json"), "utf8"));
+const players = localizePlayers(getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"))));
+const transfers = JSON.parse(fs.readFileSync(path.join(root, "data", "transfers.json"), "utf8")).map(localizeTransfer);
 
 function escapeHtml(value) {
   return String(value ?? "")
