@@ -1601,7 +1601,7 @@
     var list = Array.isArray(players) ? players : [];
     var highest = topPlayer(list, playerAiScore);
     var rising = list.filter(function (player) { return playerMatchesSignal(player, "yukselen"); }).length;
-    var needsUpdate = list.filter(playerNeedsDataRefresh).length;
+    var needsUpdate = list.filter(playerNeedsUpdateListing).length;
     var youngPotential = list.filter(function (player) {
       return Number(playerAge(player) || 99) <= 23 || radarMetric(player, "potential") >= 82;
     }).length;
@@ -2052,6 +2052,37 @@
   function playerNeedsDataRefresh(player) {
     var status = normalizeSearchText(player && player.dataStatus);
     return status === "stale" || status === "manual-review" || status === "mock_needs_verification" || status === "transfer_needs_monitoring";
+  }
+
+  /**
+   * "GÜNCELLEME GEREKEN" LİSTESİ VE SAYACI — ZAMANA BAKAR.
+   *
+   * Kart uyarısı (playerNeedsDataRefresh) yalnızca dataStatus bayrağına bakar
+   * ve değişmedi: senkron durduğunda her karta "güncelleme önerilir" yazmak
+   * gürültü olurdu. Liste ve sayaç ise oyuncunun kendi doğrulama damgası
+   * PLAYER_STALE_DAYS günden eskiyse de dolar; hesap sayfa açıldığı ana göre
+   * yapıldığı için her gün kendiliğinden güncellenir. Kural ve sabit
+   * services/playerDataFreshness.js ile AYNIDIR (scripts/test-player-radar-status.mjs
+   * ayrışmayı denetler).
+   */
+  var PLAYER_STALE_DAYS = 14;
+  var PLAYER_STAMP_FIELDS = ["lastVerifiedAt", "lastProviderSeenAt", "lastSyncedAt", "lastUpdatedAt", "lastUpdated"];
+
+  function playerNeedsUpdateListing(player) {
+    if (playerNeedsDataRefresh(player)) {
+      return true;
+    }
+    var newest = null;
+    PLAYER_STAMP_FIELDS.forEach(function (field) {
+      var ms = Date.parse(player && player[field]);
+      if (isFinite(ms) && (newest === null || ms > newest)) {
+        newest = ms;
+      }
+    });
+    if (newest === null) {
+      return true;
+    }
+    return Math.floor((Date.now() - newest) / 86400000) > PLAYER_STALE_DAYS;
   }
 
   function transferStatusBadgeHtml(player) {
@@ -8847,7 +8878,7 @@
     }
 
     if (signal === "needs-update") {
-      return playerNeedsDataRefresh(player);
+      return playerNeedsUpdateListing(player);
     }
 
     return true;

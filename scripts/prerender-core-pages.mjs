@@ -1940,8 +1940,37 @@ function freshnessStamp(freshness) {
   return `Son kontrol: <time datetime="${escapeHtml(parsed.toISOString())}">${escapeHtml(formatFreshnessDate(raw))}</time>`;
 }
 
-function updateMetaLabels(html, freshness) {
-  const stamp = freshnessStamp(freshness);
+/**
+ * OYUNCU RADARI DAMGASI — KONTROL ZAMANI VE VERİ SENKRONU AYRI YAZILIR.
+ *
+ * "Son kontrol" daha önce oyuncu verisinin son senkron damgasıydı ve
+ * senkron durunca ("17 Ağustos 2026") kimse fark etmeden donup kalıyordu.
+ * Artık günlük kontrol (scripts/refresh-player-radar-status.mjs) çalıştığı
+ * anı yazar; verinin gerçekte ne zaman senkronlandığı ise YANINDA ayrıca
+ * görünür. Kontrol bugün yapılıp veri eskiyse okuyucu ikisini birlikte
+ * görür — taze görünüm uydurulmaz. Durum dosyası yoksa ya da bozuksa eski
+ * davranış (ledger damgası) korunur.
+ */
+function playerRadarStamp(status, fallbackFreshness) {
+  const checked = status && Date.parse(status.checkedAt);
+  if (!Number.isFinite(checked)) return freshnessStamp(fallbackFreshness);
+  const time = (iso) => `<time datetime="${escapeHtml(new Date(iso).toISOString())}">${escapeHtml(formatFreshnessDate(iso))}</time>`;
+  const synced = status.newestSyncAt && Number.isFinite(Date.parse(status.newestSyncAt))
+    ? ` · Oyuncu verisi senkronu: ${time(status.newestSyncAt)}`
+    : "";
+  return `Son kontrol: ${time(status.checkedAt)}${synced}`;
+}
+
+function readPlayerRadarStatus() {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(root, "data", "player-radar-status.json"), "utf8"));
+  } catch {
+    return null;
+  }
+}
+
+function updateMetaLabels(html, freshness, stampOverride) {
+  const stamp = stampOverride || freshnessStamp(freshness);
   // `[\s\S]*?` — damga artık iç içe `<time>` taşıyabildiği için eski
   // `[^<]*` deseni ikinci koşuda eşleşmiyordu ve damga donup kalırdı.
   return html
@@ -2067,7 +2096,7 @@ function writePage(file, slots, freshness, staticSlots = {}) {
   Object.entries(staticSlots).forEach(([target, content]) => {
     html = replaceStaticSlot(html, target, content);
   });
-  html = updateMetaLabels(html, freshness);
+  html = updateMetaLabels(html, freshness, file === "oyuncu-radari.html" ? playerRadarStamp(readPlayerRadarStatus(), freshness) : null);
   // Yalnızca `.source-strip` "Son güncelleme" satırı taşıyan sayfalarda
   // etkili olur (bkz. yukarıdaki docblock) — MAÇ verisi tazeliği, `freshness`
   // parametresinden bağımsız olarak her zaman matchesFreshness'tan gelir.

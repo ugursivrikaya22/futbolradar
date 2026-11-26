@@ -527,7 +527,14 @@ function fullMaintenanceSteps(providerReady) {
     nodeStep("canonical-players", "sync-turkish-player-profiles.mjs", ["--league=super-lig", "--apply", "--offline", "--skip-squad-refresh"], { kind: "transform", timeoutMs: 8 * 60 * 1000 }),
     nodeStep("confirmed-transfers", "sync-confirmed-transfers.mjs", ["--apply"], { kind: "transform", timeoutMs: 3 * 60 * 1000 }),
     nodeStep("weekly-player-enrichment", "sync-turkish-player-profiles.mjs", ["--league=super-lig", "--stale-days=14", "--request-budget=80", "--apply", "--skip-squad-refresh"], { kind: "source", source: "api-football", timeoutMs: 15 * 60 * 1000, skip: !monday ? "Deep player enrichment runs in the Monday full update only." : noProvider }),
-    nodeStep("weekly-photo-validation", "validate-player-photos.mjs", ["--apply", "--concurrency=3", "--stale-days=14"], { kind: "source", source: "player-photo-hosts", timeoutMs: 12 * 60 * 1000, skip: !monday ? "Photo refresh runs in the Monday full update only." : false })
+    nodeStep("weekly-photo-validation", "validate-player-photos.mjs", ["--apply", "--concurrency=3", "--stale-days=14"], { kind: "source", source: "player-photo-hosts", timeoutMs: 12 * 60 * 1000, skip: !monday ? "Photo refresh runs in the Monday full update only." : false }),
+    // OYUNCU RADARI GÜNLÜK DURUM KONTROLÜ. Oyuncu verisine dokunmaz,
+    // sağlayıcıya istek atmaz: data/player-radar-status.json'a kontrol
+    // zamanını ve "güncelleme gereken" listesini yazar. Sayfadaki "Son
+    // kontrol" bundan basılır (prerender-core-pages.mjs → playerRadarStamp).
+    // Oyuncu adımlarının HEPSİNDEN sonra koşar; sağlayıcı yoksa da koşar,
+    // çünkü verinin eskidiğini görünür kılmak tam da o durumda gerekir.
+    nodeStep("player-radar-status", "refresh-player-radar-status.mjs", ["--apply"], { kind: "transform", timeoutMs: 60 * 1000 })
   ];
 }
 
