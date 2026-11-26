@@ -65,7 +65,7 @@ const server = http.createServer(async (request, response) => {
 await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
 const origin = `http://127.0.0.1:${server.address().port}`;
 
-const browser = await playwright.chromium.launch();
+const browser = await playwright.chromium.launch({channel:process.platform === "win32" ? "msedge" : undefined});
 try {
   const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
   const page = await context.newPage();
