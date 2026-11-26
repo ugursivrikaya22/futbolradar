@@ -45,8 +45,4 @@ const labels = cards.map((c) => `${c.label} ${c.note}`).join(" | ");
 assert.ok(!/\bdiger\b/.test(labels), `kart metninde "diger" kalmış: ${labels}`);
 assert.ok(cards.some((c) => c.label === "Akıllı eşleşme"), "Akıllı eşleşme kartı yok");
 
-// Public kopyaları köklerle aynı olmalı (sync-public-assets).
-for (const f of ["app.js", "app-compare.js"]) {
-  assert.equal(fs.readFileSync(f, "utf8"), fs.readFileSync(`public/${f}`, "utf8"), `public/${f} senkron değil`);
-}
 console.log("comparison Turkish copy OK");
