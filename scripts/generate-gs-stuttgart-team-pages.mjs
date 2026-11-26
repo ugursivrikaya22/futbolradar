@@ -14,6 +14,7 @@
  * - Büyük dört üreticisine (generate-big-four-data-pages.mjs) dokunulmaz; açık
  *   PR #561/#564 ile çakışmamak için ayrı üretici.
  */
+import { filterUpcoming } from "./lib/upcoming.mjs";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -62,7 +63,13 @@ function srcLinks(data, keys) {
   return keys.map((k) => `<a class="tp-src"${sourceLinkAttrs()} href="${esc(data.sources[k].url)}">${esc(data.sources[k].name.split(" — ")[0])}</a>`).join(" · ");
 }
 
+/** "Sıradaki maçlar" yalnızca bugünden sonrakileri listeler; geçmiş maç sıradaki sayılmaz. */
+function upcomingOnly(items) {
+  return filterUpcoming(items, (m) => m.date);
+}
+
 function fixtureList(data, items, label) {
+  if (!items.length) return `<p class="tp-empty">Doğrulanmış yaklaşan maç kaydı şu an yok; fikstür güncellendiğinde burada görünecek.</p>`;
   return `<ol class="tp-fixtures" aria-label="${esc(label)}">${items.map((m) => {
     const title = `${m.home} - ${m.away}`;
     const titleHtml = m.href ? `<a class="tp-match-link" href="${esc(m.href)}">${esc(title)}</a>` : `<strong>${esc(title)}</strong>`;
@@ -174,7 +181,7 @@ export function buildGsFixture(data) {
     { name: "Fikstür", url: canonical }
   ]);
   const l = gs.league;
-  const events = gs.upcoming.map((m) => eventSchema(m, canonical)).filter(Boolean);
+  const events = upcomingOnly(gs.upcoming).map((m) => eventSchema(m, canonical)).filter(Boolean);
   const graph = [
     { "@type": "WebPage", "@id": `${canonical}#page`, url: canonical, name: "Galatasaray Fikstürü", description, inLanguage: "tr-TR", dateModified: data.dataDate, about: { "@id": `${SITE}/takimlar/galatasaray#team` } },
     { "@type": "SportsTeam", "@id": `${SITE}/takimlar/galatasaray#team`, name: "Galatasaray", sport: "Football", url: `${SITE}/takimlar/galatasaray`, memberOf: { "@type": "SportsOrganization", name: "Süper Lig" } },
@@ -183,8 +190,8 @@ export function buildGsFixture(data) {
   ];
   const main = `
           <section class="evergreen-section" aria-labelledby="gs-next"><h2 id="gs-next">Sıradaki maçlar</h2>
-            <p>3 Kasım maçının künyesi, yayın bilgisi ve maç öncesi notları: <a class="tp-match-link" href="../../galatasaray-stuttgart.html">Galatasaray - Stuttgart maç sayfası</a>. Rakip profili: <a class="tp-match-link" href="../stuttgart">VfB Stuttgart takım sayfası</a>.</p>
-            ${fixtureList(data, gs.upcoming, "Galatasaray sıradaki maçlar")}
+            <p>3 Kasım'da oynanan karşılaşmanın künyesi ve maç sayfası: <a class="tp-match-link" href="../../galatasaray-stuttgart.html">Galatasaray - Stuttgart maç sayfası</a>. Rakip profili: <a class="tp-match-link" href="../stuttgart">VfB Stuttgart takım sayfası</a>.</p>
+            ${fixtureList(data, upcomingOnly(gs.upcoming), "Galatasaray sıradaki maçlar")}
           </section>
           <section class="evergreen-section" aria-labelledby="gs-ucl"><h2 id="gs-ucl">Şampiyonlar Ligi 2026-27: oynanan maçlar</h2>
             <p>Galatasaray lig aşamasının ilk üç maçında 1 galibiyet, 2 mağlubiyetle 3 puan topladı.</p>
@@ -214,7 +221,7 @@ export function buildStuttgart(data) {
   const graph = [
     { "@type": "WebPage", "@id": `${canonical}#page`, url: canonical, name: "VfB Stuttgart takım sayfası", description, inLanguage: "tr-TR", dateModified: data.dataDate, about: { "@id": `${canonical}#team` } },
     { "@type": "SportsTeam", "@id": `${canonical}#team`, name: s.name, alternateName: "Stuttgart", sport: "Football", url: canonical, foundingDate: "1893-09-09", memberOf: { "@type": "SportsOrganization", name: "Bundesliga" }, coach: { "@type": "Person", name: s.headCoach.name }, location: { "@type": "Place", name: s.stadium.name }, athlete: players, sameAs: ["https://www.vfb.de/"] },
-    { "@type": "ItemList", name: "VfB Stuttgart sıradaki maçlar", itemListElement: s.upcoming.map((m) => eventSchema(m, canonical)).filter(Boolean).map((e, i) => ({ "@type": "ListItem", position: i + 1, item: e })) },
+    { "@type": "ItemList", name: "VfB Stuttgart sıradaki maçlar", itemListElement: upcomingOnly(s.upcoming).map((m) => eventSchema(m, canonical)).filter(Boolean).map((e, i) => ({ "@type": "ListItem", position: i + 1, item: e })) },
     crumbs.schema
   ];
   const main = `
@@ -245,7 +252,7 @@ export function buildStuttgart(data) {
             <ul class="tp-facts">${s.facts.map((f) => `<li>${esc(f.text)}<span class="tp-sources">Kaynak: ${srcLinks(data, f.source)}</span></li>`).join("")}</ul>
           </section>
           <section class="evergreen-section" aria-labelledby="fikstur"><h2 id="fikstur">Fikstür: sıradaki maçlar</h2>
-            ${fixtureList(data, s.upcoming, "VfB Stuttgart sıradaki maçlar")}
+            ${fixtureList(data, upcomingOnly(s.upcoming), "VfB Stuttgart sıradaki maçlar")}
           </section>
           <nav class="evergreen-link-grid" aria-label="İlgili sayfalar"><a href="../galatasaray-stuttgart.html">Galatasaray - Stuttgart maç sayfası</a><a href="./galatasaray/fikstur.html">Galatasaray fikstürü</a><a href="./galatasaray">Galatasaray takım profili</a><a href="../sampiyonlar-ligi-puan-durumu.html">Şampiyonlar Ligi puan durumu</a><a href="../bundesliga-puan-durumu.html">Bundesliga puan durumu</a></nav>`;
   return shell({ base, canonical, title, description, h1: "VfB Stuttgart: Kadro, Tarihçe ve Fikstür", kicker: "Takımlar · Bundesliga", intro: "Galatasaray'ın Şampiyonlar Ligi rakibi VfB Stuttgart: güncel kadro, kulüp tarihçesi, Bundesliga ve Avrupa istatistikleri, sıradaki maçlar. Bilgiler kulübün resmî sitesi, Bundesliga.com ve UEFA.com'dan.", graph, body: { crumbs: crumbs.html, main }, dataDate: data.dataDate });

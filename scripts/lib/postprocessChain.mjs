@@ -115,6 +115,10 @@ export const POSTPROCESS_CHAIN = [
   { id: "en-league-pages", script: "generate-en-league-pages.mjs", args: [], timeoutMinutes: 3 },
   { id: "en-league-statistics-pages", script: "generate-en-league-statistics-pages.mjs", args: [], timeoutMinutes: 3 },
   { id: "en-info-pages", script: "generate-en-info-pages.mjs", args: [], timeoutMinutes: 2 },
+  // Rehber / soru-cevap / maç rehberi / transfer merkezi sayfalarının İngilizcesi
+  // (/en/guides/): Türkçe sayfalar generate-search-demand-pages ile yazılmış olmalı,
+  // ortak düzen ve hreflang adımlarından ÖNCE üretilmeli.
+  { id: "en-guide-pages", script: "generate-en-guide-pages.mjs", args: [], timeoutMinutes: 2 },
   // Oyuncu listeleri kulüp/form sayfalarından ÖNCE: ikincisi ilkine
   // bağlantı verir ve yalnızca diskte bulduğu hedefe bağlanır.
   { id: "en-player-list-pages", script: "generate-en-player-list-pages.mjs", args: [], timeoutMinutes: 3 },
@@ -173,6 +177,10 @@ export const POSTPROCESS_CHAIN = [
   // ve damga adımından ÖNCE.
   { id: "home-poll", script: "inject-home-poll.mjs", args: [], timeoutMinutes: 5 },
   { id: "motm-poll", script: "inject-motm-poll.mjs", args: [], timeoutMinutes: 5 },
+  // Şablondan sızan artıklar (ters tırnak, "${...}", "undefined", etiketsiz
+  // "Veri kapsamı `") görünür metinden temizlenir; meta kısaltmasından ÖNCE,
+  // böylece açıklama onarılmış metinden kesilir. İdempotent.
+  { id: "template-leaks", script: "clean-template-leaks.mjs", args: [], timeoutMinutes: 8 },
   // Meta uzunlukları üreticiler ne yazarsa yazsın son sözü burada bulur;
   // damga adımından ÖNCE koşmalı (içeriği değiştirir).
   { id: "normalize-meta", script: "normalize-meta.mjs", args: [], timeoutMinutes: 5 },

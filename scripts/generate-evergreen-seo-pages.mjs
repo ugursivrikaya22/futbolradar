@@ -5,10 +5,12 @@ import { siteFooter, siteHeader } from "./lib/layout.mjs";
 import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
 import { createRequire } from "node:module";
 import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
+import { filterUpcoming } from "./lib/upcoming.mjs";
 import { faqItems, faqSchemaNode, faqSectionHtml, genitive, lastFinishedMatch, lastMatchAnswer, loadTeamSources, sportsTeamNode } from "./lib/teamRichResults.mjs";
 
 const require = createRequire(import.meta.url);
 const { playerLink } = require("../services/playerLinks.js");
+const { collapseDuplicates } = require("../services/duplicatePlayerService.js");
 const { superLigTeamPages, teamHubIndexable, standingsPageIndexable } = require("../services/superLigTeamPages.js");
 const { sameClub } = require("../services/superLigTeams.js");
 const { pageShareHtml } = require("../services/columnShare.js");
@@ -17,7 +19,8 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const siteUrl = "https://www.futbolradar.com";
 const socialImage = `${siteUrl}/assets/og-image.png`;
 const teams = JSON.parse(fs.readFileSync(path.join(root, "data", "teams.json"), "utf8"));
-const players = JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"));
+// Aynı oyuncunun kısa ("A. Batagov") ve uzun adlı kayıtları tek satıra iner.
+const players = collapseDuplicates(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8")));
 const richSources = loadTeamSources(root);
 
 const featuredTeams = [
@@ -242,12 +245,40 @@ const KEYWORD_HUB_LINKS = [
   ["fenerbahce-transfer.html", "Fenerbahçe transfer"],
   ["besiktas-mac-ozetleri.html", "Beşiktaş maç özetleri"],
   ["super-lig-bu-hafta.html", "Süper Lig bu hafta"],
-  ["mac/galatasaray-amed-sportif-faaliyetler-7-kasim-2026.html", "Galatasaray - Amedspor (7 Kasım, 19:00 TSİ)"],
   ["galatasaray-stuttgart.html", "Galatasaray - Stuttgart (Şampiyonlar Ligi)"],
   ["vfb-stuttgart.html", "VfB Stuttgart"]
 ];
+const TR_MONTHS = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
+
+/**
+ * Galatasaray'ın SIRADAKİ maçının sayfası. Eskiden bu bağlantı sabit yazılmıştı
+ * ("Galatasaray - Amedspor (7 Kasım)") ve maç geçtikten sonra da takım
+ * sayfasında kalıyordu. Artık maç-sayfası kaydından ve yalnızca bugünden
+ * sonraki maçlardan seçilir; uygun maç yoksa bağlantı hiç basılmaz.
+ */
+function nextGalatasarayLink() {
+  let pages = [];
+  try {
+    pages = JSON.parse(fs.readFileSync(path.join(root, "data", "match-seo-pages.json"), "utf8")).pages || [];
+  } catch {
+    return null;
+  }
+  const next = filterUpcoming(
+    pages.filter((page) => /galatasaray/i.test(`${page.homeTeam} ${page.awayTeam}`) && page.competitionId !== "genclik" && !/U\d{2}/.test(`${page.homeTeam} ${page.awayTeam}`)),
+    (page) => page.kickoff
+  ).sort((a, b) => String(a.kickoff).localeCompare(String(b.kickoff)))[0];
+  if (!next || !fs.existsSync(path.join(root, "mac", `${next.slug}.html`))) return null;
+  const when = new Date(next.kickoff);
+  const parts = new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Istanbul", day: "numeric", month: "numeric", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).formatToParts(when);
+  const get = (type) => parts.find((part) => part.type === type)?.value;
+  const label = `${next.homeTeam} - ${next.awayTeam} (${get("day")} ${TR_MONTHS[Number(get("month")) - 1]}, ${get("hour")}:${get("minute")} TSİ)`;
+  return [`mac/${next.slug}.html`, label];
+}
+
 function keywordHubLinks(base = "./") {
-  return KEYWORD_HUB_LINKS.filter(([file]) => fs.existsSync(path.join(root, file)))
+  const nextLink = nextGalatasarayLink();
+  const links = nextLink ? [...KEYWORD_HUB_LINKS.slice(0, 9), nextLink, ...KEYWORD_HUB_LINKS.slice(9)] : KEYWORD_HUB_LINKS;
+  return links.filter(([file]) => fs.existsSync(path.join(root, file)))
     .map(([file, label]) => `<a href="${base}${file.startsWith("mac/") ? file.replace(/\.html$/, "") : file}">${escapeHtml(label)}</a>`).join("");
 }
 

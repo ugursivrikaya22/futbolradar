@@ -13,6 +13,7 @@ const { normalizeText } = require("../../api/_utils");
 const { createSameDayClubIndex } = require("../sameDayClubIndex.js");
 const { findCompetition, matchesCompetition, normalizeKey } = require("../competitionCatalog");
 const { normalizePlayer: normalizePlayerRecord } = require("../playerService");
+const { collapseDuplicates } = require("../duplicatePlayerService");
 const { isFinishedStatus, isAwardedStatus, liveVerdict } = require("../matchStatus.js");
 
 // Bu sağlayıcı artık yalnızca örnek veri sunmuyor: elle doğrulanmış
@@ -721,7 +722,8 @@ async function getSquad(query) {
     });
   }
 
-  return data.map((player) => ({
+  // Kadro: aynı oyuncunun kısa/uzun adlı kayıtları tek satır, mevki Türkçe.
+  return collapseDuplicates(data).map((player) => ({
     id: player.id,
     providerId: player.providerId,
     name: player.name,

@@ -70,6 +70,9 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
     "realmadrid.com",
     // Atlético de Madrid resmî sitesi (en.atleticodemadrid.com alt alanı dahil).
     "atleticodemadrid.com",
+    // Inter resmî sitesi: Tarihte Bugün 24 Kasım kaydının (Barcelona 2-0 Inter,
+    // 2009) maç merkezi künyesi. services/sourceTrust.js'de zaten güvenilir.
+    "inter.it",
     // VfB Stuttgart resmî sitesi: Galatasaray'ın UCL rakibi Stuttgart takım
     // sayfasında kadro, kulüp künyesi/başarılar ve maç programı buradan.
     "vfb.de",
@@ -192,6 +195,9 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
     "bbc.com",
     // BBC Sport RSS makale adresi bbc.co.uk üzerindedir (bbc.com değil).
     "bbc.co.uk",
+    // The Guardian: Tarihte Bugün 25 Kasım kaydının (George Best, 2005)
+    // tarihli haberi; BBC ile aynı sınıf ulusal yayın.
+    "theguardian.com",
     "cumhuriyet.com.tr",
     "transfermarkt.com.tr",
     // Gazzetta dello Sport'un güncel açık RSS'i (dynamic-feed) bu alanda.

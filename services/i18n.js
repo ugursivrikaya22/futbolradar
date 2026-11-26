@@ -460,11 +460,11 @@ const NAV_KEYS = Object.freeze({
       { route: null, href: "kose-yazilari.html", key: "nav.columns" },
       { route: null, href: "puan-durumu.html", key: "nav.standings" },
       { route: null, href: "istatistik-merkezi.html", key: "nav.stats" },
-      // TRANSFER RADAR: SEO botunun üreteceği asıl hedef `transfer-radar.html`.
-      // Derleme anında o dosya varsa menü ona bağlanır (`preferredHref`);
-      // yoksa yayında olan en yakın transfer merkezi (`href`) kullanılır.
-      // Böylece menü hiçbir zaman var olmayan bir adrese gitmez.
-      { route: null, href: "super-lig-transferleri-2026-2027.html", preferredHref: "transfer-radar.html", key: "nav.transferRadar" },
+      // TRANSFER RADAR: altı ligi kapsayan ayrı sayfa `transfer-radari.html`
+      // (scripts/generate-transfer-radar-page.mjs). Eski Süper Lig transfer
+      // sayfası (super-lig-transferleri-2026-2027.html) adresinde kalır ve
+      // bu sayfayla karşılıklı bağlantılıdır; menü yalnızca yeni sayfaya gider.
+      { route: null, href: "transfer-radari.html", key: "nav.transferRadar" },
       { route: null, href: "arsiv.html", key: "nav.archive" }
     ],
     secondary: [

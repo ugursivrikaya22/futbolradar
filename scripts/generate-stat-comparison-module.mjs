@@ -7,6 +7,7 @@
  *
  * Mevcut kıyas üreticisinin sildiği dosyalar `data-fr-module` ile korunur.
  */
+import { buildMiddlewareSource } from "./lib/middlewareSource.mjs";
 import fs from "node:fs";
 import path from "node:path";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
@@ -873,29 +874,10 @@ function reverseMap(pairs) {
 
 function writeCanonicalMiddleware(pairs) {
   const map = reverseMap(pairs);
-  const body = `/**
- * Ters kıyas adresini kanoniğe taşır.
- *
- * Çift başına vercel.json yönlendirmesi Vercel'in 1024 kural sınırını aşar
- * (scripts/inject-player-redirects.mjs). Eşleşme yoksa istek statik sayfaya düşer.
- */
-const CANONICAL = ${JSON.stringify(map, null, 2)};
-
-export const config = {
-  matcher: ["/karsilastirma/:path*"]
-};
-
-export default function middleware(request) {
-  const url = new URL(request.url);
-  const slug = url.pathname.replace(/^\\/karsilastirma\\//, "").replace(/\\.html$/, "");
-  const canonical = CANONICAL[slug];
-  if (!canonical) return;
-  url.pathname = \`/karsilastirma/\${canonical}\`;
-  url.search = "";
-  return Response.redirect(url, 301);
-}
-`;
-  fs.writeFileSync(path.join(root, "middleware.js"), body, "utf8");
+  // Haber yönlendirme tablosu aynı middleware.js'te durur (scripts/lib/middlewareSource.mjs).
+  const newsFile = path.join(root, "data", "news-slug-redirects.json");
+  const news = fs.existsSync(newsFile) ? (JSON.parse(fs.readFileSync(newsFile, "utf8")).redirects || {}) : {};
+  fs.writeFileSync(path.join(root, "middleware.js"), buildMiddlewareSource({ comparison: map, news }), "utf8");
 }
 
 function updateVercel(pairs) {

@@ -52,7 +52,7 @@ const DAILY_PAGES = new Set([
   "index.html",
   "mac-merkezi.html",
   "haftanin-maclari.html",
-  "bugunun-maclari-hangi-kanalda.html",
+  "bugun-hangi-mac-hangi-kanalda.html",
   "yarinki-maclar-hangi-kanalda.html",
   "bugunku-mac-tahminleri.html",
   "gunun-radar-bulteni.html",
@@ -192,52 +192,52 @@ const playerSeoPages = [
   {
     file: "en-iyi-forvetler.html",
     landing: "en-iyi-forvetler",
-    title: "En Iyi Forvetler | Gol Tehdidi ve AI Rating | FutbolRadar",
-    description: "En iyi forvetler listesi; gol tehdidi, xG, sut hacmi, form ve AI rating sinyalleriyle hazirlanir.",
-    h1: "En Iyi Forvetler",
+    title: "En İyi Forvetler | Gol Tehdidi ve AI Rating | FutbolRadar",
+    description: "En iyi forvetler listesi; gol tehdidi, xG, şut hacmi, form ve AI rating sinyalleriyle hazırlanır.",
+    h1: "En İyi Forvetler",
     lead: "Forvet ve kanat oyuncularını gol tehdidi, hücum radarı ve form ivmesiyle oku.",
     cards: ["Gol tehdidi", "Hücum radarı", "Bitiricilik"]
   },
   {
     file: "en-iyi-orta-sahalar.html",
     landing: "en-iyi-orta-sahalar",
-    title: "En Iyi Orta Sahalar | Yaraticilik ve Pres Radari | FutbolRadar",
+    title: "En İyi Orta Sahalar | Yaratıcılık ve Pres Radarı | FutbolRadar",
     description: "En iyi orta sahalar; yaratıcılık, pas, pres gücü, form ve AI rating metrikleriyle listelenir.",
-    h1: "En Iyi Orta Sahalar",
+    h1: "En İyi Orta Sahalar",
     lead: "Orta saha oyuncularını yaratıcılık, pres, pas ve süreklilik sinyalleriyle karşılaştır.",
     cards: ["Yaratıcılık", "Pres gücü", "Pas kalitesi"]
   },
   {
     file: "en-iyi-defanslar.html",
     landing: "en-iyi-defanslar",
-    title: "En Iyi Defanslar | Savunma Radari | FutbolRadar",
+    title: "En İyi Defanslar | Savunma Radarı | FutbolRadar",
     description: "En iyi defanslar; savunma radarı, süreklilik, disiplin, top kapma ve AI rating sinyalleriyle analiz edilir.",
-    h1: "En Iyi Defanslar",
+    h1: "En İyi Defanslar",
     lead: "Defans oyuncularını savunma etkisi, disiplin, fiziksel süreklilik ve radar skoruyla oku.",
-    cards: ["Savunma radari", "Disiplin", "Süreklilik"]
+    cards: ["Savunma radarı", "Disiplin", "Süreklilik"]
   },
   {
     file: "en-iyi-kaleciler.html",
     landing: "en-iyi-kaleciler",
-    title: "En Iyi Kaleciler | Kaleci Performans Radari | FutbolRadar",
+    title: "En İyi Kaleciler | Kaleci Performans Radarı | FutbolRadar",
     description: "En iyi kaleciler; form, savunma etkisi, veri güveni ve AI rating sinyalleriyle takip edilir.",
-    h1: "En Iyi Kaleciler",
+    h1: "En İyi Kaleciler",
     lead: "Kalecileri form, savunma katkısı ve performans radarıyla karşılaştır.",
     cards: ["Kaleci formu", "Savunma etkisi", "Veri güveni"]
   },
   {
     file: "yukselen-oyuncular.html",
     landing: "yukselen-oyuncular",
-    title: "Yukselen Oyuncular | Form Artisi ve Scouting Sinyali | FutbolRadar",
+    title: "Yükselen Oyuncular | Form Artışı ve Scouting Sinyali | FutbolRadar",
     description: "Yükselen oyuncular listesi; form değişimi, trend yönü, dakika artışı ve AI radar sinyalleriyle hazırlanır.",
     h1: "Yükselen Oyuncular",
     lead: "Formu yükselen oyuncuları trend, dakika, potansiyel ve radar metrikleriyle takip et.",
-    cards: ["Form artisi", "Trend", "Potansiyel"]
+    cards: ["Form artışı", "Trend", "Potansiyel"]
   },
   {
     file: "genc-yetenekler.html",
     landing: "genc-yetenekler",
-    title: "Genc Yetenekler | Potansiyel ve AI Rating | FutbolRadar",
+    title: "Genç Yetenekler | Potansiyel ve AI Rating | FutbolRadar",
     description: "Genç yetenekler listesi; yaş, potansiyel rating, form, piyasa değeri ve radar sinyallerine göre hazırlanır.",
     h1: "Genç Yetenekler",
     lead: "Genç oyuncuları potansiyel, form ve piyasa değeri radarıyla incele.",
@@ -525,7 +525,7 @@ function sitemapXml(files) {
   const core = [
     "index.html",
     "bugunun-maclari.html",
-    "bugunun-maclari-hangi-kanalda.html",
+    "bugun-hangi-mac-hangi-kanalda.html",
     "yarinki-maclar-hangi-kanalda.html",
     "mac-sonuclari.html",
     "iddaa-sonuclari.html",
@@ -609,7 +609,7 @@ ${unique.map((file) => {
   // kanonik hâli uzantısız; site haritasında `.html` listelemek, canonical
   // ile çelişen ikinci bir adres bildirmek olurdu.
   // Aynı kural, sayfanın kendi canonical'ı uzantısız olan diğer dosyalar için
-  // de geçerli (ör. bugunun-maclari-hangi-kanalda.html → /bugunun-maclari-hangi-kanalda).
+  // de geçerli (ör. bugun-hangi-mac-hangi-kanalda.html → /bugun-hangi-mac-hangi-kanalda).
   // Yalnızca canonical, dosyanın uzantısız hâliyle birebir eşleşiyorsa uygulanır.
   const canonicalFile = file.startsWith("futbolcu/") || selfCanonicalIsExtensionless(file) ? file.replace(/\.html$/, "") : file;
   const loc = alternatesByFile.has(file) ? i18nUrl(file) : (file === "index.html" ? `${domain}/` : `${domain}/${canonicalFile}`);

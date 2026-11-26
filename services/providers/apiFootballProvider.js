@@ -1,4 +1,5 @@
 const { buildSeasonSnapshot } = require("../apiFootballPlayerMetrics.js");
+const { cleanProviderName } = require("../templateLeaks.js");
 const {
   APIFOOTBALL_API_KEY_ENV_NAMES,
   APIFOOTBALL_LEAGUE_ID_ENV_NAMES,
@@ -703,7 +704,8 @@ function normalizeFixture(item) {
       ? { leagueCountry: String(league.country) }
       : {}),
     round: roundNumber(league),
-    venue: (fixture.venue && fixture.venue.name) || null,
+    // Sağlayıcı apostrof yerine ters tırnak yazabiliyor ("York`s LNER ...").
+    venue: cleanProviderName(fixture.venue && fixture.venue.name),
     // Hakem adı sağlayıcı fikstür yükünde hazır geliyordu ama düşürülüyordu;
     // maç bilgi kartı (stadyum/hakem/saat) bu alanı okur. Açıklanmadıysa null.
     referee: fixture.referee || null,
@@ -787,6 +789,7 @@ function normalizeStandingRow(row, leagueName) {
     name: teamName(team),
     logo: teamLogo(team),
     league: leagueName || "",
+    group: row.group || null,
     played: numberOrNull(row.all && row.all.played),
     won: numberOrNull(row.all && row.all.win),
     drawn: numberOrNull(row.all && row.all.draw),
@@ -814,7 +817,7 @@ function normalizeTeam(item) {
     logo: team.logo || null,
     league: "",
     country: team.country || "",
-    venue: venue.name || null,
+    venue: cleanProviderName(venue.name),
     coach: null,
     squadCount: null,
     momentum: null,
@@ -1241,7 +1244,7 @@ async function getStandings(query) {
   const season = resolveSeason(query && query.season);
   const payload = await providerFetch("/standings", { league, season });
   const leaguePayload = responseItems(payload)[0] && responseItems(payload)[0].league || {};
-  const table = Array.isArray(leaguePayload.standings) ? leaguePayload.standings[0] || [] : [];
+  const table = Array.isArray(leaguePayload.standings) ? leaguePayload.standings.flat() : [];
   return stampProviderData(table.map((row) => ({ ...normalizeStandingRow(row, leaguePayload.name), season, leagueId: String(league) })), "standings", 60 * 60 * 1000, payload);
 }
 

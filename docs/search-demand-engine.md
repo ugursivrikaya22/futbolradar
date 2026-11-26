@@ -26,8 +26,15 @@ paneli günceller ve içerik planını besler.
 | Sinyal toplayıcı | `scripts/fetch-search-signals.mjs` | Autocomplete + iç sinyaller (`npm run demand:signals`) |
 | Fırsat envanteri | `scripts/build-search-demand-data.mjs` | `opportunities.json` + 30 günlük takvim (`npm run demand:data`) |
 | Sayfa üretici | `scripts/generate-search-demand-pages.mjs` | Rehber/merkez/soru sayfaları + panel (`npm run demand:pages`) |
+| İngilizce eşler | `scripts/generate-en-guide-pages.mjs` | Aynı sayfaların `/en/guides/` karşılığı; metin `data/search-demand/content-plan.en.json`dan, tarih/saat/güven etiketi/kaynak adresi Türkçe kayıttan (`npm run generate:en-guides`, test: `npm run test:en-guides`) |
 | Testler | `scripts/test-search-demand.mjs` | `npm test` zincirinde |
 | Panel | `seo-icerik-firsatlari.html` | NOINDEX editoryal ekran; filtreler ve veri boşluğu beyanı |
+
+**Yeni plan sayfası = yeni İngilizce kayıt.** `content-plan.json`a eklenen her
+sayfa için `content-plan.en.json`a aynı slug ile çeviri eklenir; yapı (bölüm,
+paragraf, SSS, iddia, kaynak sayısı) Türkçeyle aynı olmalıdır. Eksikse
+`npm run test:en-guides` düşer. İngilizce sayfalar derlemede (`postprocessChain`
+→ `en-guide-pages`) üretilir, depoya işlenmez.
 
 Veri dosyaları `data/search-demand/` altında yaşar: `opportunities.json`
 (puanlı fırsat tablosu), `content-plan.json` (üretim planı — her sayfa bir

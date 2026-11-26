@@ -87,19 +87,30 @@
   function isUpcomingStatus(status) {
     return ['SCHEDULED', 'TIMED', 'NS', 'TBD'].indexOf(status) !== -1;
   }
-  function statusOf(row) {
-    return String(row.status || row.providerStatus || '').toUpperCase();
+  function isUnplayedStatus(status) {
+    return ['POSTPONED', 'PST', 'CANCELLED', 'CANC', 'ABANDONED', 'ABD'].indexOf(status) !== -1;
   }
   // Counts use the full same-day payload from /api/matches — the same live
   // source as the Turkish homepage — not the stale fixture-calendar.json
   // snapshot baked at build time.
+  //
+  // A row can carry more than one status field: the curated record may still
+  // say SCHEDULED while the provider already reports FT or PST. The MOST
+  // ADVANCED state wins — the same rule as services/matchStatus.js#matchState
+  // and as phaseOf() above — so the counters agree with the cards. Reading
+  // only the first field counted a finished or postponed match as "Upcoming"
+  // while the list had already dropped it. Order below is that ranking:
+  // finished, then not-played (postponed / cancelled / abandoned, which only
+  // count towards the total), then live, then upcoming.
   function countsOf(rows) {
     var live = 0, upcoming = 0, finished = 0, now = Date.now();
     rows.forEach(function (row) {
-      var status = statusOf(row);
-      if (isLiveStatus(status)) live += 1;
-      else if (isFinishedStatus(status)) finished += 1;
-      else if (isUpcomingStatus(status) && Date.parse(row.kickoff) >= now) upcoming += 1;
+      var tokens = statusTokens(row);
+      var any = function (test) { return tokens.some(test); };
+      if (any(isFinishedStatus)) finished += 1;
+      else if (any(isUnplayedStatus)) return;
+      else if (any(isLiveStatus)) live += 1;
+      else if (any(isUpcomingStatus) && Date.parse(row.kickoff) >= now) upcoming += 1;
     });
     return { live: live, upcoming: upcoming, finished: finished, total: rows.length };
   }

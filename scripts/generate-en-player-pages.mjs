@@ -11,10 +11,15 @@
  * İngilizcesi hiç yoktu ve dil düğmesi ana sayfaya düşüyordu. Artık
  * Türkçe sayfası diskte olan her oyuncu İngilizce sayfa alır.
  *
- * İNCE İÇERİK KURALI KORUNUR, ama "sayfa yok" yerine "indekslenmez" olarak:
- * doğrulanmamış kaydın sayfası `noindex,follow` basılır ve site haritasına
- * girmez. Sayfa Türkçesiyle aynı indirgenmiş bilgiyi verir ("Club not yet
- * confirmed"); doğrulanmamış sayı İngilizcede de gösterilmez.
+ * İNCE İÇERİK KURALI KORUNUR, ama "sayfa yok" yerine "indekslenmez" olarak —
+ * ve Türkçe profille AYNI kapıdan (scripts/lib/playerIndexing.mjs): doğrulanmış
+ * oyuncu YA DA en az bir kaynaklı içerik bölümü (sezon, maç günlüğü, kariyer,
+ * transfer, haber, madalya, kadro durumu) olan sayfa indekslenir ve site
+ * haritasına girer. Yalnızca ad + mevkiden ibaret sayfa `noindex,follow` basılır
+ * ve haritada yer almaz. Eskiden burada yalnızca `verified` aranıyordu: aynı
+ * bölümleri taşıyan Türkçe profil indekslenirken İngilizcesi noindex kalıyordu.
+ * Sayfa Türkçesiyle aynı indirgenmiş bilgiyi verir ("Club not yet confirmed");
+ * doğrulanmamış sayı İngilizcede de gösterilmez.
  *
  * Kısıtlı alanlar (rating, piyasa değeri, istatistik, forma numarası,
  * fotoğraf) doğrudan `player.*`den değil, `publicPlayerView(player).fields`
@@ -38,6 +43,8 @@ import {
 
 import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
 import { englishClubName, englishPlayer360 } from "./lib/player360English.mjs";
+import { playerPageIsIndexable } from "./lib/playerIndexing.mjs";
+import { playerNameNeedsReview } from "./lib/playerNameGate.mjs";
 import {
   englishProfilePlayers,
   peerHrefForBuiltComparisons,
@@ -215,7 +222,6 @@ function fitDescription(value) {
 
 function pageHtml(player) {
   const view = publicPlayerView(player);
-  const indexable = view.verified === true;
   const fields = view.fields || {};
   const slugValue = enPlayerSlug(player);
   // Türkçe karşılık tek çözücüden: taşınan oyuncuda `futbolcu/<tam-ad>`,
@@ -242,6 +248,14 @@ function pageHtml(player) {
     displayName: playerUrls.playerDisplayName(player),
     comparisonSlugFor: slugForPair
   });
+  // İNDEKS KARARI Türkçe profille AYNI kapıdan (scripts/lib/playerIndexing.mjs):
+  // en az bir kaynaklı içerik bölümü olan sayfa indekslenir; `verified` tek
+  // başına yetmez (yalnızca kimlik + biyografi ince içeriktir). Eskiden iki
+  // üretici ayrışıyordu: aynı bölümleri taşıyan Türkçe profil indekslenirken
+  // İngilizce eşi noindex kalıyor, Türkçe sayfanın hreflang'ı
+  // indekslenmeyen sayfaya bakıyordu.
+  // Karar, çeviri modeli değiştirmeden ÖNCE verilir (TR üreticisiyle aynı sıra).
+  const indexable = !playerNameNeedsReview(player, root) && playerPageIsIndexable({ model });
   // Kayıt Türkçe tutulur (mevki, uyruk, transfer türü…); İngilizce sayfada
   // elle yazılmış karşılıkları basılır, karşılığı olmayan alan boş kalır.
   englishPlayer360(model);
@@ -432,6 +446,6 @@ for (const sitemapPath of [path.join(root, "sitemap.xml"), path.join(root, "publ
 }
 
 console.log(`English player pages: ${written} written, ${eligible.length - written} unchanged (${eligible.length} players).`);
-console.log(`English player pages: ${indexableCount} verified and indexable, ${eligible.length - indexableCount} unverified (noindex,follow, outside the sitemap); ${withoutTurkishPage} without a Turkish page skipped.`);
+console.log(`English player pages: ${indexableCount} indexable (verified or with sourced content), ${eligible.length - indexableCount} thin (noindex,follow, outside the sitemap); ${withoutTurkishPage} without a Turkish page skipped.`);
 console.log(`English player pages: ${registered} TR↔EN pairs registered (dynamic route map).`);
 console.log(`English player pages: ${retainedPages.length} page(s) outside current data retained (never deleted).`);

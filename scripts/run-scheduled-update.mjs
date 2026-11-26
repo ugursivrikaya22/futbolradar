@@ -896,6 +896,11 @@ async function main() {
     }
   }
 
+  // Senkron bittiğinde bile veri 48 saatten eskiyse (sağlayıcı kotası, düşen
+  // kaynak) uyarı düşer; sayfalar sessizce eski veriyle yayında kalmasın.
+  // Bu adım koşuyu ASLA başarısız yapmaz.
+  await runStep({ id: "data-staleness", command: NODE, args: [path.join(root, "scripts", "check-data-staleness.mjs")], kind: "validation", required: false, timeoutMs: 60 * 1000 }, steps);
+
   if (shouldBuild && !criticalFailure) {
     const buildSpecs = args.type === "full"
       // The measured full build (including browser gates) takes ~48 minutes.

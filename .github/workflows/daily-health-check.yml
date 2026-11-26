@@ -15,7 +15,7 @@ permissions:
   statuses: read
   issues: write
 concurrency:
-  group: futbolradar-operations-monitor
+  group: site-yuku
   cancel-in-progress: false
 jobs:
   health-check:
@@ -33,6 +33,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: node scripts/restore-operations-ledger.mjs
+      - name: Warn when synced data is older than 48 hours
+        run: node scripts/check-data-staleness.mjs
       - name: Check scheduler, published versions and TR/EN pages
         env:
           GH_TOKEN: ${{ github.token }}

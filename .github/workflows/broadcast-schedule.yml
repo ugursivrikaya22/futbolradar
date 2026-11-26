@@ -26,7 +26,6 @@ on:
         description: "Kaç gün ileri taransın (varsayılan 2 = bugün + yarın)"
         required: false
         default: "2"
-
 permissions:
   contents: write
 
@@ -38,7 +37,7 @@ concurrency:
   # öğlene kadar saatlik koşuların tamamı bu yüzden sessizce yazılamadı ve
   # site bitmiş maçları "oynanacak" göstermeye devam etti. Ortak grup, işleri
   # iptal etmeden sıraya koyar.
-  group: futbolradar-production-update
+  group: site-yuku
   cancel-in-progress: false
 
 jobs:
