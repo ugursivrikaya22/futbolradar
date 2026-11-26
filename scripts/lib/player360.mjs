@@ -1138,6 +1138,34 @@ export function player360Title(model, options = {}) {
 }
 
 /**
+ * TRANSFER ODAKLI BAŞLIK — aktif tescil penceresinde kesinleşmiş transferi
+ * olan oyuncu için.
+ *
+ * O hafta arama "Osimhen Galatasaray transferi" biçiminde geliyor; kulüp
+ * adını taşıyan başlık o niyetin birebir karşılığı:
+ *
+ *   "Aleksey Batrakov Galatasaray Transferi ve İstatistikleri | FutbolRadar"
+ *
+ * Diğer oyuncular `player360Title` ("kimdir" kalıbı) ile devam eder. Marka
+ * eki ve "ve İstatistikleri" kuyruğu sırayla düşer; kulüp adı ASLA düşmez
+ * (başlığın var olma sebebi o). Takım adı yoksa genel başlığa dönülür.
+ */
+export const TRANSFER_TITLE_LIMIT = 70;
+export function player360TransferTitle(model, team, options = {}) {
+  const clean = String(team || "").trim();
+  if (!clean || options.locale === "en") return player360Title(model, options);
+  const name = model.identity.name;
+  const brand = " | FutbolRadar";
+  const variants = [
+    `${name} ${clean} Transferi ve İstatistikleri${brand}`,
+    `${name} ${clean} Transferi ve İstatistikleri`,
+    `${name} ${clean} Transferi${brand}`,
+    `${name} ${clean} Transferi`
+  ];
+  return variants.find((title) => title.length <= TRANSFER_TITLE_LIMIT) || variants[variants.length - 1];
+}
+
+/**
  * YAPILANDIRILMIŞ VERİ — YALNIZCA GÖRÜNÜR SAYFADA DA OLAN İDDİALAR.
  *
  * schema.org, görünür metinden daha kalıcı bir yanlıştır: arama motoru onu
