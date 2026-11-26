@@ -44,6 +44,7 @@ import {
 import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
 import { englishClubName, englishPlayer360 } from "./lib/player360English.mjs";
 import { playerPageIsIndexable } from "./lib/playerIndexing.mjs";
+import { playerNameNeedsReview } from "./lib/playerNameGate.mjs";
 import {
   englishProfilePlayers,
   peerHrefForBuiltComparisons,
@@ -254,7 +255,7 @@ function pageHtml(player) {
   // İngilizce eşi noindex kalıyor, Türkçe sayfanın hreflang'ı
   // indekslenmeyen sayfaya bakıyordu.
   // Karar, çeviri modeli değiştirmeden ÖNCE verilir (TR üreticisiyle aynı sıra).
-  const indexable = playerPageIsIndexable({ model });
+  const indexable = !playerNameNeedsReview(player, root) && playerPageIsIndexable({ model });
   // Kayıt Türkçe tutulur (mevki, uyruk, transfer türü…); İngilizce sayfada
   // elle yazılmış karşılıkları basılır, karşılığı olmayan alan boş kalır.
   englishPlayer360(model);
