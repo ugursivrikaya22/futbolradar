@@ -1,6 +1,9 @@
 name: Interaction checks
 on:
   pull_request:
+    # `ready_for_review`: taslakta atlanan CI, PR "hazır" işaretlenince koşar
+    # (kapı: scripts/lib/ciGate.mjs). Varsayılan tipler korunuyor.
+    types: [opened, synchronize, reopened, ready_for_review]
   push:
     branches: [main]
   workflow_dispatch:
@@ -10,7 +13,45 @@ concurrency:
   group: site-yuku
   cancel-in-progress: false
 jobs:
+  # KAPI. `production` ~48 dakikalık tam build; özel depoda dakikası faturalanır.
+  # Taslak PR ve yalnızca operasyonel dosya (docs/, .github/ ...) değiştiren PR
+  # bu işi atlatır; `main` push'u ve elle tetikleme HER ZAMAN çalışır. Atlanan iş
+  # "skipped" görünür (zorunlu kontrol olsa bile başarısız sayılmaz).
+  gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # Değişen dosya listesi için; iş akışının varsayılanı yalnızca contents: read.
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      run: ${{ steps.decide.outputs.run }}
+      reason: ${{ steps.decide.outputs.reason }}
+    steps:
+      # Yalnızca kapı betiği ve bağımlılığı: tam klon ~14.000 dosya.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          sparse-checkout: |
+            scripts/ci-gate.mjs
+            scripts/lib/ciGate.mjs
+            scripts/lib/buildDecision.mjs
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Decide whether the full build is needed
+        id: decide
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_DRAFT: ${{ github.event.pull_request.draft }}
+        run: node scripts/ci-gate.mjs
   production:
+    needs: gate
+    # KAPALI-HATA: kapı işinin kendisi başarısız olursa (checkout/setup altyapı
+    # hatası) CI sessizce atlanmasın; yalnızca kapı BAŞARILI ve "atla" derse atlanır.
+    if: ${{ !cancelled() && (needs.gate.result != 'success' || needs.gate.outputs.run == 'true') }}
     runs-on: ubuntu-latest
     # The build regenerates the whole site (match pages, both news feeds,
     # every English page) and then runs verify-production with three
