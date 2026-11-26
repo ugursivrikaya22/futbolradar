@@ -8537,6 +8537,18 @@
     return out.join("");
   }
 
+  // home-freshness:start
+  // Ana sayfa vitrini: öne çıkan haber 48 saatten eskiyse yerini yenisine bırakır.
+  // Kural services/homeFreshness.js ile aynıdır (scripts/test-home-freshness.mjs eşitliği doğrular).
+  var FEATURED_MAX_AGE_MS = 48 * 3600000;
+  function isFreshFeaturedItem(publishedAt, nowMs, maxAgeMs) {
+    var now = typeof nowMs === "number" ? nowMs : Date.now();
+    var limit = typeof maxAgeMs === "number" ? maxAgeMs : FEATURED_MAX_AGE_MS;
+    var time = Date.parse(publishedAt);
+    return isFinite(time) && time <= now && now - time < limit;
+  }
+  // home-freshness:end
+
   function publicNewsItems(news) {
     return (Array.isArray(news) ? news : [])
       .filter(function (item) {
@@ -13935,11 +13947,18 @@
     );
 
 
+    var newsPreviewTarget = document.querySelector('[data-api-target="news-preview"]');
     renderIntoWhenNear(
-      document.querySelector('[data-api-target="news-preview"]'),
+      newsPreviewTarget,
       "newsLite",
       function (news) {
-        return publicNewsItems(news).slice(0, 3).map(renderNewsCard).join("");
+        // Yalnızca 48 saatten taze haber öne çıkar; hiç yoksa bölüm gizlenir
+        // (boş dönen çıktı statik yedeği geri getirir, bu yüzden bölüm burada kapatılır).
+        var html = publicNewsItems(news)
+          .filter(function (item) { return isFreshFeaturedItem(item.publishedAt); })
+          .slice(0, 3).map(renderNewsCard).join("");
+        applyEmptyHide(newsPreviewTarget, Boolean(html));
+        return html;
       },
       "Güncel futbol gündemi yüklenemedi"
     );
