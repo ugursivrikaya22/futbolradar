@@ -46,7 +46,7 @@ function rating(player) {
 }
 
 function team(player) {
-  return player.currentTeam || player.team || "Takim bilgisi yakinda";
+  return player.currentTeam || player.team || "Takım bilgisi yakında";
 }
 
 /**
@@ -236,7 +236,7 @@ for (const slug of ["forvetler", "kaleciler", "defanslar", "orta-sahalar", "genc
   const selected = listPlayers.filter(filter).sort((a, b) => Number(rating(b)) - Number(rating(a)));
   const content = selected.length
     ? selected.map((player) => playerCard(player, "../")).join("\n")
-    : `<article class="data-empty"><strong>Bu listede oyuncu bulunamadi</strong><span>Yeni ve doğrulanmış oyuncu verileri geldikçe liste genişleyecek.</span></article>`;
+    : `<article class="data-empty"><strong>Bu listede oyuncu bulunamadı</strong><span>Yeni ve doğrulanmış oyuncu verileri geldikçe liste genişleyecek.</span></article>`;
   replaceFile(`oyuncular/${slug}.html`, (html) => html
     .replace(/<span class="hero-meta" data-landing-count>[^<]*<\/span>/, `<span class="hero-meta" data-landing-count>${selected.length} oyuncu</span>`)
     .replace(/<section class="grid" data-api-section="player-seo-landing"[\s\S]*?<\/section>/, `<section class="grid" data-api-section="player-seo-landing" data-api-target="player-seo-landing" data-player-landing="${slug}">${content}</section>`));
@@ -256,7 +256,7 @@ for (const slug of [
   const shouldIndex = selected.length >= 2;
   const content = selected.length
     ? selected.map((player) => playerCard(player, "./")).join("\n")
-    : `<article class="data-empty"><strong>Bu listede oyuncu bulunamadi</strong><span>Yeterli oyuncu verisi olustugunda sayfa genisleyecek.</span></article>`;
+    : `<article class="data-empty"><strong>Bu listede oyuncu bulunamadı</strong><span>Yeterli oyuncu verisi oluştuğunda sayfa genişleyecek.</span></article>`;
 
   replaceFile(`${slug}.html`, (html) => {
     const withContent = html
