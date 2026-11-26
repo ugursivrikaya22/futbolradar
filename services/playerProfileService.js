@@ -29,6 +29,7 @@ const {
   buildTransferRumors
 } = require("./playerInsightService");
 const { positionGroup: resolvePositionGroup } = require("./ratingService");
+const { positionLabelTr } = require("./playerLabels");
 const { formatMarketValueEur } = require("./playerService");
 const {
   publicPlayerView,
@@ -289,7 +290,7 @@ function buildIdentity(player, options) {
     team: field(team, { note: "Takım bilgisi doğrulanmayı bekliyor" }),
     teamId: player.currentTeamId || null,
     league: field(player.league || null, { note: "Lig bilgisi yok" }),
-    position: field(player.position || null, { note: "Mevki bilgisi yok" }),
+    position: field(positionLabelTr(player.position) || null, { note: "Mevki bilgisi yok" }),
     secondaryPosition: field(player.secondaryPosition || null, { note: "İkincil mevki verisi yok" }),
     positionGroup: group,
     positionGroupLabel: POSITION_GROUP_LABELS[group] || "Rol bekleniyor",

@@ -28,3 +28,18 @@ export function hasSubstantivePlayerContent(model) {
     rows(model.honours) || (model.availability && model.availability.available)
   );
 }
+
+/**
+ * İNDEKS KARARI — Türkçe ve İngilizce üretici AYNI işlevi çağırır.
+ *
+ * `verified` (kulüp/kimlik doğrulaması) TEK BAŞINA indeks gerekçesi DEĞİLDİR:
+ * doğrulanmış ama yalnızca kimlik + biyografi taşıyan sayfa (kaynaklı sezon,
+ * maç, kariyer, transfer, haber, madalya ya da kadro durumu bölümü yok) ince
+ * içeriktir ve `noindex,follow` alır; site haritasına da girmez. Aktif tescil
+ * penceresindeki kesinleşmiş transfer ise başlı başına kaynaklı bir içeriktir.
+ *
+ * @param {{model: object, hasRecentTransfer?: boolean}} input
+ */
+export function playerPageIsIndexable({ model, hasRecentTransfer = false }) {
+  return Boolean(hasRecentTransfer) || hasSubstantivePlayerContent(model);
+}
