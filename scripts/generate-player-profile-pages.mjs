@@ -9,11 +9,13 @@ import {
   player360H1,
   player360Person,
   player360Title,
+  player360TransferTitle,
   renderPlayer360,
   renderPlayer360Kimdir
 } from "./lib/player360.mjs";
 import { turkishPlayer360 } from "./lib/player360English.mjs";
 import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
+import { playerNameNeedsReview } from "./lib/playerNameGate.mjs";
 import { hasSubstantivePlayerContent } from "./lib/playerIndexing.mjs";
 
 const root = process.cwd();
@@ -25,6 +27,9 @@ const { resolvePlayerPhoto, playerPhotoAlt } = require("../services/playerPhotoS
 const { publicPlayerView, statsAreVerified, publishedOverallLabel } = require("../services/cardCredibility.js");
 const { annotateDuplicates } = require("../services/duplicatePlayerService.js");
 const { absoluteUrl, hreflangOf } = require("../services/i18n.js");
+// Mevki etiketi TEK tablodan: sağlayıcı İngilizce verir ("Attacker"), sayfa Türkçe basar.
+const { positionLabelTr } = require("../services/playerLabels.js");
+const { localizePlayers, localizeTransfer, personDisplayName } = require("../services/turkishNames.js");
 // Kıyas eşleri ve adresleri TEK kaynaktan; kıyas sayfalarını üreten script
 // de aynı listeyi okuyor, böylece buradaki her bağlantının bir sayfası var.
 const { createComparisonSlugResolver, profileCompareCandidates } = require("../services/playerComparisonPairs.js");
@@ -35,12 +40,15 @@ const { withStoredRatings } = require("../services/playerRatingService.js");
 const { playerRatingCardHtml, ratingAdditionalProperties, ratingUpdatedAt } = require("../services/playerRatingView.js");
 const { formatFreshnessDate } = require("../services/freshnessService.js");
 // `readJson` bir fonksiyon bildirimi olduğu için burada zaten çağrılabilir.
-const players = withStoredRatings(
+// Kulüp ve ad yazımı TEK tablodan (services/turkishNames.js): sağlayıcının
+// ASCII "Besiktas"ı sayfada "Beşiktaş" olur. Kimlik ve adres değişmez.
+const players = localizePlayers(withStoredRatings(
   annotateDuplicates(getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8")))),
   readJson("data/player-ratings.json", { players: {} })
-);
+));
 const confirmedTransfers = JSON.parse(fs.readFileSync(path.join(root, "data", "transfers.json"), "utf8"))
-  .filter((transfer) => transfer.status === "confirmed");
+  .filter((transfer) => transfer.status === "confirmed")
+  .map(localizeTransfer);
 const transferWindows = (JSON.parse(fs.readFileSync(path.join(root, "data", "transfer-window.json"), "utf8")).windows || []);
 
 
@@ -222,14 +230,6 @@ function playerTeamMetaPhrase(player) {
 }
 
 /**
- * Meta açıklaması, doğrulanmamış kayıtlarda kulüp ve puan İDDİA ETMEZ.
- *
- * Önceki hâli "güncel takım Schalke 04 ... overall rating 81" gibi cümleler
- * üretiyordu ve bunlar arama sonuçlarında görünüyordu. Yapılandırılmış veri
- * ve meta açıklaması, görünür HTML'den daha tehlikeli: arama motoru bunları
- * olgu olarak yutar.
- */
-/**
  * Profil fotoğrafı — YALNIZCA lisanslı sağlayıcı barındırıcısından.
  *
  * resolvePlayerPhoto yalnızca media.api-sports.io adreslerini kabul ediyor;
@@ -254,23 +254,6 @@ function profileAvatarHtml(player) {
 
 // `hasSubstantivePlayerContent` (indeks kapısı) İngilizce üreticiyle ORTAK:
 // scripts/lib/playerIndexing.mjs.
-
-function playerDescription(player, view) {
-  if (view && !view.verified) {
-    const position = player.position ? `, mevki ${player.position}` : "";
-    return `${player.name}${position}. Güncel kulüp, performans ve piyasa verileri doğrulanmış ` +
-      "sağlayıcı kaydıyla eşleştiğinde bu sayfada yayımlanır.";
-  }
-  // Puan yalnızca KAPIDAN GEÇTİYSE cümleye girer. Kaydın kaynağının
-  // doğrulanmış olması, sağlayıcının göndermediği bir dereceyi
-  // doğrulamıyor; kadro senkronu derecelendirme döndürmüyor.
-  const fields = (view && view.fields) || {};
-  const rating = fields.overallRating || fields.aiRating || fields.rating;
-  const potential = fields.potentialRating;
-  const ratingPhrase = rating ? `, overall rating ${rating}` : "";
-  const potentialPhrase = potential ? `, potansiyel ${potential}` : "";
-  return `${player.name}; ${playerTeamMetaPhrase(player)}, mevki ${player.position}. Transfer geçmişi${ratingPhrase}${potentialPhrase} ve radar metrikleriyle FutbolRadar'da analiz edilir.`;
-}
 
 /**
  * Kıyas sayfalarını üreten script (generate-player-comparison-pages.mjs)
@@ -350,7 +333,7 @@ function transferHeroHtml(player, transfer, age) {
             <article><span>Eski kulüp</span><b>${escapeHtml(transfer.fromTeam)}</b></article>
             <article><span>Transfer tarihi</span><b>${escapeHtml(formatTransferDateTr(transfer.date))}</b></article>
             <article><span>Transfer bedeli</span><b>${escapeHtml(transferFeeLabel(transfer))}</b></article>
-            <article><span>Mevki</span><b>${escapeHtml(player.position || "Mevki bekleniyor")}</b></article>
+            <article><span>Mevki</span><b>${escapeHtml(positionLabelTr(player.position) || "Mevki bekleniyor")}</b></article>
             <article><span>Yaş</span><b>${escapeHtml(age)}</b></article>
           </div>
           ${statsBlock}
@@ -448,7 +431,7 @@ function pageHtml(player) {
     matches: matchRecords,
     archive: archiveRecords,
     squadStatuses,
-    displayName: playerUrls.playerDisplayName(player),
+    displayName: personDisplayName(playerUrls.playerDisplayName(player)),
     comparisonSlugFor: slugForPair,
     basePrefix: "../",
     routes: {
@@ -469,19 +452,8 @@ function pageHtml(player) {
   // o hafta arama "Osimhen Galatasaray transferi" biçiminde geliyor ve
   // kulüp adını taşıyan başlık o niyetin birebir karşılığı. İstisna dar
   // tutuluyor (46 kayıt), çünkü genel kalıp daha geniş bir niyeti kapsıyor.
-  const displayName = model.identity.name;
   const title = recentTransfer
-    ? (function transferTitle() {
-        const brand = " | FutbolRadar";
-        const team = recentTransfer.toTeam;
-        const variants = [
-          `${displayName} Kimdir? ${team} Transferi${brand}`,
-          `${displayName} Kimdir? ${team}${brand}`,
-          `${displayName} Kimdir?${brand}`,
-          `${displayName} Kimdir?`
-        ];
-        return variants.find((row) => row.length <= 60) || variants[variants.length - 1];
-      }())
+    ? player360TransferTitle(model, recentTransfer.toTeam, { locale: "tr" })
     : player360Title(model, { locale: "tr" });
   // Meta her zaman kimdir niyetine uygun üretilir; cümle ortadan kesilmez.
   // Transfer kartı görünür kahraman bölümünde kalır, açıklamayı bölmez.
@@ -493,7 +465,9 @@ function pageHtml(player) {
   // kadro durumu, kupa) taşıyan sayfa indekslenir. Hiçbiri yoksa sayfa yalnızca
   // ad + mevkiden ibarettir: noindex,follow; `generate-static-seo-pages`
   // noindex sayfayı site haritasına zaten almaz.
-  const indexable = view.verified || Boolean(recentTransfer) || hasSubstantivePlayerContent(model);
+  // Ad sıra bozukluğu şüphesi taşıyorsa ("Sami Bircan Ahmet") ad düzelene ya da
+  // editör onaylayana kadar noindex: başlık, H1 ve kimdir cümlesi o adı basıyor.
+  const indexable = !playerNameNeedsReview(player, root) && (view.verified || Boolean(recentTransfer) || hasSubstantivePlayerContent(model));
   // Sıfır ya da tire basılmaz: gerçek bir ölçüm sanılabilir. Doğrulanmamış
   // kayıtta puan rozeti HİÇ çizilmez (aşağıda view.verified ile).
   //
@@ -600,10 +574,10 @@ function pageHtml(player) {
             <p class="lead">${escapeHtml(lead)}</p>
           </div>
           ${view.verified
-            ? `<span class="hero-meta">${escapeHtml(overall)} · ${escapeHtml(player.position)} · ${escapeHtml(age)}</span>`
+            ? `<span class="hero-meta">${escapeHtml(overall)} · ${escapeHtml(positionLabelTr(player.position))} · ${escapeHtml(age)}</span>`
             // Doğrulanmamış kayıtta puan gösterilmez. Yaş ve mevki bağımsız
             // olarak güvenli bilgiler: kulüpten ve sezondan bağımsızlar.
-            : `<span class="hero-meta">${escapeHtml(player.position || "Mevki bekleniyor")} · ${escapeHtml(age)}</span>`}
+            : `<span class="hero-meta">${escapeHtml(positionLabelTr(player.position) || "Mevki bekleniyor")} · ${escapeHtml(age)}</span>`}
         </div>
       </section>
       ${renderPlayer360Kimdir(model, { locale: "tr" })}

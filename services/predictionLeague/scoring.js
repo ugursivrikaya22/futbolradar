@@ -116,7 +116,15 @@ function periodKeys(ms) {
   };
 }
 
+function weeklyBadges(row) {
+  const badges = [];
+  if (Number(row.points) > 0 && Number(row.rank) === 1) badges.push("Haftanın lideri");
+  if (Number(row.exact) >= 3) badges.push("Haftanın nişancısı");
+  return badges;
+}
+
 module.exports = {
+  weeklyBadges,
   FINAL_PROVIDER_STATUSES,
   MAX_GOALS,
   POINTS,
