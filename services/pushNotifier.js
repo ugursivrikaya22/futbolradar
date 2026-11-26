@@ -89,6 +89,10 @@ function buildPayload(event) {
   const scoreText = scoreHome !== null && scoreAway !== null ? `${scoreHome}-${scoreAway}` : "";
   const url = matchUrl(match);
 
+  if (type === "lineup") {
+    return { title: "İlk 11 açıklandı", body: `${home} - ${away}: ${(event.teams || []).join(", ")}`, tag: `lineup-${match.id}-${(event.teams || []).join("-")}`, url };
+  }
+
   if (type === "kickoff") {
     return {
       title: "🟢 Maç başladı",
@@ -190,6 +194,7 @@ async function notifyMatchEvents(events) {
       event.match.id ? `${MATCH_FOLLOW_PREFIX}${event.match.id}` : null
     ].filter(Boolean))];
 
+    const sent = new Set();
     for (const slug of slugs) {
       let subscribers = [];
       try {
@@ -198,7 +203,14 @@ async function notifyMatchEvents(events) {
         continue;
       }
       if (!subscribers.length) continue;
-      await Promise.allSettled(subscribers.map((subscriber) => sendToSubscriber(subscriber, payload, vapid)));
+      const selected = subscribers.filter(subscriber => {
+        if (sent.has(subscriber.endpoint) || !require("./pushPreferences").accepts(subscriber, event.type)) return false;
+        sent.add(subscriber.endpoint); return true;
+      });
+      // Bound simultaneous push requests for larger subscriber sets.
+      for (let i = 0; i < selected.length; i += 20) {
+        await Promise.allSettled(selected.slice(i, i + 20).map(subscriber => sendToSubscriber(subscriber, payload, vapid)));
+      }
     }
   }
 }
