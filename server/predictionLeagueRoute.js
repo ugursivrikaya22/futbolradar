@@ -274,7 +274,7 @@ async function handlePredictionLeague(req, res, options = {}) {
       // Yalnızca rumuz + puan alanları: başka hiçbir alan dışarı çıkmaz.
       return sendSuccess(res, {
         enabled: true, period, key,
-        rows: rows.map((row) => ({ rank: row.rank, nickname: row.nickname, points: row.points, exact: row.exact, outcome: row.outcome, predicted: row.predicted }))
+        rows: rows.map((row) => ({ rank: row.rank, nickname: row.nickname, points: row.points, exact: row.exact, outcome: row.outcome, predicted: row.predicted, badges: period === "week" ? scoring.weeklyBadges(row) : [] }))
       }, SOURCE, null, null);
     } catch (error) {
       return sendLeagueError(res, error);
