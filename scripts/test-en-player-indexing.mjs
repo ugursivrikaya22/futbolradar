@@ -71,7 +71,8 @@ check("İngilizce üretici ortak işlevi içe aktarıyor, yerelde tanımlamıyor
   assert.doesNotMatch(en, /function hasSubstantivePlayerContent/);
 });
 check("İngilizce indeks kararı yalnızca `verified` değil, ortak kapıyı da içeriyor", () => {
-  assert.match(en, /const indexable = view\.verified === true \|\| hasSubstantivePlayerContent\(model\);/);
+  // Ortak içerik kapısı + ad-inceleme kapısı (playerNameNeedsReview) birlikte.
+  assert.match(en, /const indexable = !playerNameNeedsReview\(player, root\) && \(view\.verified === true \|\| hasSubstantivePlayerContent\(model\)\);/);
   assert.doesNotMatch(en, /const indexable = view\.verified === true;/);
 });
 check("Türkçe indeks kararı ortak kapıyı kullanıyor", () => {

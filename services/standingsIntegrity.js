@@ -70,10 +70,10 @@ function checkStandings(rows) {
       const rank = Number(row.rank);
       if (!Number.isInteger(rank) || rank <= 0) {
         violations.push(`${label}: geçersiz sıra (${row.rank})`);
-      } else if (seenRanks.has(rank)) {
-        violations.push(`sıra ${rank} iki takımda birden: ${seenRanks.get(rank)} / ${label}`);
+      } else if (seenRanks.has((row.group || "") + ":" + rank)) {
+        violations.push(`sıra ${rank} iki takımda birden: ${seenRanks.get((row.group || "") + ":" + rank)} / ${label}`);
       } else {
-        seenRanks.set(rank, label);
+        seenRanks.set((row.group || "") + ":" + rank, label);
       }
     }
 

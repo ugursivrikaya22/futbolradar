@@ -787,6 +787,7 @@ function normalizeStandingRow(row, leagueName) {
     name: teamName(team),
     logo: teamLogo(team),
     league: leagueName || "",
+    group: row.group || null,
     played: numberOrNull(row.all && row.all.played),
     won: numberOrNull(row.all && row.all.win),
     drawn: numberOrNull(row.all && row.all.draw),
@@ -1241,7 +1242,7 @@ async function getStandings(query) {
   const season = resolveSeason(query && query.season);
   const payload = await providerFetch("/standings", { league, season });
   const leaguePayload = responseItems(payload)[0] && responseItems(payload)[0].league || {};
-  const table = Array.isArray(leaguePayload.standings) ? leaguePayload.standings[0] || [] : [];
+  const table = Array.isArray(leaguePayload.standings) ? leaguePayload.standings.flat() : [];
   return stampProviderData(table.map((row) => ({ ...normalizeStandingRow(row, leaguePayload.name), season, leagueId: String(league) })), "standings", 60 * 60 * 1000, payload);
 }
 
