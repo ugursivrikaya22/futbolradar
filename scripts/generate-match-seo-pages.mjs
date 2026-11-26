@@ -147,7 +147,7 @@ const OG_IMAGE = `${DOMAIN}/assets/og-image.png`;
  * KISITLAR: sayfadan gelen bir sayı sağlayıcıyı saniyede bir yoklatamaz.
  */
 const POLL_SECONDS = {
-  live: envSeconds("MATCH_POLL_LIVE_SECONDS", 45),
+  live: envSeconds("MATCH_POLL_LIVE_SECONDS", 30),
   pre: envSeconds("MATCH_POLL_PRE_SECONDS", 120)
 };
 
