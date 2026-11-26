@@ -67,6 +67,31 @@ function hrefFor(rel) {
   return `/${rel.replace(/\.html$/, "")}`;
 }
 
+const ENTITIES = { "&amp;": "&", "&lt;": "<", "&gt;": ">", "&quot;": '"', "&#039;": "'", "&#39;": "'", "&apos;": "'" };
+
+/**
+ * Bağlantı etiketi: hedef sayfanın KENDİ başlığı (`<title>`).
+ *
+ * Eskiden etiket dosya adından türetiliyordu ("Köşe: divan kursusunden cikan
+ * mesaj ..."): slug ASCII olduğu için Türkçe karakterler okura düşüyordu.
+ * Sayfa başlığı zaten yayımlanmış metindir — yeni içerik uydurmaz, yalnızca
+ * doğru yazımı kullanır. Başlık okunamazsa eski slug etiketine düşer.
+ */
+export function pageTitleLabel(root, rel, fallback) {
+  try {
+    const head = fs.readFileSync(path.join(root, rel), "utf8").slice(0, 4096);
+    const m = /<title>([^<]*)<\/title>/i.exec(head);
+    if (m) {
+      let t = m[1].replace(/&(?:amp|lt|gt|quot|apos|#0?39);/g, (e) => ENTITIES[e] || e).replace(/\s*\|\s*FutbolRadar\s*$/i, "").trim();
+      if (t.length > 110) t = `${t.slice(0, 107).trimEnd()}…`;
+      if (t) return t;
+    }
+  } catch {
+    /* başlık okunamadı → slug etiketi */
+  }
+  return fallback;
+}
+
 /** Bir takım için yalnızca var olan companion bağlantılar. */
 export function teamRelatedLinks(root, slug, name) {
   /** @type {{ href: string, label: string }[]} */
@@ -87,12 +112,12 @@ export function teamRelatedLinks(root, slug, name) {
   const newsDir = path.join(root, "haber");
   if (fs.existsSync(newsDir)) {
     const news = fs.readdirSync(newsDir).filter((n) => n.endsWith(".html") && n.includes(slug)).sort().slice(0, 2);
-    for (const n of news) links.push({ href: hrefFor(`haber/${n}`), label: `Haber: ${n.replace(/\.html$/, "").replace(/-/g, " ")}` });
+    for (const n of news) links.push({ href: hrefFor(`haber/${n}`), label: `Haber: ${pageTitleLabel(root, `haber/${n}`, n.replace(/\.html$/, "").replace(/-/g, " "))}` });
   }
   const colDir = path.join(root, "kose-yazilari");
   if (fs.existsSync(colDir)) {
     const cols = fs.readdirSync(colDir).filter((n) => n.endsWith(".html") && n.includes(slug)).sort().slice(0, 2);
-    for (const n of cols) links.push({ href: hrefFor(`kose-yazilari/${n}`), label: `Köşe: ${n.replace(/\.html$/, "").replace(/-/g, " ")}` });
+    for (const n of cols) links.push({ href: hrefFor(`kose-yazilari/${n}`), label: `Köşe: ${pageTitleLabel(root, `kose-yazilari/${n}`, n.replace(/\.html$/, "").replace(/-/g, " "))}` });
   }
   add("istatistik-merkezi.html", "İstatistik merkezi");
   add("arsiv.html", "Arşiv");
