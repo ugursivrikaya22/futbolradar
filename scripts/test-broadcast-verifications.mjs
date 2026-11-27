@@ -21,3 +21,29 @@ assert.equal(applyVerifiedBroadcast({...bjk, referee:'Sahadaki Hakem'}).referee,
 assert.equal(applyVerifiedBroadcast({...bjk, kickoff:'2026-09-18T22:00:00+03:00'}).referee, null, 'Do not leak a date-specific correction');
 
 console.log('Broadcast verification OK: dated source, shared output, no mutation or inferred channel; referee fills only the gap');
+
+const { programmeRows, channelForMatch } = require('../services/broadcastProgramme.js');
+const { findBroadcaster } = require('../services/broadcastRights.js');
+const beIN = findBroadcaster('bein-sports');
+const day = '2026-11-27';
+const a = { homeTeam: 'Çaykur Rizespor', awayTeam: 'Kasımpaşa', kickoff: '2026-11-27T17:00:00Z' };
+const b = { homeTeam: 'Alanyaspor', awayTeam: 'Konyaspor', kickoff: '2026-11-27T20:00:00+03:00' };
+const grid = '<header>beIN SPORTS 5</header><p><strong>27 Kasım 2026 Cuma</strong><br>' +
+  '20:00 | ÇAYKUR RİZESPOR - KASIMPAŞA | <b>beIN SPORTS 1</b><br>' +
+  '20:00 | CORENDON ALANYASPOR - TÜMOSAN KONYASPOR | <b>beIN SPORTS 2</b></p>' +
+  '<p>28 Kasım 2026 Cumartesi<br>20:00 | Rizespor - Kasımpaşa | beIN SPORTS 3</p>';
+const rows = programmeRows(grid, beIN);
+assert.equal(channelForMatch(rows, a, day), 'beIN SPORTS 1');
+assert.equal(channelForMatch(rows, b, day), 'beIN SPORTS 2');
+assert.equal(channelForMatch(rows, {...a, awayTeam: 'Konyaspor'}, day), '');
+assert.equal(channelForMatch(rows, {...a, homeTeam: 'Çaykur Rizespor U19'}, day), '');
+assert.equal(channelForMatch(rows, {...a, kickoff: '2026-11-27T18:00:00Z'}, day), '');
+assert.equal(channelForMatch(rows, {...a, kickoff: '2026-11-27T20:00:00'}, day), '');
+assert.equal(channelForMatch(rows, {...a, kickoff: '2026-11-28T17:00:00Z'}, '2026-11-28'), 'beIN SPORTS 3');
+const table = '<table><tr><td>2026-11-27</td><td>20:00</td><td>Ç.Rizespor</td><td>Kasımpaşa</td><td>beIN SPORTS MAX 1</td></tr></table>';
+assert.equal(channelForMatch(programmeRows(table, beIN), a, day), 'beIN SPORTS MAX 1');
+const conflicting = '<p>27 Kasım 2026 Cuma<br>20:00 | Rizespor - Kasımpaşa | beIN SPORTS 4</p>';
+assert.equal(channelForMatch(programmeRows(grid + conflicting, beIN), a, day), '');
+assert.equal(channelForMatch(programmeRows('<p>Cuma<br>20:00 | Rizespor - Kasımpaşa | beIN SPORTS 1</p>', beIN), a, day), '');
+assert.equal(channelForMatch(programmeRows('<p>27 Kasım 2026 Cuma<br>20:00 | Rizespor - Kasımpaşa<br>beIN SPORTS 4</p>', beIN), a, day), '');
+console.log('Programme verification OK: dated row, Istanbul kickoff, separate simultaneous channels, no borrowed channel');
