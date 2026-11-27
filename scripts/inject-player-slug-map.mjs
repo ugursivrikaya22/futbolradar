@@ -40,6 +40,22 @@ for (const entry of entries.sort((left, right) => left.id.localeCompare(right.id
   map[entry.id] = entry.slug;
 }
 
+// KOPYA KİMLİKLER KANONİĞİN ADRESİNE.
+//
+// Kopya birleştirmesinden sonra bazı listeler (ör. Oyuncu Radarı) hâlâ eski
+// kopya kimlikle kart çiziyor ("kerem-akturkoglu"). Haritada olmayan kimlik
+// `oyuncular/<id>` yedeğine düşüyor ve oradan kanoniğe 301 ile gidiyordu;
+// tarayıcı denetimi bunu "yanlış hedef" olarak yakaladı. Kanoniğin taşınmış
+// bir adresi varsa kopya kimlik de doğrudan oraya bağlanır.
+let aliasCount = 0;
+for (const alias of (table.aliases || []).slice().sort((left, right) => String(left.id).localeCompare(String(right.id)))) {
+  if (!alias || !alias.id || !alias.canonicalId || map[alias.id]) continue;
+  const slug = map[alias.canonicalId];
+  if (!slug) continue;
+  map[alias.id] = slug;
+  aliasCount += 1;
+}
+
 const source = fs.readFileSync(TARGET, "utf8");
 const start = source.indexOf(START);
 const end = source.indexOf(END);
@@ -53,7 +69,7 @@ const next = `${source.slice(0, start + START.length)} ${JSON.stringify(map)} ${
 
 if (next !== source) {
   fs.writeFileSync(TARGET, next, "utf8");
-  console.log(`[player-slug-map] ${entries.length} taşınan adres app.js'e gömüldü.`);
+  console.log(`[player-slug-map] ${entries.length} taşınan adres ve ${aliasCount} kopya kimlik app.js'e gömüldü.`);
 } else {
-  console.log(`[player-slug-map] harita güncel (${entries.length} adres).`);
+  console.log(`[player-slug-map] harita güncel (${entries.length} adres, ${aliasCount} kopya kimlik).`);
 }
