@@ -65,7 +65,14 @@ const EDITORIAL_PAIRS = Object.freeze([
   ["kerem-akturkoglu", "semih-kilicsoy", "Yükselen yerli hücum profili"],
   ["ugurcan-cakir", "abdulkerim-bardakci", "Savunma güveni"],
   ["sebastian-szymanski", "gedson-fernandes", "Orta saha etki kıyaslaması"],
-  ["edin-dzeko", "semih-kilicsoy", "Tecrübe ve genç hücum profili"]
+  ["edin-dzeko", "semih-kilicsoy", "Tecrübe ve genç hücum profili"],
+  // Gol krallığı, asist krallığı ve derbi radarındaki elle yazılmış
+  // bağlantılar. 26 Kasım'daki kopya birleştirmesinden sonra
+  // "kerem-akturkoglu" kanoniğe çözülüyor; bu üç adres listede olmadığı
+  // için artık üretilmiyordu ve QA kırık bağlantıda derlemeyi durduruyordu.
+  ["edin-dzeko", "kerem-akturkoglu", "Bitiricilik kıyası"],
+  ["kerem-akturkoglu", "sebastian-szymanski", "Servis ve bitiricilik"],
+  ["kerem-akturkoglu", "mauro-icardi", "Kanat üretimi ve bitiricilik"]
 ]);
 
 function canonicalIdOf(player) {

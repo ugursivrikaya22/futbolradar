@@ -836,7 +836,13 @@ function checkSeoAndLinks() {
       "yukselen-oyuncular.html",
       "genc-yetenekler.html"
     ].includes(page)) {
-      expect(html.includes('data-card="player"'), `${page}: missing prerendered content cards`);
+      // Ön-çizim ya kart basar ya da dürüst boş durumu basıp sayfayı
+      // noindex yapar (prerender-player-content.mjs). İkisi de ön-çizimin
+      // koştuğunu kanıtlar; yakalanması gereken hata, hiçbirinin olmaması.
+      const prerenderedEmpty = html.includes('class="data-empty"')
+        && html.includes(`data-player-landing="${page.replace(/\.html$/, "")}"`)
+        && /<meta name="robots" content="noindex/.test(html);
+      expect(html.includes('data-card="player"') || prerenderedEmpty, `${page}: missing prerendered content cards`);
       expect(!html.includes("Oyuncular yukleniyor"), `${page}: client-only loading placeholder must not be indexed`);
     }
   }
