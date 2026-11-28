@@ -10,9 +10,13 @@
  *      talimat kartı gösterir (bkz. `showIosInstallCard`).
  *   3. Favori takım seçimi — hem service worker'a hangi sayfaların
  *      önbelleğe alınacağını söyler hem de push aboneliğini başlatır.
- *   4. Push aboneliği — VAPID genel anahtarı derleme zamanında
- *      `scripts/inject-pwa.mjs` tarafından `<meta name="fr-vapid-public-key">`
- *      olarak gömülür (anahtar yoksa özellik sessizce kapalı kalır).
+ *   4. Push aboneliği — VAPID genel anahtarı önce sayfadaki
+ *      `<meta name="fr-vapid-public-key">` etiketinden okunur
+ *      (`scripts/inject-pwa.mjs`, derleme anında). Etiket boşsa anahtar
+ *      çalışma anında `GET /api/push-subscribe` üzerinden gelir; böylece
+ *      statik HTML anahtarı gömmeden üretilmiş olsa bile Vercel'deki
+ *      `VAPID_PUBLIC_KEY` aboneliğe yeter. Anahtar yoksa izin istenmez
+ *      ve hiçbir şey gönderilmez.
  *
  * iOS KURALI: Web Push, Safari'de yalnızca sayfa ana ekrana eklenip
  * (`display-mode: standalone`) açıldıktan SONRA çalışır. Bu yüzden iOS'ta
@@ -267,17 +271,25 @@
 
   /**
    * BİLDİRİM DÜRTMESİ: tarayıcı izin penceresi ASLA kendiliğinden açılmaz.
-   * Yalnızca (a) VAPID anahtarı gömülüyse, (b) izin henüz sorulmamışsa,
+   * Yalnızca (a) VAPID genel anahtarı varsa (sayfada ya da /api/push-subscribe), (b) izin henüz sorulmamışsa,
    * (c) kullanıcı abone değilse ve (d) ana ekrana kurulmuş uygulamada ya da
    * favori takım seçmiş bir ziyaretçide küçük bir kart gösterilir; "Aç"
    * düğmesi 🔔 panelini açar, izin isteği oradaki tıklamayla gelir.
    */
   function maybeShowPushNudge() {
-    if (activeBanner || !vapidPublicKey()) return;
+    if (activeBanner) return;
     if (typeof Notification === "undefined" || Notification.permission !== "default") return;
     if (readLocal(LS_PUSH_SUBSCRIBED_TEAM) || dismissedRecently(LS_PUSH_NUDGE_DISMISSED_AT)) return;
     if (isIos() && !isStandalone()) return;
     if (!isStandalone() && !readLocal(LS_FAVORITE_TEAM)) return;
+    resolveVapidPublicKey().then(function (key) {
+      if (!key || activeBanner) return;
+      showPushNudge();
+    }).catch(function () { /* anahtar okunamazsa dürtme gösterilmez */ });
+  }
+
+  function showPushNudge() {
+    if (activeBanner) return;
     var toast = showToast(
       "<div><p><strong>Maç bildirimlerini aç</strong></p><p>Takip ettiğin takım ve maçlar için maç başı, gol ve devre arası bildirimi.</p>" +
       '<button class="fr-pwa-primary" data-action="open">Bildirimleri ayarla</button></div>' +
@@ -305,9 +317,51 @@
     return output;
   }
 
-  function vapidPublicKey() {
+  var vapidKeyRequest = null;
+
+  function embeddedVapidPublicKey() {
     var meta = document.querySelector('meta[name="fr-vapid-public-key"]');
-    return meta ? meta.getAttribute("content") || "" : "";
+    return meta ? String(meta.getAttribute("content") || "").trim() : "";
+  }
+
+  function rememberVapidPublicKey(key) {
+    if (!key || !document.head) return key || "";
+    var meta = document.querySelector('meta[name="fr-vapid-public-key"]');
+    if (!meta) {
+      meta = document.createElement("meta");
+      meta.setAttribute("name", "fr-vapid-public-key");
+      document.head.appendChild(meta);
+    }
+    meta.setAttribute("content", key);
+    return key;
+  }
+
+  /**
+   * Genel anahtar. Sayfaya gömülüyse o kullanılır (ek istek yok). Boşsa
+   * sunucudaki VAPID_PUBLIC_KEY okunur. Sunucu "yapılandırılmamış" derse
+   * veya istek düşerse boş dize döner; çağıran izin istemez.
+   */
+  function resolveVapidPublicKey() {
+    var embedded = embeddedVapidPublicKey();
+    if (embedded) return Promise.resolve(embedded);
+    if (!vapidKeyRequest) {
+      vapidKeyRequest = fetch("/api/push-subscribe", {
+        method: "GET",
+        headers: { Accept: "application/json" },
+        cache: "no-store"
+      }).then(function (response) {
+        if (!response || !response.ok) return "";
+        return response.json();
+      }).then(function (payload) {
+        var data = payload && payload.data;
+        var key = data && data.configured === true ? String(data.publicKey || "").trim() : "";
+        return key ? rememberVapidPublicKey(key) : "";
+      }).catch(function () {
+        vapidKeyRequest = null;
+        return "";
+      });
+    }
+    return vapidKeyRequest;
   }
 
   function notifyServiceWorkerOfFavoriteTeam(slug) {
@@ -331,40 +385,41 @@
       return;
     }
 
-    var key = vapidPublicKey();
-    if (!key) {
-      setPanelNote(panel, "Bildirimler henüz devrede değil; çok yakında açılacak.");
-      return;
-    }
     if (!("serviceWorker" in navigator) || !("PushManager" in window) || typeof Notification === "undefined") {
       setPanelNote(panel, "Bu tarayıcı bildirimi desteklemiyor.");
       return;
     }
 
-    Notification.requestPermission().then(function (permission) {
-      if (permission !== "granted") {
-        setPanelNote(panel, "Bildirim izni verilmedi.");
+    resolveVapidPublicKey().then(function (key) {
+      if (!key) {
+        setPanelNote(panel, "Bildirimler henüz devrede değil; çok yakında açılacak.");
         return null;
       }
-      return navigator.serviceWorker.ready
-        .then(function (registration) {
-          return registration.pushManager.subscribe({
-            userVisibleOnly: true,
-            applicationServerKey: urlBase64ToUint8Array(key)
+      return Notification.requestPermission().then(function (permission) {
+        if (permission !== "granted") {
+          setPanelNote(panel, "Bildirim izni verilmedi.");
+          return null;
+        }
+        return navigator.serviceWorker.ready
+          .then(function (registration) {
+            return registration.pushManager.subscribe({
+              userVisibleOnly: true,
+              applicationServerKey: urlBase64ToUint8Array(key)
+            });
+          })
+          .then(function (subscription) {
+            return fetch("/api/push-subscribe", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ subscription: subscription.toJSON(), favoriteTeam: slug, favoriteTeams: favoriteTeams(slug), notificationTypes: preferences() })
+            });
+          })
+          .then(function (response) {
+            if (!response.ok) throw new Error("push-subscribe-failed");
+            writeLocal(LS_PUSH_SUBSCRIBED_TEAM, slug);
+            setPanelNote(panel, "Bildirimler açık.");
           });
-        })
-        .then(function (subscription) {
-          return fetch("/api/push-subscribe", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ subscription: subscription.toJSON(), favoriteTeam: slug, favoriteTeams: favoriteTeams(slug), notificationTypes: preferences() })
-          });
-        })
-        .then(function (response) {
-          if (!response.ok) throw new Error("push-subscribe-failed");
-          writeLocal(LS_PUSH_SUBSCRIBED_TEAM, slug);
-          setPanelNote(panel, "Bildirimler açık.");
-        });
+      });
     }).catch(function () {
       setPanelNote(panel, "Bildirim aboneliği başarısız oldu.");
     });

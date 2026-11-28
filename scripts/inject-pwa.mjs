@@ -12,8 +12,9 @@
  * DEĞİL (push servisine "bu bildirim bizden" demeye yarar, VAPID özel
  * anahtarı olmadan hiçbir işe yaramaz) — `<meta>` etiketiyle her sayfaya
  * gömülmesi standart Web Push pratiğidir. Anahtar tanımsızsa boş içerikle
- * yazılır; `pwa.js` bunu görüp push düğmesini "şu anda kapalı" der,
- * sayfanın geri kalanını bozmaz.
+ * yazılır. `pwa.js` boş etiketi görünce `GET /api/push-subscribe` sorar;
+ * orada da anahtar yoksa izin istemez ve sayfanın geri kalanını bozmaz.
+ * Anahtar bu dosyaya asla yazılmaz: depodaki HTML boş kalır.
  */
 import fs from "node:fs";
 import path from "node:path";
