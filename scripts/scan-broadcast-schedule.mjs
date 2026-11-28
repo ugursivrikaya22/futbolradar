@@ -40,11 +40,11 @@ const root = process.cwd();
 
 const {
   competitionDisplayName,
-  primaryBroadcast,
   istanbulDayOffset,
   selectBroadcastMatches
 } = require("../services/broadcastSchedule.js");
-const { broadcastersForCompetition, allBroadcasters, channelFromSchedule } = require("../services/broadcastRights.js");
+const { broadcastersForCompetition, allBroadcasters } = require("../services/broadcastRights.js");
+const { programmeRows, channelForMatch } = require("../services/broadcastProgramme.js");
 const { resolveCompetitionId } = require("../services/competitionCatalog.js");
 
 const OUTPUT = path.join(root, "data", "broadcast-schedule.json");
@@ -74,56 +74,6 @@ function allMatches() {
   return [...fromCalendar, ...fromCurated];
 }
 
-/**
- * Takım adını akış metninde aramaya uygun hâle getirir.
- *
- * Yayın akışları kulüp adını sitenin kullandığı biçimde yazmıyor:
- * "Fenerbahçe" kimi akışta "FENERBAHCE", kimi akışta "Fenerbahçe SK".
- * Aksan, büyük/küçük harf ve kulüp son ekleri düşürülür; geriye ayırt
- * edici gövde kalır.
- */
-function searchKey(name) {
-  return String(name || "")
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .replace(/ı/g, "i")
-    .toLowerCase()
-    .replace(/\b(sk|as|fk|fc|cf|ac|sc|spor kul[uü]b[uü]|kul[uü]b[uü])\b/g, " ")
-    .replace(/[^a-z0-9]+/g, " ")
-    .trim();
-}
-
-/**
- * İki takım adı AYNI SATIRDA mı geçiyor?
- *
- * "İki ad da sayfada var" yetmez. Haftalık bir yayın akışında onlarca maç
- * listelenir; Liverpool bir satırda, Fulham bambaşka bir satırda geçtiğinde
- * sayfa ikisini de içerir ama Liverpool-Fulham maçını listelemiyor
- * olabilir. Eşleşmeyi maça bağlayan şey yakınlıktır: iki ad birbirinden en
- * fazla `WINDOW` karakter uzakta olmalı ki aynı program satırından
- * geldiklerine güvenelim.
- *
- * Pencere bilerek geniş (bir akış satırı saat + turnuva + iki takım + kanal
- * taşıyabiliyor) ama sayfa boyuna göre hâlâ çok dar; yan yana olmayan iki
- * adı eler.
- */
-const PROXIMITY_WINDOW = 120;
-
-function mentionedTogether(haystack, homeTeam, awayTeam) {
-  const home = searchKey(homeTeam);
-  const away = searchKey(awayTeam);
-  if (home.length < 4 || away.length < 4) return false;
-
-  let index = haystack.indexOf(home);
-  while (index !== -1) {
-    const from = Math.max(0, index - PROXIMITY_WINDOW);
-    const to = index + home.length + PROXIMITY_WINDOW;
-    if (haystack.slice(from, to).includes(away)) return true;
-    index = haystack.indexOf(home, index + 1);
-  }
-  return false;
-}
-
 async function fetchText(url) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
@@ -141,21 +91,6 @@ async function fetchText(url) {
   }
 }
 
-/** HTML'i aranabilir düz metne indirger. */
-function plainText(html) {
-  return searchKey(String(html || "")
-    .replace(/<script[\s\S]*?<\/script>/gi, " ")
-    .replace(/<style[\s\S]*?<\/style>/gi, " ")
-    .replace(/<[^>]+>/g, " "));
-}
-
-/**
- * Akış metninde geçen kanal adı.
- *
- * Yayıncının kalıbı eşleşirse akışta OKUNAN ad döner (ör. "beIN Sports 1");
- * kalıp numara yakalamazsa yayıncının dar etiketi kullanılır ("beIN
- * Sports"). Numara asla uydurulmaz.
- */
 async function main() {
   const days = Array.from({ length: DAY_COUNT }, (_, index) => istanbulDayOffset(index));
   const matches = allMatches();
@@ -173,11 +108,8 @@ async function main() {
   for (const broadcaster of allBroadcasters()) {
     const result = await fetchText(broadcaster.scheduleUrl);
     schedules.set(broadcaster.key, {
-      broadcaster,
       ok: result.ok,
-      reason: result.reason,
-      raw: result.body,
-      plain: result.ok ? plainText(result.body) : ""
+      rows: result.ok ? programmeRows(result.body, broadcaster) : []
     });
     log(`${broadcaster.key}: ${result.ok ? `akış alındı (${result.body.length} bayt)` : `alınamadı — ${result.reason}`}`);
   }
@@ -192,25 +124,11 @@ async function main() {
 
     for (const broadcaster of candidates) {
       const schedule = schedules.get(broadcaster.key);
-      if (!schedule || !schedule.ok || !schedule.plain) continue;
-      // İki ad AYNI SATIRDA geçmeli — sayfada ayrı ayrı bulunmaları
-      // maçın listelendiğini kanıtlamaz (bkz. `mentionedTogether`).
-      if (!mentionedTogether(schedule.plain, match.homeTeam, match.awayTeam)) continue;
-      const channel = channelFromSchedule(broadcaster, schedule.raw);
-      if (channel && !channels.includes(channel)) channels.push(channel);
+      if (!schedule?.ok) continue;
+      const channel = channelForMatch(schedule.rows, match, day);
+      if (!channel) continue;
+      if (!channels.includes(channel)) channels.push(channel);
       if (!sourceUrl) sourceUrl = broadcaster.scheduleUrl;
-    }
-
-    // Sağlayıcı ya da elle doğrulama zaten maça özel bir kanal verdiyse o
-    // da geçerlidir; hak haritasından değil, maç kaydından gelir.
-    //
-    // `primaryBroadcast` bilerek kullanılıyor: `broadcastChannel` bu
-    // betiğin KENDİ çıktısını da okur ve tarayıcı kendi eski kaydını
-    // "sağlayıcı verisi" sanıp kaynaksız yeniden yazardı.
-    const primary = primaryBroadcast(match);
-    if (!channels.length && primary) {
-      channels.push(primary.channel);
-      sourceUrl = primary.sourceUrl;
     }
 
     // KAYNAKSIZ KANAL YAYIMLANMAZ. Adı bilip nereden bildiğimizi
