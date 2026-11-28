@@ -195,6 +195,49 @@ await test("veri tohumu: manifestteki dosyalar siteden indirilir; tek hata koşu
   fs.rmSync(dir, { recursive: true, force: true }); fs.rmSync(bundle, { recursive: true, force: true });
 });
 
+await test("maç analizi aynası canonical bayttan kurulur; mevcut public kopyanın üzerine yazılmaz", async () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "fr-mirror-"));
+  const bundle = fs.mkdtempSync(path.join(os.tmpdir(), "fr-mirror-bundle-"));
+  fs.mkdirSync(path.join(bundle, "scripts"));
+  const fetcher = async (url) => {
+    const body = new URL(url).pathname === "/data/match-analyses.json" ? "{\"seeded\":true}" : undefined;
+    return { ok: body !== undefined, status: body === undefined ? 404 : 200, arrayBuffer: async () => new TextEncoder().encode(body || "").buffer };
+  };
+  const ctx = await engine.prepareWorkdir({
+    bundleRoot: bundle, key: "mirror", tmpRoot: dir, log: () => {}, env: {}, fetcher,
+    hydrate: async ({ root: work }) => {
+      fs.writeFileSync(path.join(work, "data", "match-analyses.json"), "HYDRATED");
+      return { lineage: {} };
+    },
+    manifest: { files: ["data/match-analyses.json"] }
+  });
+  assert.equal(fs.readFileSync(path.join(ctx.workdir, "data", "match-analyses.json"), "utf8"), "HYDRATED");
+  assert.equal(fs.readFileSync(path.join(ctx.workdir, "public", "data", "match-analyses.json"), "utf8"), "HYDRATED");
+  const kept = fs.mkdtempSync(path.join(os.tmpdir(), "fr-mirror-kept-"));
+  fs.mkdirSync(path.join(kept, "public", "data"), { recursive: true });
+  fs.mkdirSync(path.join(kept, "data"), { recursive: true });
+  fs.writeFileSync(path.join(kept, "public", "data", "match-analyses.json"), "COMMITTED");
+  fs.writeFileSync(path.join(kept, "data", "match-analyses.json"), "CANONICAL");
+  assert.equal(engine.materializeAnalysisPublicMirror(kept), false);
+  assert.equal(fs.readFileSync(path.join(kept, "public", "data", "match-analyses.json"), "utf8"), "COMMITTED");
+  const linked = fs.mkdtempSync(path.join(os.tmpdir(), "fr-mirror-link-"));
+  const linkTarget = fs.mkdtempSync(path.join(os.tmpdir(), "fr-mirror-target-"));
+  fs.mkdirSync(path.join(linked, "data"), { recursive: true });
+  fs.writeFileSync(path.join(linked, "data", "match-analyses.json"), "CANONICAL");
+  fs.symlinkSync(linkTarget, path.join(linked, "public"));
+  assert.equal(engine.materializeAnalysisPublicMirror(linked), false);
+  assert.equal(fs.existsSync(path.join(linkTarget, "data", "match-analyses.json")), false);
+  const empty = fs.mkdtempSync(path.join(os.tmpdir(), "fr-mirror-empty-"));
+  assert.equal(engine.materializeAnalysisPublicMirror(empty), false);
+  assert.equal(fs.existsSync(path.join(empty, "public")), false);
+  fs.rmSync(dir, { recursive: true, force: true });
+  fs.rmSync(bundle, { recursive: true, force: true });
+  fs.rmSync(kept, { recursive: true, force: true });
+  fs.rmSync(linked, { recursive: true, force: true });
+  fs.rmSync(linkTarget, { recursive: true, force: true });
+  fs.rmSync(empty, { recursive: true, force: true });
+});
+
 await test("health: sır yoksa atlar; varsa mevcut /api/daily-health-check ucunu Bearer ile çağırır", async () => {
   assert.equal((await engine.runHealth({ env: {} })).status, "skipped");
   let seen;
