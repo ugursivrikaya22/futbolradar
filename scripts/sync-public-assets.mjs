@@ -49,6 +49,7 @@ for (const file of [
   "match-hub.css",
   "match-hub-core.js",
   "match-center.js",
+  "live-commentary.js",
   "home-predictors.js",
   "tahmin-ligi.js",
   "prediction-league.css",

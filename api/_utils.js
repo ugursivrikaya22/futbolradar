@@ -15,6 +15,11 @@ const CACHE_POLICIES = Object.freeze({
   // api/match-detail.js bu politikayı seçer); bitmiş/başlamamış maçta
   // yukarıdaki normal politika geçerli kalır.
   "match-detail-live": { noStore: true },
+  // Canlı anlatım: oynanan maçta önbellek yok, bitmiş kayıt bir gün CDN'de
+  // kalır, allowlist dışı yanıt kısa süre tutulur.
+  "commentary-live": { noStore: true },
+  "commentary-final": { maxAge: 86400, stale: 604800 },
+  "commentary-deny": { maxAge: 120, stale: 300 },
   // Canlı skor gecikme kütüğü: her çağrı sağlayıcıya taze sorar (yeni gol
   // var mı diye), CDN/tarayıcı önbelleği "yeni gol yok" cevabını
   // dondurursa yeni golü asla göremez.
