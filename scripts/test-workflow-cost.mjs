@@ -45,7 +45,8 @@ expect(/\n  production:\n    needs: gate\n/.test(ci), "production işi kapıya b
 expect(/if: \$\{\{ !cancelled\(\) && \(needs\.gate\.result != 'success' \|\| needs\.gate\.outputs\.run == 'true'\) \}\}/.test(ci), "kapı işi başarısız olursa production çalışır (kapalı-hata)");
 expect(/sparse-checkout:/.test(ci) && /scripts\/lib\/ciGate\.mjs/.test(ci) && /scripts\/lib\/buildDecision\.mjs/.test(ci), "kapı yalnızca gereken dosyaları çeker");
 expect(/push:\n    branches: \[main\]/.test(ci) && /workflow_dispatch:/.test(ci), "main push'u ve elle tetikleme korunuyor");
-expect(/group: interactions-\$\{\{ github\.event\.pull_request\.number \|\| github\.ref \}\}\n  cancel-in-progress: true/.test(ci), "aynı PR'daki eski koşu iptal edilmeye devam ediyor");
+// 3f482d6: tüm workflow'lar tek "site-yuku" grubunda sıraya girer, koşu iptal edilmez.
+expect(/concurrency:\n  group: site-yuku\n  cancel-in-progress: false/.test(ci), "workflow'lar ortak site-yuku grubunda sıraya giriyor (iptal yok)");
 expect(/timeout-minutes: 90/.test(ci), "production işinin süre sınırı korunuyor");
 expect(!/\n  production:[\s\S]*?\n  gate:/.test(ci), "gate, production'dan önce tanımlı");
 // İzleyici yalnızca main koşularını okur; kapı main'i hiçbir koşulda atlamaz.
