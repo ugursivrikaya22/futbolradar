@@ -305,6 +305,9 @@ function presentColumn(entry, locale) {
     date: text(entry.date),
     category,
     categoryLabel: categoryLabelFor(category, wanted),
+    // JSON-LD articleSection. Yazı kendi bölüm adını verdiyse o basılır
+    // (ör. "Derbi"); vermediyse kategori etiketi kalır.
+    articleSection: text(source.articleSection) || categoryLabelFor(category, wanted),
     tags: localizeTags(entry, wanted),
     status,
     statusLabel: STATUSES[status] ? STATUSES[status].label : status,
@@ -332,6 +335,7 @@ function presentColumn(entry, locale) {
     hideFromHome: Boolean(entry.hideFromHome),
     // Yazının konu aldığı maç için doğrulanmış etkinlik künyesi (SportsEvent).
     sportsEvent: entry.sportsEvent && typeof entry.sportsEvent === "object" ? entry.sportsEvent : null,
+    generated: entry.generated && typeof entry.generated === "object" ? entry.generated : null,
     // İsteğe bağlı vitrin alanları. Boşsa sayfa eskisi gibi basılır; doluysa
     // üretici pull-quote, istatistik kutusu ve maç kartını ekler.
     pullQuote: presentPullQuote(source.pullQuote),

@@ -505,7 +505,7 @@ export function columnPageHtml(column, locale = "tr") {
     dateModified: column.updates.length ? column.updates[0].date : column.date,
     author: { "@type": schemaAuthorType(column.author), name: column.author, url: `${DOMAIN}/${column.authorPath}` },
     publisher: publisherNode(),
-    articleSection: column.categoryLabel,
+    articleSection: column.articleSection || column.categoryLabel,
     keywords: (column.keywords && column.keywords.length ? column.keywords : column.tags).join(", "),
     mainEntityOfPage: url,
     image: shareImage,
