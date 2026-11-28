@@ -122,10 +122,17 @@ async function handlePushSubscription(req, res) {
 
   if (method === "GET") {
     const vapid = vapidConfig();
-    if (!vapid.publicKey || !isConfigured()) {
+    // Genel anahtar tek başına yetmez: özel anahtar veya subject yoksa
+    // gönderim sessizce hiçbir şey yapmaz. İstemciye anahtar vermek, izin
+    // alıp sonra bildirim göndermemek olur. Depo da yoksa abonelik kaydı
+    // tutulamayacağı için anahtar yine gizlenir.
+    const vapidReady = Boolean(vapid.publicKey && vapid.privateKey && vapid.subject);
+    if (!vapidReady || !isConfigured()) {
       return sendSuccess(res, { configured: false, publicKey: null }, SOURCE, null, {
         note: "Push bildirimi yapilandirilmamis.",
-        configuration: configurationHint() || "VAPID anahtarlari tanimli degil"
+        configuration: vapidReady
+          ? (configurationHint() || "Push abonelik deposu yapilandirilmamis.")
+          : "VAPID anahtarlari tanimli degil"
       });
     }
     return sendSuccess(res, { configured: true, publicKey: vapid.publicKey }, SOURCE);
