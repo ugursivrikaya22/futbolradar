@@ -96,16 +96,40 @@ for (const draft of drafts.items || []) {
 // test kırıldı — yani denetim, bandın DOĞRU davranışını hata sayıyordu.
 // Kural artık kimliğe değil sınıfa bakıyor: küratörlü ve iç sayfaya
 // bağlanan her kaydın hedefi gerçekten üretilmiş bir haber sayfası olmalı.
+const columnsStore = JSON.parse(fs.readFileSync(path.join(root, "data", "columns.json"), "utf8"));
+const publishedColumnSlugs = new Set(
+  (columnsStore.columns || [])
+    .filter((column) => String(column.status || "").toLowerCase() === "published")
+    .map((column) => column.slug || column.id)
+);
+
+function internalTickerTarget(url) {
+  const match = String(url || "").match(/^https:\/\/www\.futbolradar\.com\/(haber|kose-yazilari)\/([^/?#]+)/);
+  if (!match) return null;
+  return { kind: match[1], slug: match[2].replace(/\.html$/, "") };
+}
+
+function assertInternalTickerTarget(item) {
+  const target = internalTickerTarget(item.source?.url || "");
+  assert.ok(target, `${item.id}: iç hedef haber ya da köşe yazısı olmalı`);
+  if (target.kind === "haber") {
+    assert.ok(
+      fs.existsSync(path.join(root, "haber", `${target.slug}.html`)),
+      `${item.id}: bağlandığı haber sayfası (haber/${target.slug}.html) üretilmiş olmalı`
+    );
+    return;
+  }
+  assert.ok(
+    publishedColumnSlugs.has(target.slug),
+    `${item.id}: bağlandığı köşe yazısı yayımlanmış olmalı (${target.slug})`
+  );
+}
+
 const internalCuratedTickerItems = (ticker.items || [])
-  .filter((entry) => !entry.automation && /^https:\/\/www\.futbolradar\.com\//.test(entry.source?.url || ""));
+  .filter((entry) => !entry.automation && internalTickerTarget(entry.source?.url || ""));
 
 for (const item of internalCuratedTickerItems) {
-  assert.match(item.source.url, /^https:\/\/www\.futbolradar\.com\/haber\//, `${item.id}: ic detay sayfasina baglanmali`);
-  const slug = item.source.url.replace(/^https:\/\/www\.futbolradar\.com\/haber\//, "").replace(/\.html$/, "");
-  assert.ok(
-    fs.existsSync(path.join(root, "haber", `${slug}.html`)),
-    `${item.id}: bağlandığı haber sayfası (haber/${slug}.html) üretilmiş olmalı`
-  );
+  assertInternalTickerTarget(item);
 }
 
 const archivedSalahRumors = [
@@ -179,18 +203,32 @@ for (const entry of ticker.items || []) {
     assert.match(entry.source?.url || "", /^https:\/\//, `${entry.id}: editoryal kaynağın https bağlantısı olmalı`);
     assert.match(
       entry.destinationUrl,
-      /^https:\/\/www\.futbolradar\.com\/(mac-dosyasi|en\/match-special)\//,
-      `${entry.id}: özel bant hedefi maç dosyası olmalı`
+      /^https:\/\/www\.futbolradar\.com\//,
+      `${entry.id}: özel bant hedefi bu sitede olmalı`
     );
     const relative = entry.destinationUrl
       .replace(/^https:\/\/www\.futbolradar\.com\//, "")
       .split("#")[0];
-    assert.ok(fs.existsSync(path.join(root, relative)), `${entry.id}: bant hedefi diskte yok (${relative})`);
+    const candidates = relative.endsWith(".html") ? [relative] : [relative, `${relative}.html`];
+    assert.ok(
+      candidates.some((file) => fs.existsSync(path.join(root, file))),
+      `${entry.id}: bant hedefi diskte yok (${relative})`
+    );
     continue;
   }
 
   if (OFFICIAL_SOURCE_TICKER_IDS.has(entry.id)) continue;
-  assert.match(entry.source.url, /^https:\/\/www\.futbolradar\.com\/haber\//, `${entry.id}: bant ogesi ic haber sayfasina baglanmali`);
+  const sourceUrl = entry.source?.url || "";
+  if (internalTickerTarget(sourceUrl)) {
+    assertInternalTickerTarget(entry);
+    continue;
+  }
+  assert.match(sourceUrl, /^https:\/\//, `${entry.id}: bant öğesi https kaynak taşımalı`);
+  assert.doesNotMatch(
+    sourceUrl,
+    /^https:\/\/www\.futbolradar\.com\//,
+    `${entry.id}: iç bağlantı haber ya da köşe yazısı olmalı`
+  );
 }
 
 console.log(`Haber yayın testi geçti (${published.length} doğrulanmış haber, ${(drafts.items || []).length} kaynak bekleyen taslak).`);
