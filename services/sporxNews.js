@@ -224,6 +224,59 @@ function extractAmount(rawText) {
 }
 
 /**
+ * TUTARIN İNGİLİZCESİ. `extractAmount` Türkçe metinden ham parça çıkarır
+ * ("80 milyon euro", "500 bin euro", "250 milyon TL"); bu parça İngilizce
+ * cümleye OLDUĞU GİBİ girerse sayfada Türkçe sözcük kalır ("The figure being
+ * discussed is 80 milyon euro."). Rakam değişmez, yalnızca ölçek ve para
+ * birimi yazılır: "€80 million", "€500,000", "250 million Turkish lira".
+ * Çözülemeyen tutar BOŞ döner: çağıran, ham Türkçe parçayı basmak yerine
+ * cümleyi hiç kurmaz.
+ */
+function amountEn(raw) {
+  const match = String(raw || "").match(/(\d+(?:[.,]\d+)?)\s*(milyon|bin)?\s*(euro|avro|€|tl|dolar|\$)/i);
+  if (!match) return "";
+  const number = match[1].replace(",", ".");
+  const scale = text(match[2]).toLowerCase();
+  const currency = match[3].toLowerCase();
+  let figure = number;
+  let suffix = "";
+  if (scale === "milyon") suffix = " million";
+  else if (scale === "bin") figure = (Number(number) * 1000).toLocaleString("en-US");
+  if (currency === "euro" || currency === "avro" || currency === "€") return `€${figure}${suffix}`;
+  if (currency === "dolar" || currency === "$") return `$${figure}${suffix}`;
+  return `${figure}${suffix} Turkish lira`;
+}
+
+/**
+ * TÜRKÇE GÖVDEDEN ÖZNE VE TUTARI GERİ KAZANIR.
+ *
+ * Şablonlu Türkçe haber, özneyi ve tutarı gövdeye YAZAR ("Gündemdeki isim X
+ * olarak öne çıkıyor. Aktarılan tutar Y olarak konuşuluyor.") ama bunlar
+ * `discovery` alanına her zaman işlenmemiş. Geri doldurma yalnızca
+ * `discovery.subject`i okuduğu için 78 haberin İngilizcesi özneyi, 6'sı tutarı
+ * düşürmüştü ("the matter in question"). Metin kaynak olarak okunur, yeni
+ * bilgi uydurulmaz.
+ *
+ * Özne denetimi: Türkçe çıkarım sezgiseli bazen kişi adı olmayan parçalar
+ * döndürüyor ("İşte", "Şampiyonlar", "Kadın Futbol", "IN Trio"). Bunlar
+ * Türkçe sayfada da anlamsız bir "isim"dir; İngilizceye taşınmaz, özne boş
+ * kalır ve sayfa genel ifadeyle ("the matter in question") yazılır.
+ */
+const SUBJECT_NOT_A_NAME = turkishWord(
+  "[İi]şte|konferans|şampiyonlar|kadın|futbol|trio|kupası|sezonu|ligi|avrupa"
+);
+
+function recoverDetailsFromTurkish(article) {
+  const body = Array.isArray(article && article.body) ? article.body.map(text).join(" ") : "";
+  const nameMatch = body.match(/Gündemdeki isim (.+?) olarak öne çıkıyor\./);
+  const amountMatch = body.match(/Aktarılan tutar (.+?) olarak konuşuluyor\./);
+  let player = nameMatch ? text(nameMatch[1]) : "";
+  SUBJECT_NOT_A_NAME.lastIndex = 0;
+  if (player && SUBJECT_NOT_A_NAME.test(player)) player = "";
+  return { player, amount: amountMatch ? text(amountMatch[1]) : "" };
+}
+
+/**
  * SPORX'TEN DOĞRUDAN "RESMÎ/DOĞRULANMIŞ" GÜVEN ÇIKARILMAZ.
  *
  * `services/sourceTrust.js` Sporx'i resmî ya da yüksek güven kademesine
@@ -568,7 +621,10 @@ function buildEnglishArticle({ team, player, eventType, confidence, amount, sour
 
   const detailParts = [];
   if (person) detailParts.push(`The name in the spotlight is ${person}.`);
-  if (text(amount)) detailParts.push(`The figure being discussed is ${text(amount)}.`);
+  // Tutar İngilizceye ÇEVRİLEREK girer ("80 milyon euro" → "€80 million");
+  // çözülemeyen ham Türkçe parça basılmaz.
+  const money = amountEn(amount);
+  if (money) detailParts.push(`The figure being discussed is ${money}.`);
   const detailSentence = detailParts.length
     ? detailParts.join(" ")
     : `${sourceName} shared one further detail on the subject; FutbolRadar is relaying it cautiously until it is confirmed by official sources.`;
@@ -978,6 +1034,8 @@ module.exports = {
   detectEventType,
   extractPersonName,
   extractAmount,
+  amountEn,
+  recoverDetailsFromTurkish,
   resolveConfidence,
   corroborateWithConfirmedTransfers,
   buildArticle,

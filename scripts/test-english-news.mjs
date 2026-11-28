@@ -316,4 +316,9 @@ const make = (title, sourceName, link, publishedAt = "2026-09-16T11:30:00.000Z")
     "izinli yayıncının eski kaydı korunmalı");
 }
 
+// Şablonlu haberlerin İngilizcesi Türkçeye sadık mı (özne, tutar)? Ayrı dosyada
+// durur (npm run test:news-english-fidelity) ve `npm test` zincirinde bu dosya
+// üzerinden koşar: dev `test` satırı sık değiştiğinden ona ayrıca eklenmedi.
+await import("./test-news-english-fidelity.mjs");
+
 console.log("english-news passed");

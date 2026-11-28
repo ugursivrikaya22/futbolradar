@@ -191,6 +191,8 @@
     "news:en": "node scripts/sync-english-news.mjs",
     "render:en-news": "node scripts/generate-en-news-pages.mjs",
     "test:english-news": "node scripts/test-english-news.mjs",
+    "test:news-english-fidelity": "node scripts/test-news-english-fidelity.mjs",
+    "news:en:repair": "node scripts/backfill-news-english.mjs --repair --apply",
     "test:editorial-status": "node scripts/test-editorial-status.mjs",
     "build:match-center-plus": "node scripts/build-match-center-plus-client.mjs",
     "test:match-center-plus": "node scripts/test-match-center-plus.mjs",
