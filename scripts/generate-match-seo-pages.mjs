@@ -88,6 +88,8 @@ import {
 
 const require = createRequire(import.meta.url);
 const { pageShareHtml } = require("../services/columnShare.js");
+const liveCommentary = require("../services/liveCommentary.js");
+const liveCommentaryStore = require("../services/liveCommentaryStore.js");
 const root = process.cwd();
 const {
   DOMAIN,
@@ -1394,6 +1396,25 @@ function pageHtml(entry, locale, options) {
   // Maç dosyası tam ikili rekabeti (federasyon kaydı) taşıyorsa, arşivden
   // derlenen kısa liste ikinci ve çelişen bir özet basmasın.
   const dossierH2h = Boolean(editorial && editorial.kind === "dossier" && editorial.h2h && editorial.h2h.rows && editorial.h2h.rows.length && locale === "tr");
+  // Canlı anlatım kabuğu yalnızca allowlist kabul ederse basılır.
+  // Başlık, canonical ve şema bu değişkene bakmaz.
+  const commentaryFixtureId = entry.providerIds && entry.providerIds.apiFootball ? String(entry.providerIds.apiFootball) : "";
+  const commentaryArchive = commentaryFixtureId ? liveCommentaryStore.read(commentaryFixtureId) : null;
+  const commentaryHtml = liveCommentary.sectionHtml({
+    locale,
+    homeTeam: entry.homeTeam,
+    awayTeam: entry.awayTeam,
+    homeTeamId: detail.calendar && detail.calendar.homeTeamId,
+    awayTeamId: detail.calendar && detail.calendar.awayTeamId,
+    competitionId: entry.competitionId,
+    providerLeagueId: (detail.calendar && detail.calendar.providerLeagueId) || null,
+    fixtureId: commentaryFixtureId,
+    state,
+    kickoff: entry.kickoff,
+    reportHref,
+    lines: commentaryArchive && commentaryArchive.final && Array.isArray(commentaryArchive.lines) ? commentaryArchive.lines : [],
+    final: Boolean(commentaryArchive && commentaryArchive.final && commentaryArchive.lines && commentaryArchive.lines.length)
+  });
   let sections = [];
   if (state === "post" || state === "pending" || state === "interrupted") {
     sections = [
@@ -1401,6 +1422,7 @@ function pageHtml(entry, locale, options) {
       // Yarıda kalan maç: sonuç İLAN EDİLMEZ. Son doğrulanmış skor yalnızca
       // bu notta, "son doğrulanmış" etiketiyle yazılır; skor tablosuna basılmaz.
       state === "interrupted" ? `<section class="msp-section"><article class="card data-empty"><strong>${escapeHtml(text.interruptedNote)}</strong>${hasScore(entry.score) ? `<span>${escapeHtml(text.lastKnownScore)}: ${escapeHtml(entry.score.home)}-${escapeHtml(entry.score.away)}</span>` : ""}</article></section>` : "",
+      commentaryHtml,
       eventsSectionHtml(events, ctx),
       // Özet, olay akışının HEMEN ardından: bitmiş maçta okuyucunun ilk
       // sorusu "ne oldu", cevap ilk ekranlarda durmalı.
@@ -1438,6 +1460,7 @@ function pageHtml(entry, locale, options) {
       broadcastSectionHtml(entry, ctx),
       radarPulseSectionHtml(ctx),
       matchPollSectionHtml(ctx),
+      commentaryHtml,
       eventsSectionHtml(events, ctx),
       statsSectionHtml(detail.statistics, ctx),
       matchCenterPlusSectionsHtml(ctx),
@@ -1471,6 +1494,7 @@ function pageHtml(entry, locale, options) {
       matchPollSectionHtml(ctx),
       // Canlı bölümlerin kabuğu: istemci başlama vuruşundan sonra doldurur.
       radarPulseSectionHtml(ctx),
+      commentaryHtml,
       eventsSectionHtml([], ctx),
       statsSectionHtml([], ctx),
       matchCenterPlusSectionsHtml(ctx),
@@ -1592,6 +1616,7 @@ function pageHtml(entry, locale, options) {
     <script src="${base}radar-fan.js" defer></script>
     <script src="${base}match-timeline.js" defer></script>
     <script src="${base}match-center.js" defer></script>
+    ${commentaryHtml ? `<script src="${base}live-commentary.js" defer></script>` : ""}
     <script src="${base}match-center-plus.js" defer></script>
     <script src="${base}ai-match-center.js" defer></script>
     ${matchCenterPlusPayloadHtml(detail, entry, state)}

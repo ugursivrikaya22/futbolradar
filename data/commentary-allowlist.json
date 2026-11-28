@@ -1,0 +1,94 @@
+{
+  "version": 1,
+  "default": "deny",
+  "documentation": {
+    "tr": "Canlı anlatım YALNIZCA bu dosyadaki kurallar maçı kabul ederse açılır. Varsayılan ret: kural yoksa anlatım yoktur. Takım eklemek veya çıkarmak için 'teams' içindeki API-Football takım kimliğini (sayı) ve görünen adı düzenleyin. Lig kuralındaki teamIds, o ligde İKİ tarafın da listede olmasını ister (dengeli büyük eşleşme). Avrupa kupası kuralı teamIds '*' kullanır: 'teams' içindeki takımlardan en az biri Şampiyonlar Ligi, Avrupa Ligi veya Konferans Ligi'nde oynuyorsa anlatım açılır; rakibin listede olması gerekmez. Kimlik, adın önündedir: kimlik listede değilse ad benziyor diye kabul edilmez. Alt yaş, kadın ve rezerv takım adları A takım sayılmaz. Yeni bir büyük takım için önce 'teams'e kimlik + ad ekleyin, sonra ilgili lig kuralının teamIds dizisine aynı kimliği yazın. Kupadan düşürmek için takımı 'teams'ten silin.",
+    "staleCache": "API-Football olayları bu dosyadan veya data/fixture-calendar.json önbelleğinden OKUNMAZ. Anlatım, repodaki mevcut API-Football istemcisinin canlı yanıtındaki olaylardan üretilir. Takvim önbelleğinin fetchedAt değeri 2026-11-06'dır; bu özellik o önbelleği tazelemez."
+  },
+  "teams": {
+    "645": { "name": "Galatasaray", "aliases": ["Galatasaray SK"] },
+    "611": { "name": "Fenerbahçe", "aliases": ["Fenerbahce"] },
+    "549": { "name": "Beşiktaş", "aliases": ["Besiktas", "Besiktas JK"] },
+    "998": { "name": "Trabzonspor", "aliases": ["Trabzonspor AŞ"] },
+    "42": { "name": "Arsenal", "aliases": ["Arsenal FC"] },
+    "50": { "name": "Manchester City", "aliases": ["Man City"] },
+    "40": { "name": "Liverpool", "aliases": ["Liverpool FC"] },
+    "49": { "name": "Chelsea", "aliases": ["Chelsea FC"] },
+    "33": { "name": "Manchester United", "aliases": ["Man United", "Man Utd"] },
+    "47": { "name": "Tottenham", "aliases": ["Tottenham Hotspur"] },
+    "541": { "name": "Real Madrid", "aliases": ["Real Madrid CF"] },
+    "529": { "name": "Barcelona", "aliases": ["FC Barcelona"] },
+    "530": { "name": "Atletico Madrid", "aliases": ["Atlético Madrid", "Atletico de Madrid"] },
+    "505": { "name": "Inter", "aliases": ["Inter Milan", "Internazionale", "FC Internazionale"] },
+    "489": { "name": "AC Milan", "aliases": ["Milan"] },
+    "496": { "name": "Juventus", "aliases": ["Juventus FC"] },
+    "492": { "name": "Napoli", "aliases": ["SSC Napoli"] },
+    "157": { "name": "Bayern München", "aliases": ["Bayern Munich", "Bayern Munchen", "FC Bayern München", "FC Bayern Munich"] },
+    "165": { "name": "Borussia Dortmund", "aliases": ["Dortmund"] },
+    "168": { "name": "Bayer Leverkusen", "aliases": ["Leverkusen"] },
+    "173": { "name": "RB Leipzig", "aliases": ["Leipzig"] },
+    "172": { "name": "VfB Stuttgart", "aliases": ["Stuttgart"] },
+    "85": { "name": "Paris Saint Germain", "aliases": ["PSG", "Paris Saint-Germain"] },
+    "81": { "name": "Marseille", "aliases": ["Olympique Marseille", "Olympique de Marseille"] },
+    "91": { "name": "Monaco", "aliases": ["AS Monaco"] },
+    "80": { "name": "Lyon", "aliases": ["Olympique Lyon", "Olympique Lyonnais"] }
+  },
+  "rules": [
+    {
+      "id": "super-lig-big-four",
+      "description": "Süper Lig: yalnızca Galatasaray, Beşiktaş, Fenerbahçe ve Trabzonspor'un kendi aralarındaki maçlar.",
+      "competitionIds": ["super-lig"],
+      "providerLeagueIds": [203],
+      "require": "both",
+      "teamIds": ["645", "611", "549", "998"]
+    },
+    {
+      "id": "premier-league-big",
+      "description": "Premier League'de dengeli büyük eşleşme: iki taraf da bu listedeyse.",
+      "competitionIds": ["premier-league"],
+      "providerLeagueIds": [39],
+      "require": "both",
+      "teamIds": ["42", "50", "40", "49", "33", "47"]
+    },
+    {
+      "id": "la-liga-big",
+      "description": "La Liga'da dengeli büyük eşleşme. Örnek: Real Madrid-Barcelona.",
+      "competitionIds": ["la-liga"],
+      "providerLeagueIds": [140],
+      "require": "both",
+      "teamIds": ["541", "529", "530"]
+    },
+    {
+      "id": "serie-a-big",
+      "description": "Serie A'da dengeli büyük eşleşme. Örnek: Inter-Milan.",
+      "competitionIds": ["serie-a"],
+      "providerLeagueIds": [135],
+      "require": "both",
+      "teamIds": ["505", "489", "496", "492"]
+    },
+    {
+      "id": "bundesliga-big",
+      "description": "Bundesliga'da dengeli büyük eşleşme. Örnek: Bayern München-Stuttgart.",
+      "competitionIds": ["bundesliga"],
+      "providerLeagueIds": [78],
+      "require": "both",
+      "teamIds": ["157", "165", "168", "173", "172"]
+    },
+    {
+      "id": "ligue-1-big",
+      "description": "Ligue 1'de dengeli büyük eşleşme.",
+      "competitionIds": ["ligue-1"],
+      "providerLeagueIds": [61],
+      "require": "both",
+      "teamIds": ["85", "81", "91", "80"]
+    },
+    {
+      "id": "european-cups",
+      "description": "Şampiyonlar Ligi, Avrupa Ligi ve Konferans Ligi: teams listesindeki bir takımın maçı. Rakip listede olmak zorunda değil.",
+      "competitionIds": ["sampiyonlar-ligi", "avrupa-ligi", "konferans-ligi"],
+      "providerLeagueIds": [2, 3, 848],
+      "require": "either",
+      "teamIds": "*"
+    }
+  ]
+}

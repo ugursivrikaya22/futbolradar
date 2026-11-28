@@ -22033,6 +22033,15 @@ a.motm-week__card:focus-visible {
 .msp-facts dd { margin: 2px 0 0; overflow-wrap: anywhere; font-weight: 700; font-size: var(--fs-sm); }
 .msp-section { margin-top: 26px; }
 .msp-section-title { margin: 0 0 12px; font-size: var(--fs-lg); letter-spacing: -0.01em; }
+.lc-note { margin: 0 0 10px; }
+.lc-card { padding: 16px; }
+.lc-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+.lc-line { display: grid; grid-template-columns: 4.75rem minmax(0, 1fr); gap: 8px 12px; align-items: baseline; padding: 8px 0; border-top: 1px solid var(--line); }
+.lc-line:first-child { border-top: 0; padding-top: 0; }
+.lc-minute { color: var(--muted); font-size: var(--fs-xs); font-weight: 800; font-variant-numeric: tabular-nums; }
+.lc-text { font-size: var(--fs-sm); line-height: 1.45; }
+.lc-line.is-goal .lc-text, .lc-line.is-penalty .lc-text, .lc-line.is-own-goal .lc-text, .lc-line.is-fulltime .lc-text { font-weight: 800; }
+.lc-report { margin: 10px 0 0; }
 .msp-subtitle { margin: 16px 0 8px; font-size: var(--fs-md); }
 .msp-two-col { display: grid; grid-template-columns: 1fr; gap: 14px; }
 .msp-two-col > .card, .msp-two-col > .data-empty { min-height: 0; }
