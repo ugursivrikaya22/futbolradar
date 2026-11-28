@@ -376,11 +376,13 @@ function column(overrides = {}) {
 
 console.log("Radar Yorumu testleri geçti (zorunlu alanlar, taslak gizliliği, yazar sayfaları, son üç yazı, temiz rotalar, elle yayın).");
 
-// Kaynak numaraları yalnızca kayıtlı HTTPS kaynaklarına bağlanır.
+// Dipnot işaretleri metinde görünmez; kaynak, sayfa sonundaki "Kaynaklar"
+// bölümünde yalnızca HTTPS bağlantısıyla listelenir (ayrıntı: test-column-citations).
 {
   const rendered = columnPageHtml(presentColumn(column({author:'FutbolRadar',body:['**Doğrulanan bilgi** [1]. Bilinmeyen [9]. <script>alert(1)</script>'],sources:[{label:'Resmî kaynak',url:'https://www.tff.org/default.aspx?a=1&b=2'}]})));
-  assert.match(rendered, /href="https:\/\/www\.tff\.org\/default\.aspx\?a=1&amp;b=2"[^>]*>\[1\]<\/a>/);
-  assert.match(rendered, /Bilinmeyen \[9\]/);
+  assert.match(rendered, /<h2 id="column-sources-title">Kaynaklar<\/h2><ul><li><a href="https:\/\/www\.tff\.org\/default\.aspx\?a=1&amp;b=2"[^>]*>Resmî kaynak<\/a>/);
+  assert.match(rendered, /<strong>Doğrulanan bilgi<\/strong>\. Bilinmeyen\. /);
+  assert.ok(!/\[\d+\]/.test(rendered.slice(rendered.indexOf('class="column-body"'), rendered.indexOf('column-sources-title'))));
   assert.ok(!rendered.includes('<script>alert(1)</script>'));
   assert.match(rendered, /"author":\{"@type":"Organization","name":"FutbolRadar"/);
 }
