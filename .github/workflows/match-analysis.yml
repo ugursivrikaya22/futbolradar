@@ -183,7 +183,7 @@ jobs:
 
       - name: Commit only validated public changes
         id: publication
-        if: steps.update.outcome == 'success'
+        if: steps.update.outcome == 'success' && steps.update.outputs.already-verified != 'true'
         shell: bash
         env:
           UPDATE_TYPE: ${{ steps.plan.outputs.type }}
@@ -195,6 +195,8 @@ jobs:
         if: always() && steps.plan.outputs.run == 'true'
         env:
           PUBLICATION_OUTCOME: ${{ steps.publication.outcome }}
+          FULL_LOCK_KEY: ${{ steps.update.outputs.full-lock-key }}
+          FULL_LOCK_STARTED_AT: ${{ steps.update.outputs.full-lock-started-at }}
         run: node scripts/finalize-operations-publication.mjs
 
       - name: Preserve operational history without deployment

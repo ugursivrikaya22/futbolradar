@@ -6,12 +6,13 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import {execFileSync} from 'node:child_process';
+import {execFileSync,spawnSync} from 'node:child_process';
 import {createRequire} from 'node:module';
 import policy from '../services/operationsPolicy.js';
-import {finalize} from '../scripts/finalize-operations-publication.mjs';
+import {finalize,settleFullLock} from '../scripts/finalize-operations-publication.mjs';
 import {monitor} from '../scripts/monitor-operations.mjs';
 import {plan} from '../scripts/plan-scheduled-update.mjs';
+import {claimSharedRunLock} from '../scripts/run-scheduled-update.mjs';
 
 const L = policy.limits;
 const at = (iso) => Date.parse(iso);
@@ -355,6 +356,58 @@ test('workflow: dependencies and Playwright follow the planned type, not the fir
   assert.match(wf, /Install validation browser\n\s+if: steps\.plan\.outputs\.run == 'true' && steps\.plan\.outputs\.type == 'full'/);
   assert.doesNotMatch(wf, /Install validation browser[\s\S]{0,120}github\.event\.schedule/);
   assert.match(wf, /UPDATE_TYPE: \$\{\{ steps\.plan\.outputs\.type \}\}/);
+});
+
+test('unavailable shared daily lock exits 1 and is saved as a non-public failure', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'fr-lock-cli-'));
+  try {
+    const result = spawnSync(process.execPath,[path.resolve('scripts/run-scheduled-update.mjs'),'--type=full','--ci-guard'], {
+      cwd:dir, env:{GITHUB_ACTIONS:'true',GITHUB_EVENT_NAME:'schedule',GITHUB_REPOSITORY:'ugursivrikaya22/futbolradar',
+        FUTBOLRADAR_AUTOMATION_TOKEN:'fake-local-test',GITHUB_RUN_ID:'123'},encoding:'utf8'
+    });
+    assert.equal(result.status,1,result.stderr);
+    assert.match(result.stdout,/Shared cron lock is not configured/);
+    const ledger = JSON.parse(fs.readFileSync(path.join(dir,'outputs/operations/update-status.json'),'utf8'));
+    assert.equal(ledger.lastFull.status,'failed');
+    assert.equal(ledger.lastFull.errors[0].step,'shared-full-lock');
+    assert.equal(fs.existsSync(path.join(dir,'data/update-status.json')),false);
+  } finally { fs.rmSync(dir,{recursive:true,force:true}); }
+});
+
+test('a blocked scheduled full backup fails, but a completed hourly owner is a harmless skip', async () => {
+  const env={GITHUB_EVENT_NAME:'schedule'};
+  let hydrates=0;
+  const run=(type,status)=>claimSharedRunLock({type},'key',env,{
+    configured:true,
+    hydrate:async()=>{hydrates++;},
+    store:{
+      claimGithubFullRun:async()=>({acquired:false,row:{runner:'vercel',status}}),
+      acquireRun:async()=>({acquired:false,row:{runner:'vercel',status}})
+    }
+  });
+  for(const status of ['running','complete','failed','skipped']) {
+    const result=await run('full',status);
+    assert.equal(result.skip,true); assert.equal(result.failed,true);
+    assert.match(result.reason,new RegExp(status));
+  }
+  const hourly=await run('hourly','complete');
+  assert.equal(hourly.skip,true); assert.equal(hourly.failed,false);
+  assert.equal(hydrates,0);
+});
+
+test('daily lock completion needs the same run/key and verified publication', async () => {
+  const calls=[];
+  const key='full:2026-10-08';
+  const store={updateOwnedRun:async (args)=>{calls.push(args);return true;}};
+  const owner={key,startedAt:'2026-10-08T02:00:00Z',runId:'77',now:'2026-10-08T02:05:00Z',store};
+  const good=record({id:77,publication:{state:'committed'},finishedAt:owner.now});
+  await settleFullLock({lastUpdate:good},{...owner,outcome:'success'});
+  assert.deepEqual(calls.at(-1),{key,startedAt:owner.startedAt,runner:'github-actions',patch:{status:'complete',finished_at:owner.now}});
+  await settleFullLock({lastUpdate:good},{...owner,outcome:'failure'});
+  assert.equal(calls.at(-1).patch.status,'failed');
+  await assert.rejects(settleFullLock({lastUpdate:{...good,dedupeKey:'full:2026-10-07'}},{...owner,outcome:'success'}),/no verified completion/);
+  assert.equal(calls.at(-1).patch.status,'failed');
+  await assert.rejects(settleFullLock({lastUpdate:good},{...owner,store:{updateOwnedRun:async()=>false},outcome:'success'}),/Could not finalize/);
 });
 
 test('workflow: shared write lock is kept and critical failures reach the final result', () => {

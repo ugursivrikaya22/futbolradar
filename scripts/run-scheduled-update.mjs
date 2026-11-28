@@ -733,33 +733,43 @@ function appendGithubSummary(record) {
   fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `${lines.join("\n")}\n`, "utf8");
 }
 
-// PAYLAŞILAN SAATLİK KİLİT (Supabase `cron_runs`, migration 0012).
-//
-// Vercel Cron (`/api/cron/scheduled-update`) ile bu koşu aynı saatte
-// başlayabilir. Aynı anahtar (`hourly:YYYY-MM-DDTHH` / `full:YYYY-MM-DD`)
-// için ilk INSERT kazanır; Vercel almışsa bu koşu API-Football'a HİÇ
-// gitmeden atlar. Yalnızca zamanlanmış (schedule) koşularda uygulanır —
-// elle tetiklenen, --force, --match, --backfill koşuları engellenmez.
-// Supabase yapılandırılmamış / tablo yok / erişilemiyorsa bugünkü davranış
-// sürer (fail-open). Kilit alınırsa Vercel'in yazdığı daha yeni veri
-// eserleri depo verisinin üzerine koşullu uygulanır (services/cron/hydrate.js).
-async function claimSharedRunLock(args, key, env = process.env) {
+// A scheduled full backup must not run without an exclusive shared lock.
+// Hourly and intentional manual runs retain their existing behavior.
+async function claimSharedRunLock(args, key, env = process.env, deps = {}) {
   if (env.GITHUB_EVENT_NAME !== "schedule" || args.force || args.match || args.backfill) return { skip: false, reason: "not-scheduled" };
-  if (!supabaseConfigured()) return { skip: false, reason: "supabase-not-configured" };
+  const full = args.type === "full";
+  if (!(deps.configured ?? supabaseConfigured())) {
+    return { skip: full, failed: full, reason: "Shared cron lock is not configured." };
+  }
   const { createRequire } = await import("node:module");
   const req = createRequire(import.meta.url);
   try {
-    const store = req("../services/cron/runStore.js");
-    const claim = await store.acquireRun({ key, type: args.type, runner: "github-actions" });
-    if (!claim.acquired && claim.row && claim.row.runner === "vercel") {
-      return { skip: true, reason: `Shared lock ${key} is held by Vercel Cron (${claim.row.status}); skipping to avoid duplicate API-Football requests.` };
+    const store = deps.store || req("../services/cron/runStore.js");
+    const claim = full
+      ? await store.claimGithubFullRun({ key })
+      : await store.acquireRun({ key, type: args.type, runner: "github-actions" });
+    if (!claim.acquired && (full || claim.row?.runner === "vercel")) {
+      return {
+        skip: true, failed: full,
+        reason: `Shared lock ${key} is held by ${claim.row?.runner || "unknown"} (${claim.row?.status || "unknown"}); skipping to avoid duplicate API-Football requests.`
+      };
     }
     if (claim.acquired) {
-      await req("../services/cron/hydrate.js").hydrateDataDir({ root, gitAware: true, headSha: process.env.GITHUB_SHA, log: (m) => console.log(m) });
+      if (full) {
+        // Pass the exact acquired generation to CI's post-publication step.
+        // Set before hydration so an error there still releases it as failed.
+        if (!claim.row?.started_at) throw new Error("Acquired cron lock has no ownership timestamp");
+        if (env.GITHUB_OUTPUT) fs.appendFileSync(env.GITHUB_OUTPUT, `full-lock-key=${key}\nfull-lock-started-at=${claim.row.started_at}\n`);
+        if (claim.reclaimed) console.log(`[scheduled-update] Reclaimed failed Vercel lock ${key}.`);
+      }
+      const hydrate = deps.hydrate || req("../services/cron/hydrate.js").hydrateDataDir;
+      await hydrate({ root, gitAware: true, headSha: env.GITHUB_SHA, log: (m) => console.log(m) });
     }
     return { skip: false, reason: claim.acquired ? "lock-acquired" : "lock-held-by-github-actions" };
   } catch (error) {
-    console.warn(`[scheduled-update] shared lock unavailable (fail-open): ${redact(error.message || String(error))}`);
+    const detail = redact(error.message || String(error));
+    if (full) return { skip: true, failed: true, reason: `Shared daily lock unavailable: ${detail}` };
+    console.warn(`[scheduled-update] shared lock unavailable (fail-open): ${detail}`);
     return { skip: false, reason: "lock-unavailable" };
   }
 }
@@ -801,6 +811,7 @@ async function main() {
     };
     // A fallback schedule may arrive after the primary run. Keep the published
     // last-success record intact and capture this no-op in the Actions log only.
+    if (process.env.GITHUB_OUTPUT) fs.appendFileSync(process.env.GITHUB_OUTPUT, "already-verified=true\n");
     appendGithubSummary(record);
     console.log(`[scheduled-update] ${record.reason}`);
     return;
@@ -810,12 +821,18 @@ async function main() {
   if (sharedLock.skip) {
     const finishedAt = new Date().toISOString();
     const record = {
-      id: `${process.env.GITHUB_RUN_ID || process.pid}-shared-lock`,
-      dedupeKey: key, type: args.type, trigger: process.env.GITHUB_EVENT_NAME || "local", status: "skipped",
+      id: String(process.env.GITHUB_RUN_ID || `${process.pid}-shared-lock`),
+      dedupeKey: key, type: args.type, trigger: process.env.GITHUB_EVENT_NAME || "local", status: sharedLock.failed ? "failed" : "skipped",
       startedAt: started.toISOString(), finishedAt, durationMs: Date.parse(finishedAt) - started.getTime(),
       reason: sharedLock.reason, sourcesChecked: [],
-      counts: { matchesUpdated: 0, newsUpdated: 0, transfersUpdated: 0, teamsUpdated: 0, playersUpdated: 0, filesChanged: 0 }, errors: []
+      counts: { matchesUpdated: 0, newsUpdated: 0, transfersUpdated: 0, teamsUpdated: 0, playersUpdated: 0, filesChanged: 0 },
+      errors: sharedLock.failed ? [{ step: "shared-full-lock", message: sharedLock.reason }] : []
     };
+    if (sharedLock.failed) {
+      record.publication = { required: false, state: "blocked" };
+      writeStatus(record);
+      process.exitCode = 1;
+    }
     appendGithubSummary(record);
     console.log(`[scheduled-update] ${record.reason}`);
     return;
@@ -978,6 +995,14 @@ async function main() {
   // Stage-by-stage truth: fetched/validated/built are known here; "published"
   // is only added by finalize-operations-publication.mjs after the real push.
   record.completion = operationsPolicy.assessCompletion({ ...record, publication: { state: 'committed' } });
+  if (args.type === "full" && process.env.GITHUB_EVENT_NAME === "schedule" && !record.completion.verified && !criticalFailure) {
+    const reason = `Daily update not verified: ${record.completion.reasons.join(", ")}`;
+    criticalFailure = true;
+    record.status = "failed";
+    record.publication = { ...record.publication, required: false, state: "blocked" };
+    record.errors.push({ step: "verify-full-update", message: reason });
+    record.completion = operationsPolicy.assessCompletion(record);
+  }
   atomicWrite(path.join(root,'outputs','operations','observations.json'),{...sourceData.observations,...transformedData.observations});
   retainUnchangedData(dataBefore);
   writeStatus(record);

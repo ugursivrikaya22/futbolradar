@@ -36,7 +36,14 @@ function fakeSupabase() {
         runs.set(row.run_key, full);
         return [full];
       }
-      if (method === "PATCH") { const k = eqOf(query, "run_key"); runs.set(k, { ...runs.get(k), ...body }); return []; }
+      if (method === "PATCH") {
+        const key = eqOf(query, "run_key");
+        const before = runs.get(key);
+        if (!before || ["type", "runner", "status", "started_at", "finished_at"].some(col => eqOf(query, col) !== null && eqOf(query, col) !== before[col])) return [];
+        const updated = { ...before, ...body };
+        runs.set(key, updated);
+        return options.headers?.Prefer === "return=representation" ? [updated] : [];
+      }
       const key = eqOf(query, "run_key");
       if (key) return runs.has(key) ? [runs.get(key)] : [];
       let rows = [...runs.values()];
@@ -139,6 +146,31 @@ await test("api/cron/[job].js sırsız isteği 401 ile reddeder", async () => {
 /* ---------------- eser kararı / kodlama ---------------- */
 const store = require("../services/cron/runStore.js");
 const engine = await import("./lib/cronJobEngine.mjs");
+await test("failed Vercel full lock has one atomic GitHub winner and rejects late Vercel changes", async () => {
+  const fake = fakeSupabase();
+  const key = "full:2026-11-27";
+  const request = fake.request;
+  const initial = await store.acquireRun({ key, type: "full", runner: "vercel", request });
+  for (const status of ["running", "complete", "skipped"]) {
+    fake.runs.set(key, { ...initial.row, status });
+    assert.equal((await store.claimGithubFullRun({ key, request })).acquired, false, status);
+  }
+  const failed = { ...initial.row, status: "failed", changed: true, finished_at: "2026-11-27T02:02:00Z", cursor: { old: 1 } };
+  fake.runs.set(key, failed);
+  const now = () => new Date("2026-11-27T02:03:00Z");
+  const results = await Promise.all([store.claimGithubFullRun({ key, request, now }), store.claimGithubFullRun({ key, request, now })]);
+  assert.equal(results.filter(r => r.acquired && r.reclaimed).length, 1);
+  assert.equal(fake.runs.get(key).runner, "github-actions");
+  assert.equal(fake.runs.get(key).status, "running");
+  assert.deepEqual(fake.runs.get(key).cursor, {});
+  assert.equal(fake.runs.get(key).finished_at, null);
+  assert.equal(fake.runs.get(key).changed, false);
+  assert.equal(await store.updateOwnedRun({ key, runner: "vercel", startedAt: initial.row.started_at, patch: { status: "complete" }, request }), false);
+  assert.equal(await store.updateOwnedRun({ key, runner: "github-actions", startedAt: now().toISOString(), patch: { status: "failed" }, request }), true);
+  assert.equal((await store.claimGithubFullRun({ key, request })).acquired, false, "a failed GitHub-owned row is not a failed Vercel row");
+  await assert.rejects(store.claimGithubFullRun({ key: "hourly:2026-11-27T05", request }), /full-day/);
+});
+
 await test("artifactDecision: aynı / ata → uygula / depo kazanır", () => {
   assert.equal(store.artifactDecision("a", { sha256: "a", lineage: [] }), "same");
   assert.equal(store.artifactDecision("r0", { sha256: "a2", lineage: ["r0", "a1"] }), "apply");
