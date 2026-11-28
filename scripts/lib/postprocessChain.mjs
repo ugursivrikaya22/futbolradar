@@ -207,6 +207,11 @@ export const POSTPROCESS_CHAIN = [
   { id: "sitemap-indexability", script: "sync-sitemap-indexability.mjs", args: [], timeoutMinutes: 2 },
   // Birleşik urlset → türe göre çocuk haritalar + sitemap-index.xml (üretici sırasına dokunulmaz).
   { id: "sitemap-index", script: "sync-sitemap-index.mjs", args: [], timeoutMinutes: 2 },
+  // Google Discover: haber/köşe yazısı sayfalarına 16:9 öne çıkan görsel,
+  // og:image + JSON-LD image/publisher.logo, `max-image-preview:large`
+  // (bkz. scripts/lib/discoverMedia.mjs). Üreticilerden ve paylaşım
+  // enjektörlerinden (organic-growth) SONRA: son sözü bu adım söyler.
+  { id: "discover-media", script: "inject-discover-media.mjs", args: [], timeoutMinutes: 3 },
   { id: "served-links", script: "normalize-served-links.mjs", args: [], timeoutMinutes: 2 },
   { id: "asset-version", script: "inject-asset-version.mjs", args: [], timeoutMinutes: 5 }
 ];

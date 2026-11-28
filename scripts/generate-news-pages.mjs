@@ -16,6 +16,8 @@ import { siteHeader, siteFooter, escapeLayoutHtml as escapeHtml } from "./lib/la
 import { findTurkish } from "./lib/turkish-detector.mjs";
 import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
 import { NEWS_SITEMAP_FILE, NEWS_SITEMAP_SOURCE_FILE, buildNewsSitemap, columnNewsItems } from "./lib/newsSitemap.mjs";
+// Discover: 16:9 öne çıkan görsel + og:image/JSON-LD image (bkz. lib).
+import { withDiscoverMedia } from "./lib/discoverMedia.mjs";
 // Otomatik keşif kaynaklı, şablon metinli ince haberler indekslenmez (bkz. servis).
 const { isThinAutomatedNews } = createRequire(import.meta.url)("../services/newsIndexPolicy.js");
 const { publishedColumns } = createRequire(import.meta.url)("../services/columnService.js");
@@ -404,7 +406,7 @@ ${siteFooter({ base, locale })}
 
 function writeArticle(article, locale = "tr") {
   const file = articleFile(article, locale);
-  const html = pageHtml(article, locale);
+  const html = withDiscoverMedia(root, file, pageHtml(article, locale));
   for (const targetRoot of [root, path.join(root, "public")]) {
     const target = path.join(targetRoot, file);
     fs.mkdirSync(path.dirname(target), { recursive: true });
