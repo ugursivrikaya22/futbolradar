@@ -176,8 +176,18 @@
       : "https://www.futbolradar.com/oyuncular/" + encodeURIComponent(playerId) + ".html";
   }
 
+  function pageIsEnglish() {
+    var lang = document.documentElement && document.documentElement.lang;
+    return Boolean(lang && String(lang).toLowerCase().indexOf("en") === 0);
+  }
+
+  function trEn(tr, en) {
+    return pageIsEnglish() ? en : tr;
+  }
+
   function playerCompareHref(query) {
-    return siteHref("oyuncu-karsilastir.html" + (query || ""));
+    var page = pageIsEnglish() ? "en/player-compare.html" : "oyuncu-karsilastir.html";
+    return siteHref(page + (query || ""));
   }
 
   function clampPercent(value) {
@@ -7737,8 +7747,10 @@
 
     var names = selected.map(function (player) { return player.name; });
     var titleBase = names.join(" vs ");
-    var title = titleBase + " Karşılaştırması | FutbolRadar";
-    var description = titleBase + " oyuncu karşılaştırması; AI rating, form, gol tehdidi, yaratıcılık, pres gücü, piyasa değeri ve transfer verileriyle okunur.";
+    var title = titleBase + trEn(" Karşılaştırması | FutbolRadar", " comparison | FutbolRadar");
+    var description = pageIsEnglish()
+      ? titleBase + " player comparison, read with rating, form, goal threat, creativity, pressing, market value and transfer data."
+      : titleBase + " oyuncu karşılaştırması; AI rating, form, gol tehdidi, yaratıcılık, pres gücü, piyasa değeri ve transfer verileriyle okunur.";
     var h1 = document.querySelector(".hero h1");
     var lead = document.querySelector(".hero .lead");
     var meta = document.querySelector(".hero-meta");
@@ -7752,7 +7764,7 @@
     setMetaContent('meta[name="twitter:description"]', description);
 
     if (h1) {
-      h1.textContent = titleBase + " Karşılaştırması";
+      h1.textContent = titleBase + trEn(" Karşılaştırması", " comparison");
     }
 
     if (lead) {
@@ -7760,7 +7772,9 @@
     }
 
     if (meta) {
-      meta.textContent = selected.length + " oyunculu radar karşılaştırması";
+      meta.textContent = pageIsEnglish()
+        ? selected.length + "-player radar comparison"
+        : selected.length + " oyunculu radar karşılaştırması";
     }
 
     if (schema) {
@@ -7770,7 +7784,7 @@
         name: title,
         url: window.location.href,
         description: description,
-        inLanguage: "tr-TR"
+        inLanguage: pageIsEnglish() ? "en" : "tr-TR"
       });
     }
   }
@@ -7788,10 +7802,10 @@
 
     return (
       '<section class="comparison-share-panel">' +
-      '<div><span>Paylaşılabilir karşılaştırma</span><strong>' + escapeHtml(names) + "</strong><p>Bu link; seçili oyuncuları, radar grafiğini ve metrik satırlarını aynı ekranda açar.</p></div>" +
+      '<div><span>' + trEn("Paylaşılabilir karşılaştırma", "Shareable comparison") + '</span><strong>' + escapeHtml(names) + "</strong><p>" + trEn("Bu link; seçili oyuncuları, radar grafiğini ve metrik satırlarını aynı ekranda açar.", "This link opens the selected players, the radar chart and the metric rows on one screen.") + "</p></div>" +
       '<div class="compare-share-actions">' +
-      '<a class="detail-link" href="' + escapeHtml(href) + '">Kanonik link</a>' +
-      '<button class="detail-link ghost" type="button" data-share-url="' + escapeHtml(href) + '" data-share-label="Karşılaştırma linkini kopyala">Linki kopyala</button>' +
+      '<a class="detail-link" href="' + escapeHtml(href) + '">' + trEn("Kanonik link", "Canonical link") + '</a>' +
+      '<button class="detail-link ghost" type="button" data-share-url="' + escapeHtml(href) + '" data-share-label="' + trEn("Karşılaştırma linkini kopyala", "Copy comparison link") + '">' + trEn("Linki kopyala", "Copy link") + '</button>' +
       "</div>" +
       "</section>"
     );
@@ -8567,6 +8581,18 @@
     });
     return out.join("");
   }
+
+  // home-freshness:start
+  // Ana sayfa vitrini: öne çıkan haber 48 saatten eskiyse yerini yenisine bırakır.
+  // Kural services/homeFreshness.js ile aynıdır (scripts/test-home-freshness.mjs eşitliği doğrular).
+  var FEATURED_MAX_AGE_MS = 48 * 3600000;
+  function isFreshFeaturedItem(publishedAt, nowMs, maxAgeMs) {
+    var now = typeof nowMs === "number" ? nowMs : Date.now();
+    var limit = typeof maxAgeMs === "number" ? maxAgeMs : FEATURED_MAX_AGE_MS;
+    var time = Date.parse(publishedAt);
+    return isFinite(time) && time <= now && now - time < limit;
+  }
+  // home-freshness:end
 
   function publicNewsItems(news) {
     return (Array.isArray(news) ? news : [])
@@ -9585,13 +9611,13 @@
       ? String(computed.value)
       : legacy !== null && legacy !== undefined
         ? String(legacy)
-        : RATING_INSUFFICIENT_LABEL;
+        : ratingInsufficientLabel();
     var ratingClass = computed && computed.value !== null ? "rating" : (legacy !== null && legacy !== undefined ? "rating" : "rating is-empty");
     // Yaş ve piyasa değeri ayrı ayrı bilinir: ölçülmeyen biri yüzünden
     // diğerinin yerine tire basılmaz, satır o parçayı hiç taşımaz.
     var meta = [];
     var age = playerAge(player);
-    if (age !== null && age !== undefined && age !== "") meta.push("Yaş " + age);
+    if (age !== null && age !== undefined && age !== "") meta.push((pageIsEnglish() ? "Age " : "Yaş ") + age);
     if (market) meta.push(market);
 
     return (
@@ -9618,6 +9644,18 @@
   /** Sayım istatistiği doğrulanmamış satırların etiketi. */
   var RATING_UNMEASURED_LABEL = "Ölçüm yok";
 
+  function ratingInsufficientLabel() {
+    return pageIsEnglish() ? "Not enough data" : RATING_INSUFFICIENT_LABEL;
+  }
+
+  function ratingNotApplicableLabel() {
+    return pageIsEnglish() ? "Not for this position" : RATING_NOT_APPLICABLE_LABEL;
+  }
+
+  function ratingUnmeasuredLabel() {
+    return pageIsEnglish() ? "Not measured" : RATING_UNMEASURED_LABEL;
+  }
+
   function ratingScoreCategory(player, key) {
     var scores = player && player.ratingScores;
     if (!scores || !scores.categories) return null;
@@ -9631,7 +9669,7 @@
       value: status === "computed" && isFinite(value) ? value : null,
       display: status === "computed" && isFinite(value)
         ? String(Math.round(value))
-        : status === "not-applicable" ? RATING_NOT_APPLICABLE_LABEL : RATING_INSUFFICIENT_LABEL
+        : status === "not-applicable" ? ratingNotApplicableLabel() : ratingInsufficientLabel()
     };
   }
 
@@ -9650,7 +9688,7 @@
     if (!hasScores) return compareMultiRowHtml(label, players, legacyGetter);
 
     var cells = players.map(function (player) {
-      return ratingScoreCategory(player, key) || { status: "insufficient", value: null, display: RATING_INSUFFICIENT_LABEL };
+      return ratingScoreCategory(player, key) || { status: "insufficient", value: null, display: ratingInsufficientLabel() };
     });
     var known = cells.map(function (cell) { return cell.value; }).filter(function (value) { return value !== null; });
     var best = known.length ? Math.max.apply(Math, known) : null;
@@ -9702,7 +9740,7 @@
         // ÇIPLAK TİRE YERİNE GEREKÇE. "-" okuyucuya iki ayrı şeyi aynı
         // işaretle söylüyordu: "ölçüldü, sıfır çıktı" ve "hiç ölçülmedi".
         // İkincisi bu satırların gerçek durumu; açıkça yazılıyor.
-        var text = value === null ? RATING_UNMEASURED_LABEL : String(value);
+        var text = value === null ? ratingUnmeasuredLabel() : String(value);
         return (
           '<b class="' + (leading ? "is-leading" : "") + (value === null ? " is-empty" : "") + '">' +
           escapeHtml(text) +
@@ -9731,9 +9769,9 @@
 
     return (
       '<section class="compare-winner">' +
-      '<span>Kim önde?</span>' +
+      '<span>' + trEn("Kim önde?", "Who is ahead?") + '</span>' +
       "<strong>" + escapeHtml(leader.name) + "</strong>" +
-      "<p>Overall, form, potansiyel ve veri güveni birlikte okunduğunda bu eşleşmede radar lideri olarak öne çıkıyor.</p>" +
+      "<p>" + trEn("Overall, form, potansiyel ve veri güveni birlikte okunduğunda bu eşleşmede radar lideri olarak öne çıkıyor.", "Read together, overall, form, potential and data confidence put this player ahead in the matchup.") + "</p>" +
       "</section>"
     );
   }
@@ -9761,7 +9799,7 @@
       '<strong>' + escapeHtml(leader.name) + '</strong>' +
       '<b>' + escapeHtml(displayValue(value)) + '</b>' +
       '<p>' + escapeHtml(note) + '</p>' +
-      '<a href="' + escapeHtml(playerProfileHref(leader.id)) + '">Profili aç</a>' +
+      '<a href="' + escapeHtml(playerProfileHref(leader.id)) + '">' + trEn("Profili aç", "Open profile") + '</a>' +
       "</article>"
     );
   }
@@ -9782,35 +9820,35 @@
     // compareInsightCardHtml onu hiç çizmez. Yalnızca biri eksikse diğer
     // yarı gerçek bir sinyal taşıdığından 0 ile tamamlanır.
     var cards = [
-      compareInsightCardHtml("Skor tehdidi", selected, function (player) {
+      compareInsightCardHtml(trEn("Skor tehdidi", "Goal threat"), selected, function (player) {
         var score = playerScore(player, "threatScore");
         var goals = playerStats(player).goals;
         if (score === null && goals === null) return null;
         return (score === null ? 0 : score) + (goals === null ? 0 : goals) * 2;
-      }, "Gol tehdidi, xG ve bitiricilik etkisi birlikte okunur."),
-      compareInsightCardHtml("Oyun kurma", selected, function (player) {
+      }, trEn("Gol tehdidi, xG ve bitiricilik etkisi birlikte okunur.", "Goal threat, xG and finishing are read together.")),
+      compareInsightCardHtml(trEn("Oyun kurma", "Chance creation"), selected, function (player) {
         var score = playerScore(player, "creativityScore");
         var assists = playerStats(player).assists;
         if (score === null && assists === null) return null;
         return (score === null ? 0 : score) + (assists === null ? 0 : assists) * 2;
-      }, "Yaratıcılık, xA ve kilit pas etkisi önde."),
-      compareInsightCardHtml("Pres direnci", selected, function (player) {
+      }, trEn("Yaratıcılık, xA ve kilit pas etkisi önde.", "Creativity, xA and key passes lead.")),
+      compareInsightCardHtml(trEn("Pres direnci", "Pressing"), selected, function (player) {
         var score = playerScore(player, "pressingScore");
         var pressures = playerStats(player).pressures;
         if (score === null && pressures === null) return null;
         return (score === null ? 0 : score) + (pressures === null ? 0 : pressures) / 5;
-      }, "Pres, ikili mücadele ve ikinci top takibi izlenir."),
-      compareInsightCardHtml("Form / potansiyel", selected, function (player) {
+      }, trEn("Pres, ikili mücadele ve ikinci top takibi izlenir.", "Pressing, duels and second balls are tracked.")),
+      compareInsightCardHtml(trEn("Form / potansiyel", "Form / potential"), selected, function (player) {
         var form = radarMetric(player, "form");
         var potential = radarMetric(player, "potential");
         if (form === null && potential === null) return null;
         return (form === null ? 0 : form) * 0.55 + (potential === null ? 0 : potential) * 0.45;
-      }, "Anlik form ile gelecek tavanini birlikte tartar.")
+      }, trEn("Anlik form ile gelecek tavanini birlikte tartar.", "Current form and the future ceiling are weighed together."))
     ].filter(Boolean);
 
     return (
       '<section class="compare-insights">' +
-      '<div class="compare-insights-head"><span>Kısa analiz</span><strong>Bu eşleşmede kim, nerede öne çıkıyor?</strong></div>' +
+      '<div class="compare-insights-head"><span>' + trEn("Kısa analiz", "Short read") + '</span><strong>' + trEn("Bu eşleşmede kim, nerede öne çıkıyor?", "Who leads this matchup, and where?") + '</strong></div>' +
       '<div class="compare-insights-grid">' + cards.join("") + "</div>" +
       "</section>"
     );
@@ -9847,26 +9885,26 @@
       compareRatingRowHtml("Overall", "overall", selected, function (player) { return verifiedRatingValue(player, player.overallRating || player.aiRating || player.rating); }) +
       compareRatingRowHtml("Form", "form", selected, function (player) { return verifiedRatingValue(player, radarMetric(player, "form")); }) +
       compareRatingRowHtml("Hücum", "attack", selected, function (player) { return verifiedRatingValue(player, radarMetric(player, "attack")); }) +
-      compareRatingRowHtml("Yaratıcılık", "creativity", selected, function (player) { return verifiedRatingValue(player, radarMetric(player, "creativity")); }) +
-      compareRatingRowHtml("Savunma", "defense", selected, function (player) { return verifiedRatingValue(player, radarMetric(player, "defense")); }) +
-      compareRatingRowHtml("Disiplin", "discipline", selected, function (player) { return verifiedRatingValue(player, radarMetric(player, "discipline")); }) +
-      compareRatingRowHtml("Süreklilik", "durability", selected, function (player) { return verifiedRatingValue(player, radarMetric(player, "durability")); }) +
-      compareRatingRowHtml("Potansiyel", "potential", selected, function (player) { return verifiedRatingValue(player, radarMetric(player, "potential")); }) +
+      compareRatingRowHtml(trEn("Yaratıcılık", "Creativity"), "creativity", selected, function (player) { return verifiedRatingValue(player, radarMetric(player, "creativity")); }) +
+      compareRatingRowHtml(trEn("Savunma", "Defence"), "defense", selected, function (player) { return verifiedRatingValue(player, radarMetric(player, "defense")); }) +
+      compareRatingRowHtml(trEn("Disiplin", "Discipline"), "discipline", selected, function (player) { return verifiedRatingValue(player, radarMetric(player, "discipline")); }) +
+      compareRatingRowHtml(trEn("Süreklilik", "Durability"), "durability", selected, function (player) { return verifiedRatingValue(player, radarMetric(player, "durability")); }) +
+      compareRatingRowHtml(trEn("Potansiyel", "Potential"), "potential", selected, function (player) { return verifiedRatingValue(player, radarMetric(player, "potential")); }) +
       // Veri güveni bilinçli olarak süzülmez: oyuncunun performansını değil,
       // kaydın ne kadar iyi kaynaklandığını anlatıyor (bkz. cardCredibility.js).
-      compareMultiRowHtml("Veri güveni", selected, function (player) { return radarMetric(player, "dataConfidence"); }) +
-      compareMultiRowHtml("Piyasa EUR", selected, function (player) { return verifiedStatValue(player, player.marketValueEur); }) +
-      compareMultiRowHtml("Maç", selected, function (player) { return verifiedStatValue(player, playerStats(player).appearances); }) +
-      compareMultiRowHtml("Dakika", selected, function (player) { return verifiedStatValue(player, playerStats(player).minutesPlayed); }) +
-      compareMultiRowHtml("Gol", selected, function (player) { return verifiedStatValue(player, playerStats(player).goals); }) +
-      compareMultiRowHtml("Asist", selected, function (player) { return verifiedStatValue(player, playerStats(player).assists); }) +
+      compareMultiRowHtml(trEn("Veri güveni", "Data confidence"), selected, function (player) { return radarMetric(player, "dataConfidence"); }) +
+      compareMultiRowHtml(trEn("Piyasa EUR", "Market value EUR"), selected, function (player) { return verifiedStatValue(player, player.marketValueEur); }) +
+      compareMultiRowHtml(trEn("Maç", "Matches"), selected, function (player) { return verifiedStatValue(player, playerStats(player).appearances); }) +
+      compareMultiRowHtml(trEn("Dakika", "Minutes"), selected, function (player) { return verifiedStatValue(player, playerStats(player).minutesPlayed); }) +
+      compareMultiRowHtml(trEn("Gol", "Goals"), selected, function (player) { return verifiedStatValue(player, playerStats(player).goals); }) +
+      compareMultiRowHtml(trEn("Asist", "Assists"), selected, function (player) { return verifiedStatValue(player, playerStats(player).assists); }) +
       // 90 dakikaya normalize edilmiş değer /api/players yanıtında hazır
       // gelir (services/statNormalization.js) — istemci ham/dakika oranını
       // yeniden hesaplamaz, sunucudaki karar tekrar edilmez.
-      compareMultiRowHtml("Gol (90 dk)", selected, function (player) { return player.goalsPer90; }) +
-      compareMultiRowHtml("Asist (90 dk)", selected, function (player) { return player.assistsPer90; }) +
+      compareMultiRowHtml(trEn("Gol (90 dk)", "Goals per 90"), selected, function (player) { return player.goalsPer90; }) +
+      compareMultiRowHtml(trEn("Asist (90 dk)", "Assists per 90"), selected, function (player) { return player.assistsPer90; }) +
       playerRadarChartHtml(selected[0], selected[1], selected.map(function (player) { return player.name; }).join(" / "), selected[2]) +
-      '<p class="compare-note">FutbolRadar yorumu: lider oyuncu metrik bazında yeşil vurgulanır; üç oyunculu seçimde tüm radar alanları aynı grafikte okunur.</p>' +
+      '<p class="compare-note">' + trEn("FutbolRadar yorumu: lider oyuncu metrik bazında yeşil vurgulanır; üç oyunculu seçimde tüm radar alanları aynı grafikte okunur.", "The leading player is highlighted in green on each metric. With three players, every radar area is read on the same chart.") + '</p>' +
       "</article>"
     );
   }
@@ -9921,32 +9959,32 @@
     var presets = [
       {
         key: "goal-threat",
-        title: "Gol tehdidi",
-        note: "xG, şut hacmi ve bitiricilik etkisi",
+        title: trEn("Gol tehdidi", "Goal threat"),
+        note: trEn("xG, şut hacmi ve bitiricilik etkisi", "xG, shot volume and finishing"),
         ids: topPlayerIds(list, function (player) { return playerScore(player, "threatScore") + playerStats(player).goals * 2; }, 3)
       },
       {
         key: "creative-core",
-        title: "Yaratıcılık",
-        note: "Kilit pas, xA ve pas radarı",
+        title: trEn("Yaratıcılık", "Creativity"),
+        note: trEn("Kilit pas, xA ve pas radarı", "Key passes, xA and the passing radar"),
         ids: topPlayerIds(list, function (player) { return playerScore(player, "creativityScore") + playerStats(player).assists * 2; }, 3)
       },
       {
         key: "press-power",
-        title: "Pres gücü",
-        note: "Baskı, top kazanma ve merkez direnci",
+        title: trEn("Pres gücü", "Pressing"),
+        note: trEn("Baskı, top kazanma ve merkez direnci", "Pressing, ball wins and central resistance"),
         ids: topPlayerIds(list, function (player) { return playerScore(player, "pressingScore") + playerStats(player).pressures / 4; }, 3)
       },
       {
         key: "young-upside",
-        title: "Genc yetenek",
-        note: "Yas, potansiyel ve form ivmesi",
+        title: trEn("Genc yetenek", "Young talent"),
+        note: trEn("Yas, potansiyel ve form ivmesi", "Age, potential and form trend"),
         ids: topPlayerIds(list, function (player) { return radarMetric(player, "potential") + playerScore(player, "formChange") * 3; }, 3, function (player) { return Number(playerAge(player) || 99) <= 27; })
       },
       {
         key: "transfer-watch",
-        title: "Transfer takibi",
-        note: "Güncel takım ve transfer riski izlenenler",
+        title: trEn("Transfer takibi", "Transfer watch"),
+        note: trEn("Güncel takım ve transfer riski izlenenler", "Current club and players on the transfer watch"),
         ids: topPlayerIds(list, function (player) {
           return (playerNeedsDataRefresh(player) ? 40 : 0) + Number(player.marketValueEur || 0) / 1000000 + radarMetric(player, "dataConfidence");
         }, 3, function (player) { return playerHasTransferHistory(player); })
@@ -9964,12 +10002,12 @@
     }
 
     if (!presets.length) {
-      target.innerHTML = '<article class="data-empty compact"><strong>Hazır kıyas bulunamadı</strong><span>Oyuncu verisi çoğaldıkça bu alan otomatik dolacak.</span></article>';
+      target.innerHTML = '<article class="data-empty compact"><strong>' + trEn("Hazır kıyas bulunamadı", "No ready comparison found") + '</strong><span>' + trEn("Oyuncu verisi çoğaldıkça bu alan otomatik dolacak.", "This area fills in as more player data arrives.") + '</span></article>';
       return;
     }
 
     target.innerHTML =
-      '<div class="compare-presets-head"><div><span>Hazır kıyaslar</span><strong>Tek tıkla radar eşleşmesi aç</strong></div><p>Oyuncular veri metriklerine göre otomatik gruplanır.</p></div>' +
+      '<div class="compare-presets-head"><div><span>' + trEn("Hazır kıyaslar", "Ready comparisons") + '</span><strong>' + trEn("Tek tıkla radar eşleşmesi aç", "Open a radar matchup in one click") + '</strong></div><p>' + trEn("Oyuncular veri metriklerine göre otomatik gruplanır.", "Players are grouped from the measured metrics.") + '</p></div>' +
       '<div class="compare-preset-grid">' +
       presets.map(function (preset) {
         var names = preset.ids.map(function (id) {
@@ -10006,16 +10044,16 @@
     }
 
     toolbar.insertAdjacentHTML("beforebegin",
-      '<section class="compare-guide" aria-label="Karşılaştırma rehberi">' +
-      '<article class="compare-guide-card"><span>1</span><strong>Rol benzerliğini oku</strong><p>Forvet, kanat, orta saha ve kaleci profillerini aynı metrik setiyle değil, rol etkisiyle birlikte yorumla.</p></article>' +
-      '<article class="compare-guide-card"><span>2</span><strong>Fark yaratan metriği bul</strong><p>Overall tek başına yeterli değil; gol tehdidi, yaratıcılık, pres ve potansiyel farklarını birlikte izle.</p></article>' +
-      '<article class="compare-guide-card"><span>3</span><strong>Transfer verisini kontrol et</strong><p>Güncel takım, piyasa değeri, veri güveni ve transfer geçmişi oyuncu kararını daha net hale getirir.</p></article>' +
+      '<section class="compare-guide" aria-label="' + trEn("Karşılaştırma rehberi", "Comparison guide") + '">' +
+      '<article class="compare-guide-card"><span>1</span><strong>' + trEn("Rol benzerliğini oku", "Read the role match") + '</strong><p>' + trEn("Forvet, kanat, orta saha ve kaleci profillerini aynı metrik setiyle değil, rol etkisiyle birlikte yorumla.", "Read forwards, wingers, midfielders and goalkeepers with the effect of the role, not one shared metric set.") + '</p></article>' +
+      '<article class="compare-guide-card"><span>2</span><strong>' + trEn("Fark yaratan metriği bul", "Find the metric that separates them") + '</strong><p>' + trEn("Overall tek başına yeterli değil; gol tehdidi, yaratıcılık, pres ve potansiyel farklarını birlikte izle.", "Overall is not enough on its own. Watch goal threat, creativity, pressing and potential together.") + '</p></article>' +
+      '<article class="compare-guide-card"><span>3</span><strong>' + trEn("Transfer verisini kontrol et", "Check the transfer data") + '</strong><p>' + trEn("Güncel takım, piyasa değeri, veri güveni ve transfer geçmişi oyuncu kararını daha net hale getirir.", "Current club, market value, data confidence and transfer history make the comparison clearer.") + '</p></article>' +
       '</section>' +
-      '<section class="compare-quick-links" aria-label="Popüler oyuncu karşılaştırmaları">' +
-      '<a href="./oyuncu-karsilastir.html?p1=kerem-akturkoglu">Kerem için akıllı eşleşme</a>' +
-      '<a href="./oyuncu-karsilastir.html?players=mauro-icardi,edin-dzeko">Icardi vs Dzeko</a>' +
-      '<a href="./oyuncu-karsilastir.html?players=ugurcan-cakir,abdulkerim-bardakci">Savunma güveni</a>' +
-      '<a href="./oyuncu-radari.html?filter=gol-tehdidi">Gol tehdidi filtresine don</a>' +
+      '<section class="compare-quick-links" aria-label="' + trEn("Popüler oyuncu karşılaştırmaları", "Popular player comparisons") + '">' +
+      '<a href="' + playerCompareHref("?p1=kerem-akturkoglu") + '">' + trEn("Kerem için akıllı eşleşme", "Smart match for Kerem") + '</a>' +
+      '<a href="' + playerCompareHref("?players=mauro-icardi,edin-dzeko") + '">Icardi vs Dzeko</a>' +
+      '<a href="' + playerCompareHref("?players=ugurcan-cakir,abdulkerim-bardakci") + '">' + trEn("Savunma güveni", "Defensive reliability") + '</a>' +
+      '<a href="' + (pageIsEnglish() ? siteHref("en/player-radar.html") : "./oyuncu-radari.html?filter=gol-tehdidi") + '">' + trEn("Gol tehdidi filtresine don", "Back to player radar") + '</a>' +
       '</section>'
     );
   }
@@ -10036,7 +10074,7 @@
 
     loadData("players").then(function (players) {
       if (!Array.isArray(players) || !players.length) {
-        setEmpty(target, "Karşılaştırma için oyuncu yok", "Oyuncu listesi şu anda boş görünüyor.");
+        setEmpty(target, trEn("Karşılaştırma için oyuncu yok", "No players to compare"), trEn("Oyuncu listesi şu anda boş görünüyor.", "The player list is empty right now."));
         return;
       }
 
@@ -10073,7 +10111,7 @@
         var requestedId = requestedIds[index] || resolveCanonicalId(query.get(index === 0 ? "p1" : index === 1 ? "p2" : "p3") || "");
         var fallback = (canonicalPlayers[index] && canonicalPlayers[index].id) || (canonicalPlayers[0] && canonicalPlayers[0].id) || "";
         var exists = canonicalPlayers.some(function (player) { return player.id === requestedId; });
-        select.innerHTML = (index > 1 ? '<option value="">Opsiyonel 3. oyuncu</option>' : "") + options;
+        select.innerHTML = (index > 1 ? '<option value="">' + trEn("Opsiyonel 3. oyuncu", "Optional 3rd player") + '</option>' : "") + options;
         select.value = exists ? requestedId : (index > 1 ? "" : fallback);
       });
 
@@ -10105,7 +10143,7 @@
         }
 
         if (seeded.length < 2) {
-          setEmpty(target, "Karşılaştırma hazırlanamadı", "Bu statik karşılaştırma için yeterli oyuncu verisi bulunamadı.");
+          setEmpty(target, trEn("Karşılaştırma hazırlanamadı", "Comparison could not be prepared"), trEn("Bu statik karşılaştırma için yeterli oyuncu verisi bulunamadı.", "There is not enough player data for this comparison."));
           return;
         }
 
@@ -10127,7 +10165,7 @@
         var params = new URLSearchParams(window.location.search);
 
         if (selected.length < 2) {
-          setEmpty(target, "Karşılaştırma hazırlanamadı", "En az iki farklı oyuncu seç.");
+          setEmpty(target, trEn("Karşılaştırma hazırlanamadı", "Comparison could not be prepared"), trEn("En az iki farklı oyuncu seç.", "Choose at least two different players."));
           return;
         }
 
@@ -10164,7 +10202,7 @@
 
       render();
     }).catch(function () {
-      setEmpty(target, "Karşılaştırma yüklenemedi", "Oyuncu verisi geçici olarak okunamıyor.");
+      setEmpty(target, trEn("Karşılaştırma yüklenemedi", "Comparison could not be loaded"), trEn("Oyuncu verisi geçici olarak okunamıyor.", "Player data cannot be read right now."));
     });
   }
 
@@ -13966,11 +14004,18 @@
     );
 
 
+    var newsPreviewTarget = document.querySelector('[data-api-target="news-preview"]');
     renderIntoWhenNear(
-      document.querySelector('[data-api-target="news-preview"]'),
+      newsPreviewTarget,
       "newsLite",
       function (news) {
-        return publicNewsItems(news).slice(0, 3).map(renderNewsCard).join("");
+        // Yalnızca 48 saatten taze haber öne çıkar; hiç yoksa bölüm gizlenir
+        // (boş dönen çıktı statik yedeği geri getirir, bu yüzden bölüm burada kapatılır).
+        var html = publicNewsItems(news)
+          .filter(function (item) { return isFreshFeaturedItem(item.publishedAt); })
+          .slice(0, 3).map(renderNewsCard).join("");
+        applyEmptyHide(newsPreviewTarget, Boolean(html));
+        return html;
       },
       "Güncel futbol gündemi yüklenemedi"
     );

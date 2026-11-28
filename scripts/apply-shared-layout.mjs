@@ -270,9 +270,8 @@ for (const file of files) {
     : "";
 
   // Transfer Radar on the English homepage sits in the same slot as the
-  // Turkish band: immediately under Son Dakika / Headlines, above live scores.
-  // Chrome is English; sourced item text is left in the original language
-  // (lang="tr") rather than machine-translated.
+  // Turkish band: immediately under Headlines, above live scores.
+  // Chrome and item text are English (scripts/lib/tickerEnglish.mjs).
   const wantsHomeTicker = HOME_TICKER_PAGES.has(sitePath);
   const homeTicker = wantsHomeTicker
     ? renderHomeTicker(homeTickerSelected.items, { base, locale: "en" })

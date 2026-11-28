@@ -35,6 +35,11 @@ yüzden ayrı dosya.
 `items` dizisine ekleyin, `npm run test:home-ticker` çalıştırın, commit edin.
 Bant bir sonraki derlemede (en geç saatlik CI koşusunda) güncellenir.
 
+İngilizce ana sayfa aynı öğeyi `en.text` ile basar. Cümle kaynağın söylediğini
+söyler, oyuncu ve kulüp adları değişmez. `en.text` yoksa üretici
+(`scripts/lib/tickerEnglish.mjs`) standart kalıbı çevirir; çeviri Türkçe
+işlev sözcüğü bırakırsa o öğe İngilizce banda girmez.
+
 ### Alan kuralları
 
 | Alan | Zorunlu | Kural |

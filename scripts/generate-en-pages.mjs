@@ -1212,10 +1212,9 @@ ${cards}
  * biçimde ayrışıyordu. Artık işaretleme `.stats-route-grid`, sıra Türkçe
  * taraftaki sıra.
  *
- * Sekiz hedefin üçünün İngilizce karşılığı var; kalan beşi yalnızca Türkçe
- * yayımlanıyor. Kutuyu hiç çizmemek yerine Türkçe sayfaya `hreflang="tr"`
- * ile bağlanıyoruz — bu sayfalar tablo ve sayı ağırlıklı, İngilizce okuyucu
- * için de kullanılabilir, ve etiket nereye gittiğini önceden söylüyor.
+ * Oyuncu karşılaştırması ve Süper Lig fikstürünün İngilizce sayfası var;
+ * o kutular kendi İngilizce adresine gider. Karşılığı olmayan kutular
+ * Türkçe sayfaya `hreflang="tr"` ile bağlanır ve etiket "(TR)" der.
  */
 function quickNavSection() {
   const routes = [
@@ -1224,8 +1223,8 @@ function quickNavSection() {
     { kicker: "Clubs", label: t("nav.teams", LOCALE), href: "./teams.html", tr: false },
     { kicker: "Stats", label: "Stats hub", href: `${BASE}istatistik-merkezi.html`, tr: true },
     { kicker: "Goals", label: "Top scorers", href: `${BASE}gol-kralligi.html`, tr: true },
-    { kicker: "Compare", label: "Player comparisons", href: `${BASE}oyuncu-karsilastirmalari.html`, tr: true },
-    { kicker: "Fixtures", label: "Süper Lig fixtures", href: `${BASE}super-lig-fikstur.html`, tr: true },
+    { kicker: "Compare", label: "Player comparisons", href: "./player-comparisons.html", tr: false },
+    { kicker: "Fixtures", label: "Süper Lig fixtures", href: "./fixtures.html", tr: false },
     { kicker: "Analysis", label: t("nav.analysis", LOCALE), href: "./analysis.html", tr: false }
   ];
   const tiles = routes.map((route) =>
@@ -1471,17 +1470,16 @@ function motmWeekSection() {
 function bigClubsSection() {
   const links = [
     ["Galatasaray standings", "../galatasaray-puan-durumu"],
-    ["Galatasaray matches", "../galatasaray-maclari.html"],
+    ["Galatasaray matches", "./team/galatasaray.html"],
     ["Fenerbahçe standings", "../fenerbahce-puan-durumu"],
-    ["Fenerbahçe matches", "../fenerbahce-maclari.html"],
+    ["Fenerbahçe matches", "./team/fenerbahce.html"],
     ["Beşiktaş standings", "../besiktas-puan-durumu"],
-    ["Beşiktaş matches", "../besiktas-maclari.html"],
+    ["Beşiktaş matches", "./team/besiktas.html"],
     ["Trabzonspor standings", "../trabzonspor-puan-durumu"],
-    ["Trabzonspor matches", "../trabzonspor-maclari.html"]
+    ["Trabzonspor matches", "./team/trabzonspor.html"]
   ];
-  // Prefer English team hubs when the generator has published them; the
-  // dedicated standings/matches pages still live on the Turkish URLs, so
-  // the labels are English and the destinations are the same sourced pages.
+  // Match links go to the English club pages, which carry that club's
+  // fixtures. Standings links stay on the Turkish standings URLs.
   return `<section class="container section big-clubs-links" id="buyuk-takimlar" aria-labelledby="buyuk-takimlar-title">
           ${sectionHead("The Big 4", "buyuk-takimlar-title", "Galatasaray, Fenerbahçe, Beşiktaş, Trabzonspor", "Each club's standings and fixture page — one tap away.", "", "")}
           <div class="popular-links" aria-label="Big 4 club pages">${links.map(([label, href]) => `<a href="${escapeHtml(href)}">${escapeHtml(label)}</a>`).join("")}</div>

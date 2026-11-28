@@ -470,20 +470,39 @@ function pageHtml(pair) {
   return { html, trPath, enPath, canonical, indexable };
 }
 
+const PICKER_PATH = "en/player-compare.html";
+
+/** Türkçe dizindeki aynı öne çıkan çiftler, aynı sırada. */
+function featuredPairs(pairs) {
+  let html = "";
+  try {
+    html = fs.readFileSync(path.join(root, TR_INDEX_PATH), "utf8");
+  } catch {
+    html = "";
+  }
+  const bySlug = new Map(pairs.map((pair) => [pair.slug, pair]));
+  const ordered = [];
+  const seen = new Set();
+  for (const match of html.matchAll(/karsilastirma\/([^"']+?)\.html/g)) {
+    const pair = bySlug.get(match[1]);
+    if (!pair || seen.has(pair.slug)) continue;
+    seen.add(pair.slug);
+    ordered.push(pair);
+  }
+  return ordered.length ? ordered : pairs.slice(0, 20);
+}
+
 function indexHtml(pairs) {
+  const featured = featuredPairs(pairs);
   const canonical = `${DOMAIN}/${INDEX_PATH}`;
   const title = "Player Comparisons | FutbolRadar";
-  const description = `${pairs.length} head-to-head player comparisons on FutbolRadar: position, club and attribute ratings side by side, published only from verified and measured data.`;
-  const groups = new Map();
-  for (const pair of pairs) {
-    const letter = (pair.left.name.normalize("NFD").replace(/[^A-Za-z]/g, "").charAt(0) || "#").toUpperCase();
-    if (!groups.has(letter)) groups.set(letter, []);
-    groups.get(letter).push(pair);
-  }
-  const sections = [...groups.keys()].sort().map((letter) => `<section class="section" aria-labelledby="cmp-${letter}">
-        <div class="section-head"><div class="section-title"><h2 id="cmp-${letter}">${escapeHtml(letter)}</h2></div></div>
-        <div class="comparison-index-grid">${groups.get(letter).map((pair) => `<a class="comparison-index-card" href="./compare/${escapeHtml(pair.slug)}.html"><span>${escapeHtml(groupLabel(pair.left) === groupLabel(pair.right) ? groupLabel(pair.left) : `${groupLabel(pair.left)} / ${groupLabel(pair.right)}`)}</span><strong>${escapeHtml(pair.left.name)} vs ${escapeHtml(pair.right.name)}</strong></a>`).join("")}</div>
-      </section>`).join("\n      ");
+  const description = "FutbolRadar player comparisons: Süper Lig players side by side on rating, form, role, market value and transfer signals.";
+  const cards = featured.map((pair) => {
+    const role = groupLabel(pair.left) === groupLabel(pair.right)
+      ? groupLabel(pair.left)
+      : `${groupLabel(pair.left)} / ${groupLabel(pair.right)}`;
+    return `<a class="comparison-index-card" href="./compare/${escapeHtml(pair.slug)}.html"><span>${escapeHtml(role)}</span><strong>${escapeHtml(pair.left.name)} vs ${escapeHtml(pair.right.name)}</strong></a>`;
+  }).join("\n        ");
   return `<!doctype html>
 <html lang="${htmlLang(LOCALE)}">
   <head>
@@ -492,6 +511,9 @@ function indexHtml(pairs) {
     <title>${escapeHtml(title)}</title>
     <meta name="description" content="${escapeHtml(description)}" />
     <link rel="canonical" href="${canonical}" />
+    <link rel="alternate" hreflang="en" href="${canonical}" />
+    <link rel="alternate" hreflang="tr-TR" href="${DOMAIN}/${TR_INDEX_PATH}" />
+    <link rel="alternate" hreflang="x-default" href="${DOMAIN}/${TR_INDEX_PATH}" />
     <meta name="robots" content="${ROBOTS_INDEX}" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="${ogLocale(LOCALE)}" />
@@ -507,12 +529,26 @@ function indexHtml(pairs) {
   </head>
   <body class="subpage">
     ${siteHeader({ base: "../", locale: LOCALE, altHref: TR_INDEX_PATH })}
-    <main class="container">
-      <nav class="breadcrumb" aria-label="Breadcrumb"><a href="./index.html">Home</a><span>/</span><span>Player comparisons</span></nav>
+    <main class="container comparison-index-page">
+      <nav class="breadcrumb" aria-label="Breadcrumb"><a href="./index.html">Home</a><span>/</span><a href="./player-radar.html">Player radar</a><span>/</span><span>Player comparisons</span></nav>
       <section class="hero">
-        <div class="hero-row"><div><span class="eyebrow">Player comparison</span><h1>Player comparisons</h1><p class="lead">${escapeHtml(description)}</p></div></div>
+        <div class="hero-row">
+          <div>
+            <span class="eyebrow">Player comparison</span>
+            <h1>Player comparisons</h1>
+            <p class="lead">${escapeHtml(description)}</p>
+          </div>
+          <span class="hero-meta">${featured.length} ready comparisons</span>
+        </div>
       </section>
-      ${sections}
+      <section class="comparison-index-grid" aria-label="Ready player comparisons">
+        ${cards}
+      </section>
+      <section class="comparison-seo-links" aria-label="Player comparison navigation">
+        <span>Continue</span>
+        <a href="./player-radar.html">Player radar</a>
+        <a href="./player-compare.html">Interactive comparison</a>
+      </section>
     </main>
     ${siteFooter({ base: "../", locale: LOCALE })}
     <script src="../site.js" defer></script>
@@ -552,7 +588,9 @@ for (const pair of pairs) {
   const result = pageHtml(pair);
   expected.add(`${pair.slug}.html`);
   if (writeIfChanged(path.join(root, result.enPath), result.html)) written += 1;
-  routePairs.push({ tr: result.trPath, en: result.enPath });
+  // Tek tek çiftler rota haritasına yazılmaz: hreflang enjeksiyonu aksi
+  // hâlde binlerce Türkçe kıyas sayfasına dokunur. Dil kutusu sayfanın
+  // kendi altHref'inden gider. Dizin ve seçici ayrı kaydolur.
   if (result.indexable) {
     sitemapEntries.push(`  <url>\n    <loc>${result.canonical}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.5</priority>\n  </url>`);
   } else {
@@ -567,13 +605,97 @@ for (const file of fs.readdirSync(OUT_DIR)) {
   removed += 1;
 }
 
+function pickerHtml() {
+  const canonical = `${DOMAIN}/${PICKER_PATH}`;
+  const title = "Compare Players | FutbolRadar";
+  const description = "Compare two footballers side by side on rating, goal threat, creativity, pressing and radar profile.";
+  return `<!doctype html>
+<html lang="${htmlLang(LOCALE)}">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>${escapeHtml(title)}</title>
+    <meta name="description" content="${escapeHtml(description)}" />
+    <link rel="canonical" href="${canonical}" />
+    <link rel="alternate" hreflang="en" href="${canonical}" />
+    <link rel="alternate" hreflang="tr-TR" href="${DOMAIN}/oyuncu-karsilastir.html" />
+    <link rel="alternate" hreflang="x-default" href="${DOMAIN}/oyuncu-karsilastir.html" />
+    <meta name="robots" content="${ROBOTS_NOINDEX_FOLLOW}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="${ogLocale(LOCALE)}" />
+    <meta property="og:site_name" content="FutbolRadar" />
+    <meta property="og:title" content="${escapeHtml(title)}" />
+    <meta property="og:description" content="${escapeHtml(description)}" />
+    <meta property="og:url" content="${canonical}" />
+    <meta property="og:image" content="${DOMAIN}/assets/og-image.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="../site.webmanifest" />
+    <link rel="stylesheet" href="../page.css" />
+  </head>
+  <body class="subpage">
+    ${siteHeader({ base: "../", locale: LOCALE, altHref: "oyuncu-karsilastir.html" })}
+    <main class="container">
+      <section class="hero">
+        <div class="hero-row">
+          <div>
+            <span class="eyebrow">Player comparison</span>
+            <h1>Compare players</h1>
+            <p class="lead">${escapeHtml(description)}</p>
+          </div>
+          <span class="hero-meta">Radar comparison</span>
+        </div>
+      </section>
+      <section class="compare-toolbar" aria-label="Player comparison choices">
+        <div class="filter-group">
+          <label for="compare-player-one">Player 1</label>
+          <select id="compare-player-one" data-compare-player></select>
+        </div>
+        <div class="filter-group">
+          <label for="compare-player-two">Player 2</label>
+          <select id="compare-player-two" data-compare-player></select>
+        </div>
+        <div class="filter-group">
+          <label for="compare-player-three">Player 3</label>
+          <select id="compare-player-three" data-compare-player></select>
+        </div>
+        <a class="detail-link" href="./player-radar.html">Back to player radar</a>
+        <a class="detail-link ghost" href="./player-comparisons.html">Ready comparisons</a>
+      </section>
+      <section class="compare-presets" data-compare-presets aria-label="Ready player comparisons">
+        <article class="data-empty compact">
+          <strong>Loading ready comparisons</strong>
+          <span>Goal threat, creativity, pressing and young-talent matches are prepared from the player data.</span>
+        </article>
+      </section>
+      <section class="compare-grid" data-api-target="player-compare">
+        <article class="data-empty" data-card="empty-state">
+          <strong>Loading comparison</strong>
+          <span>Player radars are compared on form, role and performance.</span>
+        </article>
+      </section>
+      <section class="source-strip" aria-label="Model information">
+        <div><span>Last update</span><b>Loading…</b></div>
+        <div><span>Data source</span><b>FutbolRadar player data layer</b></div>
+        <div><span>Model coverage</span><b>Rating, goal threat, creativity, pressing and radar profile</b></div>
+      </section>
+    </main>
+    ${siteFooter({ base: "../", locale: LOCALE })}
+    <script src="../site.js" defer></script>
+    <script src="../app.js" defer></script>
+  </body>
+</html>
+`;
+}
+
 if (pairs.length) {
   writeIfChanged(path.join(root, INDEX_PATH), indexHtml(pairs));
-  if (pageExists(TR_INDEX_PATH)) routePairs.push({ tr: TR_INDEX_PATH, en: INDEX_PATH });
+  writeIfChanged(path.join(root, PICKER_PATH), pickerHtml());
   sitemapEntries.push(`  <url>\n    <loc>${DOMAIN}/${INDEX_PATH}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.6</priority>\n  </url>`);
 }
 
-const registered = writeDynamicRoutePairs("comparison", routePairs);
+// Boş çağrı bütün rota dosyasını yeniden sıralardı. Çift yoksa dosyaya dokunma.
+const registered = routePairs.length ? writeDynamicRoutePairs("comparison", routePairs) : 0;
 
 /*
  * İNGİLİZCE OYUNCU PROFİLİ İNGİLİZCE KIYAS SAYFASINA BAĞLANIR.
@@ -591,8 +713,9 @@ if (fs.existsSync(profileDir)) {
     if (!file.endsWith(".html")) continue;
     const target = path.join(profileDir, file);
     const html = fs.readFileSync(target, "utf8");
-    const next = html.replace(/href="\.\.\/\.\.\/karsilastirma\/([^"\/]+?)\.html"/g, (match, slug) =>
+    let next = html.replace(/href="\.\.\/\.\.\/karsilastirma\/([^"\/]+?)\.html"/g, (match, slug) =>
       (expected.has(`${slug}.html`) ? `href="../compare/${slug}.html"` : match));
+    next = next.replace(/href="(?:\.\.\/)+oyuncu-karsilastir\.html([^"]*)"/g, (_match, query) => `href="../player-compare.html${query}"`);
     if (next !== html) {
       fs.writeFileSync(target, next, "utf8");
       relinkedProfiles += 1;
