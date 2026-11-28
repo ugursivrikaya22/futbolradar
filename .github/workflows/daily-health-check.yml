@@ -1,7 +1,13 @@
 name: FutbolRadar Daily Health Check
 on:
   schedule:
-    - cron: '47 * * * *'
+    # GÜNDE BİR (24.11.2026). Önceden saatlikti (`47 * * * *`) ve 2.000
+    # dakikalık aylık Actions kotasının görünür bir payını yiyordu; kota
+    # 9 Kasım'da bitince bütün işler runner alamadan düşmeye başladı.
+    # Saatlik canlılık izi Vercel'deki /api/cron/health (aynı 47. dakika,
+    # vercel.json) ile zaten tutuluyor; bu iş günlük özet ve bildirim için.
+    # 07:47 UTC = 10:47 TSİ, saat başı kuyruğundan uzak.
+    - cron: '47 7 * * *'
   workflow_dispatch: {}
 permissions:
   contents: read
