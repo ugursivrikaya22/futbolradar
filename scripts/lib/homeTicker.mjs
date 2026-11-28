@@ -18,6 +18,7 @@
  * içindeki bağlantılar sekme sırasından çıkarılır.
  */
 import { createRequire } from "node:module";
+import { englishTickerItem } from "./tickerEnglish.mjs";
 
 const require = createRequire(import.meta.url);
 const { CATEGORIES } = require("../../services/homeTicker.js");
@@ -87,13 +88,11 @@ function itemHtml(item, { base, hidden, locale }) {
   const href = internalHref(item.url, base) || fallback;
   const breaking = item.breaking === true;
   const label = categoryLabel(item, locale);
-  // Item body stays in the source language. English pages use English chrome
-  // (title, tags, pause) and mark the sourced sentence with data-source-lang
-  // rather than lang="tr" (that attribute is reserved for the language switch).
-  const langAttr = locale === "en" ? ' data-original-language="tr"' : "";
+  // İngilizce bantta cümle englishTickerItem ile çevrilmiş olarak gelir.
+  // lang="tr" dil değiştiriciye ayrılmıştır; çevrilmiş cümleye basılmaz.
   const text = href
-    ? `<a class="home-ticker__link" href="${escapeHtml(href)}"${tab}${langAttr}>${escapeHtml(item.text)}</a>`
-    : `<span class="home-ticker__text"${langAttr}>${escapeHtml(item.text)}</span>`;
+    ? `<a class="home-ticker__link" href="${escapeHtml(href)}"${tab}>${escapeHtml(item.text)}</a>`
+    : `<span class="home-ticker__text">${escapeHtml(item.text)}</span>`;
   const source = `<a class="home-ticker__source" href="${escapeHtml(item.sourceUrl)}" target="_blank" rel="nofollow noopener noreferrer"${tab} aria-label="${escapeHtml(words.sourceAria)}: ${escapeHtml(item.sourceName)}">${escapeHtml(item.sourceName)}</a>`;
   const expires = item.expiresAt ? ` data-expires="${escapeHtml(item.expiresAt)}"` : "";
   const cls = breaking ? "home-ticker__item home-ticker__item--breaking"
@@ -110,10 +109,13 @@ export function tickerDurationSeconds(items) {
 }
 
 export function renderHomeTicker(items, options = {}) {
-  const list = Array.isArray(items) ? items : [];
-  if (!list.length) return "";
   const base = options.base || "./";
   const locale = options.locale === "en" ? "en" : "tr";
+  const source = Array.isArray(items) ? items : [];
+  const list = locale === "en"
+    ? source.map((item) => englishTickerItem(item)).filter(Boolean)
+    : source;
+  if (!list.length) return "";
   const words = copyFor(locale);
   const group = (hidden) => `<ul class="home-ticker__group"${hidden ? ' aria-hidden="true"' : ""}>${list.map((item) => itemHtml(item, { base, hidden, locale })).join("")}</ul>`;
   const localeAttr = locale === "en" ? ' data-home-ticker-locale="en"' : "";

@@ -152,8 +152,8 @@ const EN_ROUTES = {
   },
   matchReportHref: () => null,
   newsHref: (slug) => (slug && newsSlugs.has(slug) ? `en/news/${slug}.html` : null),
-  comparisonHref: (slug) => `karsilastirma/${slug}.html`,
-  comparePickerHref: (playerId) => `oyuncu-karsilastir.html?player=${encodeURIComponent(playerId)}`,
+  comparisonHref: (slug) => `en/compare/${slug}.html`,
+  comparePickerHref: (playerId) => `en/player-compare.html?player=${encodeURIComponent(playerId)}`,
   topScorers: "en/top-scorers.html",
   topAssists: "en/top-assists.html",
   matchCentre: "en/match-centre.html",
@@ -263,7 +263,7 @@ function pageHtml(player) {
   // Static pairs are generated only for canonical records. A verified alias
   // can still own the public profile when its canonical record is unverified;
   // use the existing picker (which resolves IDs) instead of inventing a URL.
-  const pickerFor = (peer) => `${BASE}oyuncu-karsilastir.html?p1=${encodeURIComponent(player.id)}&p2=${encodeURIComponent(peer.id)}`;
+  const pickerFor = (peer) => `${BASE}en/player-compare.html?p1=${encodeURIComponent(player.id)}&p2=${encodeURIComponent(peer.id)}`;
   if (player.isDuplicate) {
     model.compare.peers = model.compare.peers.map(peer => ({ ...peer, href: pickerFor(peer) }));
   } else {
@@ -430,7 +430,7 @@ const retainedPages = retainedEnglishPages(fs.readdirSync(OUT_DIR), expectedFile
 for (const file of retainedPages) {
   const target = path.join(OUT_DIR, file);
   const html = fs.readFileSync(target, "utf8");
-  const stripped = rewriteUnbuiltComparisonLinks(stripHreflangAlternates(html), builtComparisonSlugs, `${BASE}oyuncu-karsilastir.html`);
+  const stripped = rewriteUnbuiltComparisonLinks(stripHreflangAlternates(html), builtComparisonSlugs, `${BASE}en/player-compare.html`);
   if (stripped !== html) fs.writeFileSync(target, stripped, "utf8");
 }
 const retainedLocs = new Set(retainedPages.map((file) => `${DOMAIN}/en/player/${file.slice(0, -5)}`));

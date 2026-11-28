@@ -20,6 +20,8 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { renderHomeTicker, tickerDurationSeconds } from "./lib/homeTicker.mjs";
+import { englishTickerText, translateTickerText } from "./lib/tickerEnglish.mjs";
+import { findTurkish } from "./lib/turkish-detector.mjs";
 
 const require = createRequire(import.meta.url);
 const root = process.cwd();
@@ -147,15 +149,24 @@ assert.ok(errs({ expiresAt: "2026-10-01T00:00:00+03:00" }).some((m) => /önce/.t
 // ── 6. İngilizce ana sayfa kromu ─────────────────────────────────────────────
 {
   const en = renderHomeTicker([
-    { ...base, category: "iddia", text: "Örnek iddia metni", expiresAt: "2026-10-30T00:00:00+03:00" }
+    {
+      ...base,
+      category: "iddia",
+      text: "Sözcü'nün iddiasına göre örnek transfer",
+      en: { text: "Sözcü claims an example transfer" },
+      expiresAt: "2026-10-30T00:00:00+03:00"
+    }
   ], { base: "../", locale: "en" });
   assert.ok(en.includes("Transfer Radar"), "EN başlık Transfer Radar olmalı");
   assert.ok(!en.includes("Transfer Radarı"), "EN başlıkta Türkçe Radarı olmamalı");
   assert.ok(en.includes("Rumour"), "iddia kategorisi EN'de Rumour olmalı");
   assert.ok(!en.includes(">İddia<") && !en.includes(">Durdur<"), "EN kromunda İddia/Durdur olmamalı");
   assert.ok(en.includes('data-home-ticker-locale="en"'), "EN locale damgası olmalı");
-  assert.ok(en.includes('data-original-language="tr"'), "kaynak cümle data-source-lang ile işaretlenmeli");
+  assert.ok(en.includes("Sözcü claims an example transfer"), "EN bant en.text ile İngilizce cümle basmalı");
+  assert.ok(!en.includes("data-original-language"), "çevrilmiş cümle kaynak diliyle işaretlenmemeli");
+  assert.ok(!en.includes("iddiaya göre"), "EN bantta Türkçe iddia kalıbı kalmamalı");
   assert.ok(en.includes(">Pause<"), "EN durdur düğmesi Pause olmalı");
+  assert.equal(findTurkish(en, { limit: 3 }).length, 0, "EN bant işaretlemesinde Türkçe işlev sözcüğü olmamalı");
   const enIndex = fs.existsSync(path.join(root, "en/index.html")) ? fs.readFileSync(path.join(root, "en/index.html"), "utf8") : "";
   if (enIndex) {
     const sonDakika = enIndex.indexOf("<!-- shared-layout:ticker:end -->");
@@ -164,6 +175,26 @@ assert.ok(errs({ expiresAt: "2026-10-01T00:00:00+03:00" }).some((m) => /önce/.t
     const main = enIndex.indexOf("<main");
     assert.ok(sonDakika > -1 && radar > sonDakika && radar < live && radar < main, "EN Transfer Radar bandı Headlines altında olmalı");
   }
+}
+
+// ── 7. İngilizce cümle: sadık, adlar ve sayılar durur, sonraki öğe de çevrilir ─
+{
+  const stored = readTickerFile(path.join(root, "data", "ticker.json"));
+  for (const item of stored) {
+    const english = englishTickerText(item);
+    assert.ok(english, `${item.id}: İngilizce metin üretilmeli`);
+    assert.equal(findTurkish(english, { limit: 3 }).length, 0, `${item.id}: İngilizce metinde Türkçe işlev sözcüğü var`);
+    const numbers = String(item.text).match(/\d+/g) || [];
+    for (const number of numbers) {
+      assert.ok(english.includes(number), `${item.id}: sayı korunmalı (${number})`);
+    }
+  }
+  const future = "Fanatik'in iddiasına göre Galatasaray, ocakta yeni bir stoper için teklif yapmayı planlıyor";
+  const translated = translateTickerText(future);
+  assert.equal(findTurkish(translated, { limit: 3 }).length, 0, "en.text'siz yeni söylenti kalıp çevirisinden geçmeli");
+  assert.ok(translated.includes("Fanatik") && translated.includes("Galatasaray") && translated.includes("plans to make a bid"), "yeni söylenti kaynak, kulüp ve fiili korumalı");
+  const bare = englishTickerText({ text: "Bu cümle çevrilemez çünkü özel bir kalıp değil ve içinde için var" });
+  assert.equal(bare, "", "çevrilemeyen cümle İngilizce banda girmez");
 }
 
 console.log("test-home-ticker: ok");
