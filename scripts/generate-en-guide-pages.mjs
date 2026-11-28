@@ -76,11 +76,26 @@ export function structureProblems(tr, en) {
     same(`bölüm ${i + 1} paragraf sayısı`, (section.paragraphs || []).length, (other.paragraphs || []).length);
     if (!String(other.heading || "").trim()) problems.push(`bölüm ${i + 1} başlığı boş`);
     // İç bağlantı sayısı paragraf başına aynı kalmalı.
+    const count = (text) => (String(text || "").match(/\]\(/g) || []).length;
     (section.paragraphs || []).forEach((paragraph, j) => {
-      const count = (text) => (String(text || "").match(/\]\(/g) || []).length;
       same(`bölüm ${i + 1} paragraf ${j + 1} bağlantı sayısı`, count(paragraph), count((other.paragraphs || [])[j]));
     });
+    // Liste ve tablo sonrası paragraflar da birebir eşleşir (madde sayısı, bağlantı sayısı).
+    same(`bölüm ${i + 1} liste uzunluğu`, (section.list || []).length, (other.list || []).length);
+    (section.list || []).forEach((item, j) => {
+      same(`bölüm ${i + 1} liste ${j + 1} bağlantı sayısı`, count(item), count((other.list || [])[j]));
+    });
+    same(`bölüm ${i + 1} ek paragraf sayısı`, (section.afterParagraphs || []).length, (other.afterParagraphs || []).length);
+    (section.afterParagraphs || []).forEach((paragraph, j) => {
+      same(`bölüm ${i + 1} ek paragraf ${j + 1} bağlantı sayısı`, count(paragraph), count((other.afterParagraphs || [])[j]));
+    });
   });
+  if (tr.standings) {
+    const zones = (tr.standings.zones || []).length;
+    const labels = ((en.standings && en.standings.zoneLabels) || []).length;
+    same("puan tablosu bölge etiketi sayısı", zones, labels);
+    if (!String((en.standings && en.standings.caption) || "").trim()) problems.push("puan tablosu başlığı boş");
+  }
 
   same("SSS sayısı", (tr.faq || []).length, (en.faq || []).length);
   same("kaynak sayısı", (tr.sources || []).length, (en.sources || []).length);
@@ -118,7 +133,22 @@ export function buildEnglishGuide(tr, en) {
       statement: en.claims[i].statement,
       sourceName: en.claims[i].sourceName
     })),
-    sections: en.sections,
+    // Liste türü ve canlı tablo yeri Türkçe kayıttan; metin İngilizce kayıttan.
+    sections: en.sections.map((section, i) => ({
+      ...section,
+      ordered: Boolean(tr.sections[i] && tr.sections[i].ordered),
+      widget: (tr.sections[i] && tr.sections[i].widget) || null
+    })),
+    standings: tr.standings && tr.standings.snapshot
+      ? {
+          caption: en.standings.caption,
+          asOf: tr.standings.snapshot.asOf,
+          highlight: tr.standings.highlight || [],
+          sourceLabel: tr.standings.sourceLabel || "API-Football",
+          zones: (tr.standings.zones || []).map((zone, i) => ({ ...zone, label: en.standings.zoneLabels[i] })),
+          rows: tr.standings.snapshot.rows || []
+        }
+      : null,
     faq: en.faq,
     internalLinks: en.internalLinks || [],
     sources: (tr.sources || []).map((source, i) => ({ url: source.url, name: en.sources[i].name }))
@@ -255,9 +285,34 @@ export function guideHtml(page, isAvailable = () => true, warn = () => {}) {
       </section>`;
   }
 
+  // İngilizce sayfa tabloyu Türkçe kayıttaki doğrulanmış anlık görüntüden
+  // basar (tarihiyle); canlı tazeleme yalnızca Türkçe sayfada.
+  const standingsTable = () => {
+    const table = page.standings;
+    if (!table || !table.rows.length) return "";
+    const highlight = new Set(table.highlight);
+    const zoneFor = (rank) => table.zones.find((zone) => rank >= zone.from && rank <= zone.to);
+    const body = table.rows.slice().sort((a, b) => Number(a.rank) - Number(b.rank)).map((row) => {
+      const zone = zoneFor(Number(row.rank));
+      const gd = Number(row.goalDifference);
+      const name = highlight.has(row.team) ? `<strong>${escapeHtml(row.team)}</strong>` : escapeHtml(row.team);
+      return `<tr><td>${escapeHtml(row.rank)}</td><th scope="row">${name}</th><td>${Number.isFinite(gd) ? `${gd > 0 ? "+" : ""}${gd}` : "-"}</td><td><strong>${escapeHtml(row.points)}</strong></td><td>${zone ? `<span class="${escapeHtml(zone.tag || "tag")}">${escapeHtml(zone.label)}</span>` : "-"}</td></tr>`;
+    }).join("");
+    return `<div class="evergreen-table-wrap" style="width:0;min-width:100%"><table class="evergreen-table"><caption>${escapeHtml(table.caption)}</caption><thead><tr><th scope="col">Pos</th><th scope="col">Team</th><th scope="col">GD</th><th scope="col">Pts</th><th scope="col">Status</th></tr></thead><tbody>${body}</tbody></table></div>
+          <p class="muted-copy">Source: ${escapeHtml(table.sourceLabel)} · As of <time datetime="${escapeHtml(table.asOf)}">${escapeHtml(formatStamp(table.asOf))}</time></p>`;
+  };
+  const sectionExtras = (section) => {
+    let html = "";
+    if (Array.isArray(section.list) && section.list.length) {
+      const tag = section.ordered ? "ol" : "ul";
+      html += `\n          <${tag}>${section.list.map((item) => `<li>${renderRichText(item)}</li>`).join("")}</${tag}>`;
+    }
+    if (section.widget === "standings") html += `\n          ${standingsTable()}`;
+    return html + (section.afterParagraphs || []).map((paragraph) => `\n          <p>${renderRichText(paragraph)}</p>`).join("");
+  };
   const sections = page.sections.map((section) => `<section>
           <h2>${escapeHtml(section.heading)}</h2>
-          ${section.paragraphs.map((paragraph) => `<p>${renderRichText(paragraph)}</p>`).join("\n          ")}
+          ${section.paragraphs.map((paragraph) => `<p>${renderRichText(paragraph)}</p>`).join("\n          ")}${sectionExtras(section)}
         </section>`).join("\n        ");
 
   const faq = page.faq.length
