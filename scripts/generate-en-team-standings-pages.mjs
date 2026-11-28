@@ -21,6 +21,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
+import { standingsFreshness, standingsUpdatedHtml } from "./lib/standingsFreshness.mjs";
 import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
 import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
 import { findTurkish } from "./lib/turkish-detector.mjs";
@@ -168,7 +169,8 @@ function buildPage(team, sorted, total, indexableIds) {
         name: title,
         isPartOf: { "@type": "WebSite", name: "FutbolRadar", url: `${DOMAIN}/en/` },
         inLanguage: "en",
-        description
+        description,
+        ...((standingsFreshness(sorted) || {}).iso ? { dateModified: standingsFreshness(sorted).iso } : {})
       },
       {
         "@type": "BreadcrumbList",
@@ -220,6 +222,7 @@ function buildPage(team, sorted, total, indexableIds) {
           <h1>${escapeHtml(row.name)} Standings</h1>
           <p>${escapeHtml(intro)}</p>
           <p class="muted">The table shows all ${total} clubs with the ${escapeHtml(row.name)} row highlighted. It is rebuilt from the verified standings record on every site update.</p>
+          ${standingsUpdatedHtml(sorted, "en")}
         </div>
       </section>
       <section class="data-panel team-standings-panel" id="team-standings-page">

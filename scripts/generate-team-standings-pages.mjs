@@ -22,6 +22,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
+import { standingsFreshness, standingsUpdatedHtml } from "./lib/standingsFreshness.mjs";
 import { createRequire } from "node:module";
 import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
 import { columnsForTeams, teamMatchPages } from "./lib/clusterLinks.mjs";
@@ -167,7 +168,7 @@ function relatedStandingsLinks(team) {
   return `<div class="trend-link-grid">${links.map((link) => `<a href="${escapeHtml(link.href)}"><span>${escapeHtml(link.kicker)}</span><strong>${escapeHtml(link.title)}</strong><p>${escapeHtml(link.text)}</p></a>`).join("")}</div>`;
 }
 
-function pageSchema(team, url, title, description, faq) {
+function pageSchema(team, url, title, description, faq, modified) {
   const faqNode = faqSchemaNode(faq);
   return {
     "@context": "https://schema.org",
@@ -180,6 +181,8 @@ function pageSchema(team, url, title, description, faq) {
         isPartOf: { "@type": "WebSite", name: "FutbolRadar", url: `${DOMAIN}/` },
         inLanguage: "tr-TR",
         description,
+        // Verinin kendi tarihi (derleme anı değil); veri tarihi yoksa alan yok.
+        ...(modified ? { dateModified: modified } : {}),
         about: { "@id": `${url}#team` }
       },
       sportsTeamNode(richSources, { name: team.name, providerId: team.providerId, url: `${DOMAIN}/takimlar/${team.slug}`, id: `${url}#team` }),
@@ -245,7 +248,7 @@ function buildPage(team, sorted, total) {
     <meta name="twitter:title" content="${escapeHtml(title)}" />
     <meta name="twitter:description" content="${escapeHtml(description)}" />
     <meta name="twitter:image" content="${DOMAIN}/assets/og-image.png" />
-    <script type="application/ld+json">${JSON.stringify(pageSchema(team, url, title, description, faq))}</script>
+    <script type="application/ld+json">${JSON.stringify(pageSchema(team, url, title, description, faq, (standingsFreshness(sorted) || {}).iso))}</script>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="./site.webmanifest" />
     <link rel="stylesheet" href="./page.css" />
@@ -260,6 +263,7 @@ function buildPage(team, sorted, total) {
           <h1>${escapeHtml(team.name)} Puan Durumu</h1>
           <p>${escapeHtml(intro)}</p>
           <p class="muted">Tablo tüm 18 takımı gösterir; ${escapeHtml(team.name)} satırı vurgulanmıştır. Sonuçlar geldikçe otomatik güncellenir.</p>
+          ${standingsUpdatedHtml(sorted, "tr")}
         </div>
       </section>
       ${rankAnswerSection(fullTeam, sorted)}
