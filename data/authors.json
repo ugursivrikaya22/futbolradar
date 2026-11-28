@@ -1,0 +1,12 @@
+{
+  "_comment": "YAZAR KAYDI. Köşe yazısı yazarı buradan çözülür (services/authorService.js): yazının `authorId` alanı ya da `author` adı bir kayda uyar. type 'Person' ise ad, bio (en az 40 karakter) ve slug ZORUNLUDUR; biyografisiz kişi yazar yayımlanmaz. Yalnızca GERÇEK kişiler eklenir. sameAs: kişinin kendi profil bağlantıları (https). Yeni yazar için örnek: { \"id\": \"ad-soyad\", \"type\": \"Person\", \"name\": \"Ad Soyad\", \"slug\": \"ad-soyad\", \"jobTitle\": \"Spor yazarı\", \"bio\": \"...\", \"sameAs\": [\"https://...\"] }",
+  "authors": [
+    {
+      "id": "futbolradar",
+      "type": "Organization",
+      "name": "FutbolRadar",
+      "slug": "futbolradar",
+      "bio": "FutbolRadar, Süper Lig ve Avrupa futbolunu maç verisi, puan durumu ve analizle izleyen bir futbol takip sitesidir. Köşe yazıları Radar Yorumu bölümünde, haber ve maç verisinden ayrı olarak yayımlanır."
+    }
+  ]
+}

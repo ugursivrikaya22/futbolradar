@@ -21,6 +21,16 @@ import { NAV_PRIMARY, NAV_SECONDARY } from "./lib/layout.mjs";
 import { authorPageHtml, columnCard, columnPageHtml, groupAuthors } from "./generate-column-pages.mjs";
 
 const root = process.cwd();
+
+// Bu dosyadaki sentetik yazılar "Yazar Adı" yazarını kullanıyor. Kişi yazar
+// kayıtlı ve biyografili olmadan yayımlanmaz (services/authorService.js);
+// gerçek data/authors.json'a sahte kişi eklememek için test kendi kaydını kullanır.
+const testAuthorsFile = path.join(fs.mkdtempSync(path.join(process.env.TMPDIR || "/tmp", "fr-authors-")), "authors.json");
+fs.writeFileSync(testAuthorsFile, JSON.stringify({ authors: [
+  { id: "futbolradar", type: "Organization", name: "FutbolRadar", slug: "futbolradar", bio: "Test kurumu." },
+  { id: "yazar-adi", type: "Person", name: "Yazar Adı", slug: "yazar-adi", bio: "Yalnızca testte kullanılan, gerçek olmayan örnek yazar kaydı." }
+] }));
+process.env.FUTBOLRADAR_AUTHORS_FILE = testAuthorsFile;
 const require = createRequire(import.meta.url);
 
 const {

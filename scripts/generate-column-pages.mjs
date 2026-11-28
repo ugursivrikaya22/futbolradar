@@ -274,6 +274,7 @@ export function groupAuthors(columns) {
       authors.set(column.authorPath, {
         name: column.author,
         path: column.authorPath,
+        profile: column.authorProfile || null,
         columns: [],
         nameCounts: new Map()
       });
@@ -325,6 +326,34 @@ const PAGE_STRINGS = {
 
 function schemaAuthorType(name) {
   return String(name || "").trim().toLocaleLowerCase("tr") === "futbolradar" ? "Organization" : "Person";
+}
+
+/**
+ * schema.org yazar düğümü (Article `author` ve ProfilePage `mainEntity`).
+ * Kayıtlı profil varsa (data/authors.json) ad, sayfa adresi, unvan, kısa
+ * biyografi ve kişinin kendi profil bağlantıları (`sameAs`) eklenir; alanı
+ * boş olan hiç basılmaz. Profil yoksa eski davranış: ad + sayfa adresi.
+ */
+function authorSchemaNode(profile, fallbackName, fallbackPath) {
+  const name = (profile && profile.name) || fallbackName;
+  const pagePath = (profile && profile.path) || fallbackPath;
+  const node = {
+    "@type": profile ? profile.type : schemaAuthorType(name),
+    name,
+    url: `${DOMAIN}/${pagePath}`
+  };
+  if (profile && profile.jobTitle && profile.type === "Person") node.jobTitle = profile.jobTitle;
+  if (profile && profile.bio) node.description = profile.bio;
+  if (profile && profile.sameAs && profile.sameAs.length) node.sameAs = profile.sameAs;
+  return node;
+}
+
+/** Yazı sonundaki yazar kutusu: ad (yazar sayfasına bağlı) + kısa biyografi. */
+function authorBoxHtml(column, base, locale) {
+  const profile = column.authorProfile;
+  if (!profile || !profile.bio || locale === "en") return "";
+  const role = profile.jobTitle ? `<span class="column-author-box-role">${escapeHtml(profile.jobTitle)}</span>` : "";
+  return `<aside class="column-author-box" aria-label="Yazar hakkında"><span class="column-author-box-label">Yazar</span><a class="column-author-box-name" href="${base}${escapeHtml(profile.path)}">${escapeHtml(profile.name)}</a>${role}<p>${escapeHtml(profile.bio)}</p></aside>`;
 }
 
 /** Tek yazı sayfası. */
@@ -503,7 +532,7 @@ export function columnPageHtml(column, locale = "tr") {
     // tazelik sinyalini yalanlar. Tarihli bir güncelleme notu varsa
     // değişiklik tarihi en yeni notun tarihidir.
     dateModified: column.updates.length ? column.updates[0].date : column.date,
-    author: { "@type": schemaAuthorType(column.author), name: column.author, url: `${DOMAIN}/${column.authorPath}` },
+    author: authorSchemaNode(column.authorProfile, column.author, column.authorPath),
     publisher: publisherNode(),
     articleSection: column.categoryLabel,
     keywords: (column.keywords && column.keywords.length ? column.keywords : column.tags).join(", "),
@@ -592,6 +621,8 @@ export function columnPageHtml(column, locale = "tr") {
 
         ${sourcesHtml}
 
+        ${authorBoxHtml(column, base, locale)}
+
         ${clusterLinksHtml(column, locale, base)}
 
         ${column.tags.length ? `<div class="column-tags">${column.tags.map((tag) => `<span class="column-tag">${escapeHtml(tag)}</span>`).join("")}</div>` : ""}
@@ -612,19 +643,21 @@ export function columnPageHtml(column, locale = "tr") {
 export function authorPageHtml(author) {
   const base = "../";
   const url = `${DOMAIN}/${author.path}`;
-  const description = `${author.name} tarafından FutbolRadar'da yayımlanan köşe yazıları, futbol yorumları ve analizler.`;
+  const profile = author.profile && author.profile.registered ? author.profile : null;
+  const description = profile && profile.bio
+    ? `${profile.bio} ${author.name} tarafından FutbolRadar'da yayımlanan köşe yazıları.`
+    : `${author.name} tarafından FutbolRadar'da yayımlanan köşe yazıları, futbol yorumları ve analizler.`;
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "ProfilePage",
     url,
     name: `${author.name} Yazıları`,
     inLanguage: "tr-TR",
-    mainEntity: {
-      "@type": schemaAuthorType(author.name),
-      name: author.name,
-      url
-    }
+    mainEntity: authorSchemaNode(profile, author.name, author.path)
   };
+  const bioHtml = profile && profile.bio
+    ? `<p class="column-author-bio">${escapeHtml(profile.bio)}</p>${profile.jobTitle ? `<span class="column-author-role">${escapeHtml(profile.jobTitle)}</span>` : ""}${profile.sameAs.length ? `<ul class="column-author-links">${profile.sameAs.map((link) => `<li><a href="${escapeHtml(link)}" rel="me noopener noreferrer" target="_blank">${escapeHtml(link.replace(/^https:\/\/(?:www\.)?/, ""))}</a></li>`).join("")}</ul>` : ""}`
+    : "";
 
   return `<!doctype html>
 <html lang="tr">
@@ -660,7 +693,7 @@ export function authorPageHtml(author) {
       <header class="hero column-author-hero">
         <span class="eyebrow">Yazar</span>
         <h1>${escapeHtml(author.name)} Yazıları</h1>
-        <p>${escapeHtml(description)}</p>
+        ${bioHtml || `<p>${escapeHtml(description)}</p>`}
         <span class="column-author-summary">${author.columns.length} yayımlanmış yazı</span>
       </header>
 
