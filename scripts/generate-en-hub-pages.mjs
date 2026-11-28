@@ -9,8 +9,10 @@
  *      form-tablosu/super-lig.html      → en/super-lig-form-table.html
  *      <kulüp>-form-durumu.html         → en/<kulüp>-form.html
  *      <kulüp>-oyuncu-radari.html       → en/<kulüp>-player-radar.html
- *      Kaynak: `data/teams.json` (sıra, puan, son sonuçlar, form ve momentum
- *      skoru) ve hesaplanmış oyuncu puanları (`data/player-ratings.json`).
+ *      Kaynak: `data/teams.json` (sıra, puan, son 5 lig sonucu) ve o sonuçtan
+ *      hesaplanan form skoru / momentum (services/trendTeams.js; dosyadaki
+ *      sezon öncesi sayılar kullanılmaz). Oyuncu puanları
+ *      `data/player-ratings.json` dosyasından gelir.
  *      uefa-ulke-puani-siralamasi.html  → en/uefa-country-ranking.html
  *      Kaynak: `data/uefa-country-coefficients.json` (UEFA; ülke adları
  *      kayıtta zaten İngilizce).
@@ -47,6 +49,7 @@ const { annotateDuplicates } = require("../services/duplicatePlayerService.js");
 const { withStoredRatings } = require("../services/playerRatingService.js");
 const { categoryOf } = require("../services/playerRatingView.js");
 const { playerCurrentTeam } = require("../services/playerComparisonPairs.js");
+const { withLiveFormScores } = require("../services/trendTeams.js");
 const playerUrls = require("../services/playerUrl.js").createPlayerUrlResolver((() => {
   try {
     return JSON.parse(fs.readFileSync(path.join(root, "data", "player-url-slugs.json"), "utf8"));
@@ -85,6 +88,11 @@ function escapeHtml(value) {
 
 const exists = (relative) => fs.existsSync(path.join(root, relative));
 const cell = (value) => (value === null || value === undefined || value === "" ? "—" : escapeHtml(value));
+// 0 gerçek bir form skorudur (beş mağlubiyet). `|| -1` onu "skor yok" sayardı.
+const rankValue = (value) => {
+  const number = Number(value);
+  return Number.isFinite(number) ? number : -1;
+};
 const isClean = (value) => findTurkish(String(value || ""), { limit: 1 }).length === 0;
 const plural = (count, one, many) => `${count} ${Number(count) === 1 ? one : many}`;
 
@@ -96,7 +104,10 @@ function ordinal(value) {
   return `${n}${{ 1: "st", 2: "nd", 3: "rd" }[n % 10] || "th"}`;
 }
 
-const teams = readJson("data/teams.json", []).filter((team) => team.isCurrentSuperLigTeam !== false);
+const teams = withLiveFormScores(
+  readJson("data/teams.json", []).filter((team) => team.isCurrentSuperLigTeam !== false),
+  readJson("data/matches.json", [])
+);
 const CLUBS = superLigTeamPages({ root }).map(({ slug, id, name, record }) => {
   const display = (record && record.name) || name;
   return { slug, id, name: display, enSlug: teamSlug(display), row: teams.find((team) => team.id === id || sameClub(team.name, display)) || null };
@@ -183,7 +194,7 @@ function shell(page) {
 function formTablePage() {
   const rows = teams
     .filter((team) => results(team).length)
-    .sort((left, right) => (Number(right.formScore) || -1) - (Number(left.formScore) || -1) || (Number(right.momentum) || -1) - (Number(left.momentum) || -1) || Number(left.rank || 99) - Number(right.rank || 99));
+    .sort((left, right) => rankValue(right.formScore) - rankValue(left.formScore) || rankValue(right.momentum) - rankValue(left.momentum) || Number(left.rank || 99) - Number(right.rank || 99));
   const body = `<section class="data-panel">
         <h2 class="panel-title">Süper Lig form table</h2>
         <p class="muted-copy">Clubs with a calculated form score come first, ordered by that score; the rest follow in league order. The form score (0–10) and the momentum score (0–100) are FutbolRadar calculations and are shown only where they have been calculated.</p>

@@ -25,4 +25,24 @@ function liveTeamMomentum(teams, matches) {
   return computeLeagueMomentum(list, matches, list);
 }
 
-module.exports = { liveTeamMomentum };
+/**
+ * Sıralama sayfalarının okuduğu formScore / momentum alanları.
+ *
+ * Puan tablosu senkronu `form` dizisini (son 5 lig sonucu) günceller ama
+ * sezon öncesi formScore ve momentum sayılarını yerinde bırakıyordu.
+ * Samsunspor beş maçtır yenilmesine rağmen kayıtlı 71 momentum ve 7.5 form
+ * skoruyla İngilizce form sıralamasında 3. kalıyordu. Burada o iki alan,
+ * /api/momentum ile aynı hesaptan (son 5 sonuç) yeniden yazılır. Sonuç
+ * dizisinin kendisi değiştirilmez.
+ */
+function withLiveFormScores(teams, matches) {
+  const list = teamList(teams);
+  const byName = new Map(liveTeamMomentum(list, matches).map((row) => [row.team, row]));
+  return list.map((team) => {
+    const row = byName.get(team && team.name);
+    if (!row) return team;
+    return { ...team, formScore: row.formScore, momentum: row.momentum };
+  });
+}
+
+module.exports = { liveTeamMomentum, withLiveFormScores };

@@ -14,11 +14,16 @@ const { collapseDuplicates } = require("../services/duplicatePlayerService.js");
 const { superLigTeamPages, teamHubIndexable, standingsPageIndexable } = require("../services/superLigTeamPages.js");
 const { sameClub } = require("../services/superLigTeams.js");
 const { pageShareHtml } = require("../services/columnShare.js");
+const { withLiveFormScores } = require("../services/trendTeams.js");
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const siteUrl = "https://www.futbolradar.com";
 const socialImage = `${siteUrl}/assets/og-image.png`;
-const teams = JSON.parse(fs.readFileSync(path.join(root, "data", "teams.json"), "utf8"));
+const storedTeams = JSON.parse(fs.readFileSync(path.join(root, "data", "teams.json"), "utf8"));
+const storedMatches = JSON.parse(fs.readFileSync(path.join(root, "data", "matches.json"), "utf8"));
+// Form skoru ve momentum son 5 lig sonucundan hesaplanır. teams.json'daki
+// sezon öncesi sayılar (Samsunspor 7.5 / 71) sıralamaya girmez.
+const teams = withLiveFormScores(storedTeams, storedMatches);
 // Aynı oyuncunun kısa ("A. Batagov") ve uzun adlı kayıtları tek satıra iner.
 const players = collapseDuplicates(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8")));
 const richSources = loadTeamSources(root);
@@ -226,7 +231,7 @@ function formPage() {
     canonicalPath: "/form-tablosu/super-lig",
     h1: "Süper Lig Form Tablosu",
     kicker: "Takım Formu",
-    intro: "Takımlar kayıtlı form skoruna göre sıralanır. Sonuç dizisi ve momentum değerleri yalnızca veri kaynağında bulunan kayıtları yansıtır.",
+    intro: "Takımlar son 5 lig maçının sonucundan hesaplanan form skoruna göre sıralanır. Sonuç dizisi kayıtlı lig formudur; form skoru ve momentum bu diziden hesaplanır.",
     breadcrumbs,
     schema: { "@type": "CollectionPage", "@id": `${siteUrl}/form-tablosu/super-lig#page`, url: `${siteUrl}/form-tablosu/super-lig`, name: "Süper Lig Form Tablosu", description: "Süper Lig takımlarının form skoru, momentum ve son kayıtlı sonuçları.", inLanguage: "tr-TR", dateModified: dataDate },
     content: `<section class="evergreen-section" aria-labelledby="form-heading"><h2 id="form-heading">Takımların kayıtlı form sıralaması</h2>${table(["Sıra", "Takım", "Form skoru", "Momentum", "Son sonuçlar"], rows, "Süper Lig form tablosu")}</section>${relatedLinks("Form tablosundan devam edin", "../")}`

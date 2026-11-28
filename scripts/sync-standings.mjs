@@ -9,6 +9,7 @@ const apiFootballProvider = require("../services/providers/apiFootballProvider.j
 const { resolveSuperLigLeagueId } = require("../services/leagueResolver.js");
 const { normalizeText } = require("../services/matchRadarService.js");
 const { checkStandings } = require("../services/standingsIntegrity.js");
+const { computeTeamMomentum } = require("../services/momentumService.js");
 
 const root = process.cwd();
 const TEAMS_PATH = path.join(root, "data", "teams.json");
@@ -50,9 +51,23 @@ function standingFields(row, previous, nowIso, season) {
   return changed ? { ...next, lastStandingsSyncedAt: row.fetchedAt || nowIso } : null;
 }
 
+/**
+ * Form dizisi güncellenince form skoru ve momentum da aynı hesaptan
+ * yenilenir. Beş mağlubiyet, dosyada kalan sezon öncesi 71'i taşımaz.
+ * Formu olmayan takıma skor uydurulmaz (beş beraberlik doldurulmaz).
+ */
+function refreshComputedForm(team, matches) {
+  const form = Array.isArray(team && team.form) ? team.form.filter(Boolean) : [];
+  if (!form.length) return team;
+  const computed = computeTeamMomentum(team, matches || [], [team]);
+  if (team.formScore === computed.formScore && team.momentum === computed.momentum) return team;
+  return { ...team, formScore: computed.formScore, momentum: computed.momentum };
+}
+
 export function mergeStandings(teams, standings, options = {}) {
   const nowIso = options.nowIso || new Date().toISOString();
   const season = options.season || null;
+  const matches = options.matches || [];
   const byProviderId = new Map((standings || []).filter((row) => row.providerId).map((row) => [String(row.providerId), row]));
   const byName = new Map((standings || []).map((row) => [normalizeText(row.team || row.name), row]));
   let updated = 0;
@@ -60,12 +75,15 @@ export function mergeStandings(teams, standings, options = {}) {
 
   const merged = (teams || []).map((team) => {
     const row = (team.providerId && byProviderId.get(String(team.providerId))) || byName.get(normalizeText(team.name));
-    if (!row) return team;
-    matched += 1;
-    const fields = standingFields(row, team, nowIso, season);
-    if (!fields) return team;
-    updated += 1;
-    return { ...team, ...fields };
+    let next = team;
+    if (row) {
+      matched += 1;
+      const fields = standingFields(row, team, nowIso, season);
+      if (fields) next = { ...team, ...fields };
+    }
+    const scored = refreshComputedForm(next, matches);
+    if (scored !== next || next !== team) updated += 1;
+    return scored;
   });
 
   return { teams: merged, updated, matched };
@@ -92,9 +110,18 @@ export async function synchronizeStandings(options = {}) {
   }
 
   const config = provider.getConfig();
+  let matches = options.matches;
+  if (!matches) {
+    try {
+      matches = JSON.parse(fs.readFileSync(path.join(root, "data", "matches.json"), "utf8"));
+    } catch {
+      matches = [];
+    }
+  }
   const merged = mergeStandings(teams, standings, {
     nowIso: (options.now || new Date()).toISOString(),
-    season: seasonLabel(config.season)
+    season: seasonLabel(config.season),
+    matches
   });
 
   // ARİTMETİK KAPISI YAZMADAN ÖNCE.

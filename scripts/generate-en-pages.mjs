@@ -119,6 +119,7 @@ const { MATCH_LIST_INITIAL } = require("../services/matchListWindow.js");
 // Fikstür haftaları Türkçe yüzeyle AYNI servisten gelir: hafta sınırlarını
 // burada yeniden hesaplamak, iki dilde farklı bir fikstür göstermek olurdu.
 const { getFixtureWeeks } = require("../services/superLigFixtureService.js");
+const { withLiveFormScores } = require("../services/trendTeams.js");
 
 const root = process.cwd();
 const OUT_DIR = path.join(root, "en");
@@ -153,7 +154,9 @@ function label(key) {
 const calendar = readJson("fixture-calendar.json", { matches: [] });
 const calendarMatches = Array.isArray(calendar.matches) ? calendar.matches : [];
 const curatedMatches = readJson("matches.json", []);
-const teams = readJson("teams.json", []);
+// Form skoru ve momentum, teams.json'daki sezon öncesi sayılardan değil,
+// son 5 lig sonucundan hesaplanır (Türkçe ana sayfa ile aynı hesap).
+const teams = withLiveFormScores(readJson("teams.json", []), curatedMatches);
 const { isActiveStatsPlayer, filterActiveLeaderRows } = require("../services/playerStatsEligibility.js");
 const allPlayers = getPlayers(readJson("players.json", []));
 const players = allPlayers.filter(isActiveStatsPlayer);
