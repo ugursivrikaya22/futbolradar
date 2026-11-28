@@ -53,6 +53,7 @@ for (const file of [
   "tahmin-ligi.js",
   "prediction-league.css",
   "league-live.js",
+  "standings-live.js",
   "prematch-stats.js",
   "lineup-live.js",
   "match-center-plus.js",

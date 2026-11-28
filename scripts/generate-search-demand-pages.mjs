@@ -87,7 +87,7 @@ function jsonLd(page) {
       datePublished: page.publishedAt,
       dateModified: page.updatedAt,
       mainEntityOfPage: url,
-      author: { "@type": "Organization", name: "FutbolRadar" },
+      author: { "@type": "Organization", name: "FutbolRadar", url: `${domain}/yazarlar/futbolradar.html` },
       publisher: { "@type": "Organization", name: "FutbolRadar", logo: { "@type": "ImageObject", url: `${domain}/assets/og-image.png` } },
       citation: (page.sources || []).map((source) => source.url)
     },
@@ -196,6 +196,89 @@ function renderRichText(value) {
   return html;
 }
 
+/**
+ * CANLI PUAN TABLOSU BİLEŞENİ — bölümde `widget: "standings"` ile çağrılır.
+ *
+ * Sunucu tarafı tablo iki kaynaktan TAZE OLANI basar: plan kaydındaki
+ * doğrulanmış anlık görüntü (`page.standings.snapshot`) ya da
+ * data/league-standings.json (derlemede senkronlanmışsa). Tarayıcıda
+ * `standings-live.js` aynı tabloyu /api/standings (API-Football) ile
+ * tazeler; istek düşerse basılı tablo ve tarihi olduğu gibi kalır —
+ * uydurma satır yok, eksik tablo hiç basılmaz.
+ */
+function standingsSource(page) {
+  const config = page.standings || {};
+  const snapshot = config.snapshot || {};
+  const synced = readJson("data/league-standings.json", {})[config.competitionId] || {};
+  const syncedRows = Array.isArray(synced.table) ? synced.table : [];
+  const snapshotRows = Array.isArray(snapshot.rows) ? snapshot.rows : [];
+  const syncedTime = Date.parse(synced.updatedAt || "");
+  const snapshotTime = Date.parse(snapshot.asOf || "");
+  const expected = Number(config.teams) || 0;
+  const syncedUsable = syncedRows.length && (!expected || syncedRows.length === expected);
+  if (syncedUsable && (!snapshotRows.length || (Number.isFinite(syncedTime) && syncedTime > snapshotTime))) {
+    return { asOf: synced.updatedAt, rows: syncedRows.map((row) => ({ ...row, team: row.team || row.name })) };
+  }
+  return { asOf: snapshot.asOf || "", rows: snapshotRows };
+}
+
+function zoneFor(rank, zones) {
+  return (zones || []).find((zone) => rank >= zone.from && rank <= zone.to) || null;
+}
+
+/** Takımın sırası ve sınır puanlarından tek cümlelik durum; JS aynı kalıbı kullanır. */
+function standingsStatusText(rows, team, config) {
+  const row = rows.find((item) => item.team === team);
+  if (!row) return "";
+  const zone = zoneFor(Number(row.rank), config.zones);
+  const cutoff = rows.find((item) => Number(item.rank) === Number(config.cutoffRank || 8));
+  const next = rows.find((item) => Number(item.rank) === Number(config.cutoffRank || 8) + 1);
+  let tail = "";
+  if (Number(row.rank) <= Number(config.cutoffRank || 8) && next) {
+    tail = ` İlk ${config.cutoffRank || 8}'in hemen dışındaki ${next.team} ${next.points} puanda.`;
+  } else if (cutoff) {
+    tail = ` ${config.cutoffRank || 8}. sıradaki ${cutoff.team} ${cutoff.points} puanda.`;
+  }
+  return `${team} ${row.played} maç sonunda ${row.points} puanla ${row.rank}. sırada (${zone ? zone.label.toLocaleLowerCase("tr") : "sıra"} bölgesi).${tail}`;
+}
+
+function standingsWidget(page) {
+  const config = page.standings;
+  if (!config) return "";
+  const { asOf, rows } = standingsSource(page);
+  if (!rows.length) return "";
+  const highlight = new Set(config.highlight || []);
+  const body = rows
+    .slice()
+    .sort((a, b) => Number(a.rank) - Number(b.rank))
+    .map((row) => {
+      const zone = zoneFor(Number(row.rank), config.zones);
+      const gd = Number(row.goalDifference);
+      const name = highlight.has(row.team) ? `<strong>${escapeHtml(row.team)}</strong>` : escapeHtml(row.team);
+      return `<tr${highlight.has(row.team) ? ' data-highlight="true"' : ""}><td>${escapeHtml(row.rank)}</td><th scope="row">${name}</th><td>${Number.isFinite(gd) ? `${gd > 0 ? "+" : ""}${gd}` : "—"}</td><td><strong>${escapeHtml(row.points)}</strong></td><td>${zone ? `<span class="${escapeHtml(zone.tag || "tag")}">${escapeHtml(zone.label)}</span>` : "—"}</td></tr>`;
+    })
+    .join("");
+  const status = (config.highlight || []).map((team) => standingsStatusText(rows, team, config)).filter(Boolean).join(" ");
+  const zonesAttr = escapeHtml(JSON.stringify((config.zones || []).map(({ from, to, label, tag }) => ({ from, to, label, tag }))));
+  // width:0 + min-width:100%: tablo makale ızgarasının sütununu genişletmez
+  // (mobilde yatay sayfa kayması olmaz); kutu sütunu doldurur, tablo içinde kayar.
+  return `<div class="evergreen-table-wrap" style="width:0;min-width:100%" data-standings-live="${escapeHtml(config.competitionId)}" data-standings-teams="${escapeHtml(config.teams || "")}" data-standings-highlight="${escapeHtml((config.highlight || []).join("|"))}" data-standings-cutoff="${escapeHtml(config.cutoffRank || 8)}" data-standings-zones="${zonesAttr}">
+            <table class="evergreen-table"><caption>${escapeHtml(config.caption || "Puan durumu")}</caption><thead><tr><th scope="col">Sıra</th><th scope="col">Takım</th><th scope="col">Av.</th><th scope="col">P</th><th scope="col">Durum</th></tr></thead><tbody>${body}</tbody></table>
+          </div>
+          ${status ? `<p data-standings-status>${escapeHtml(status)}</p>` : ""}
+          <p class="muted-copy" data-standings-stamp role="status">Kaynak: ${escapeHtml(config.sourceLabel || "API-Football")} · Son güncelleme: <time datetime="${escapeHtml(asOf)}">${escapeHtml(formatStamp(asOf))}</time></p>`;
+}
+
+function sectionExtras(section, page) {
+  let html = "";
+  if (Array.isArray(section.list) && section.list.length) {
+    const tag = section.ordered ? "ol" : "ul";
+    html += `\n          <${tag}>${section.list.map((item) => `<li>${renderRichText(item)}</li>`).join("")}</${tag}>`;
+  }
+  if (section.widget === "standings") html += `\n          ${standingsWidget(page)}`;
+  return html;
+}
+
 function faqSection(page) {
   if (!Array.isArray(page.faq) || !page.faq.length) return "";
   return `<section class="demand-faq" aria-labelledby="faq-title">
@@ -248,8 +331,9 @@ function contentPageHtml(page) {
   const showUpdated = page.updatedAt && page.updatedAt !== page.publishedAt;
   const sections = (page.sections || []).map((section) => `<section>
           <h2>${escapeHtml(section.heading)}</h2>
-          ${(section.paragraphs || []).map((paragraph) => `<p>${renderRichText(paragraph)}</p>`).join("\n          ")}
+          ${(section.paragraphs || []).map((paragraph) => `<p>${renderRichText(paragraph)}</p>`).join("\n          ")}${sectionExtras(section, page)}${(section.afterParagraphs || []).map((paragraph) => `\n          <p>${renderRichText(paragraph)}</p>`).join("")}
         </section>`).join("\n        ");
+  const hasLiveStandings = Boolean(page.standings) && (page.sections || []).some((section) => section.widget === "standings");
   const updateNote = page.updateNote
     ? `<aside class="article-update-note" role="note"><strong>Güncellenecek</strong><p>${escapeHtml(page.updateNote)}</p></aside>`
     : "";
@@ -285,7 +369,7 @@ ${siteHeader({ base: "./" })}
       <nav class="breadcrumb" aria-label="Sayfa yolu"><a href="./index.html">Ana Sayfa</a><span>/</span><span>${escapeHtml(page.h1)}</span></nav>
       <article class="column-article">
         <header class="column-article-head">
-          <div class="column-article-meta"><span>${escapeHtml(page.type === "transfer-hub" ? "Transfer Merkezi" : page.type === "match-guide" ? "Maç Rehberi" : "Rehber")}</span><time datetime="${escapeHtml(page.publishedAt)}">Yayın: ${escapeHtml(published)}</time>${showUpdated ? `<time datetime="${escapeHtml(page.updatedAt)}">Güncelleme: ${escapeHtml(updated)}</time>` : ""}</div>
+          <div class="column-article-meta"><span>${escapeHtml(page.type === "transfer-hub" ? "Transfer Merkezi" : page.type === "match-guide" ? "Maç Rehberi" : "Rehber")}</span><a class="column-author" href="./yazarlar/futbolradar.html">futbolradar</a><time datetime="${escapeHtml(page.publishedAt)}">Yayın: ${escapeHtml(published)}</time>${showUpdated ? `<time datetime="${escapeHtml(page.updatedAt)}">Güncelleme: ${escapeHtml(updated)}</time>` : ""}</div>
           <h1>${escapeHtml(page.h1)}</h1>
           <p class="lead">${renderRichText(page.directAnswer)}</p>
         </header>
@@ -302,7 +386,7 @@ ${siteHeader({ base: "./" })}
     </main>
 ${siteFooter({ base: "./" })}
     <script src="${assetHref("site.js")}" defer></script>
-    <script src="${assetHref("app.js")}" defer></script>
+    <script src="${assetHref("app.js")}" defer></script>${hasLiveStandings ? `\n    <script src="${assetHref("standings-live.js")}" defer></script>` : ""}
   </body>
 </html>
 `;
@@ -429,8 +513,15 @@ function upsertSitemap(pages) {
     for (const page of pages) {
       if (page.type === "dashboard") continue; // Panel dizine kapalı; haritaya girmez.
       const loc = `${domain}/${page.slug}.html`;
-      if (xml.includes(`<loc>${loc}</loc>`)) continue;
       const lastmod = String(page.updatedAt || page.publishedAt || "").slice(0, 10);
+      if (xml.includes(`<loc>${loc}</loc>`)) {
+        // Baştan basılan sayfanın lastmod'u plan kaydının güncelleme tarihini izler.
+        if (page.rebuild === true && lastmod) {
+          const escaped = loc.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+          xml = xml.replace(new RegExp(`(<loc>${escaped}</loc>\\s*<lastmod>)[^<]*(</lastmod>)`), `$1${lastmod}$2`);
+        }
+        continue;
+      }
       const freq = page.type === "evergreen-guide" ? "weekly" : "daily";
       xml = xml.replace("</urlset>", `  <url>\n    <loc>${loc}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>${freq}</changefreq>\n    <priority>0.85</priority>\n  </url>\n</urlset>`);
     }
@@ -554,7 +645,10 @@ function writePage(page) {
   fs.writeFileSync(path.join(root, "public", file), html, "utf8");
 }
 
-const freshPages = pages.filter((page) => !alreadyPublished.has(page.slug));
+// `rebuild: true` taşıyan kayıt yayımlanmış olsa da AYNI ADRESTE baştan basılır:
+// içeriği plan kaydı yönetir (ör. canlı puan tablolu ilk 8 rehberi). Bayrak
+// olmayan yayımlanmış sayfalar eskisi gibi yerinde kalır.
+const freshPages = pages.filter((page) => !alreadyPublished.has(page.slug) || page.rebuild === true);
 // İlk geçiş dosyaları oluşturur; ikinci geçiş kardeş rehberler diskte
 // durduğu için iç bağlantıları düşürmez. Yayımlanmış sayfalar baştan basılmaz.
 for (const page of freshPages) writePage(page);

@@ -178,7 +178,8 @@ function relatedLinksHtml(entry) {
     ["./lig/" + entry.id + ".html", `${entry.nameTr} fikstür ve sonuçlar`],
     ["./bugunun-maclari.html", "Bugünün maçları"],
     ["./mac-merkezi.html", "Maç merkezi"],
-    ...(entry.id === "la-liga" ? [["./el-clasico-barcelona-real-madrid", "El Clásico: Barcelona – Real Madrid rehberi"]] : [])
+    ...(entry.id === "la-liga" ? [["./el-clasico-barcelona-real-madrid", "El Clásico: Barcelona – Real Madrid rehberi"]] : []),
+    ...(entry.id === "avrupa-ligi" ? [["./avrupa-ligi-ilk-8-kurali.html", "Avrupa Ligi'nde ilk 8'e girince ne oluyor?"]] : [])
   ];
   return `<aside class="evergreen-related" aria-labelledby="related-heading"><h2 id="related-heading">Puan durumundan devam edin</h2><div class="evergreen-link-grid">${links.map(([href, label]) => `<a href="${escapeHtml(href)}">${escapeHtml(label)}</a>`).join("")}</div></aside>`;
 }
