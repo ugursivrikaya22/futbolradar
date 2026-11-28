@@ -333,10 +333,23 @@ function computedCategoryCount(player) {
   return RATING_CATEGORY_ORDER.filter((key) => categoryOf(player, key).status === "computed").length;
 }
 
+/**
+ * Yayımlanabilir kategori puanı.
+ *
+ * Yalnızca motorun "computed" dediği değer. Eksik, uygulanamaz ya da
+ * hesaplanamamış kategori `null` döner — kart buna sıfır ya da tire basmaz,
+ * kartı hiç çizmez.
+ */
+function publishedScore(player, key) {
+  const cell = categoryOf(player, key);
+  return cell.status === "computed" && Number.isFinite(cell.value) ? Number(cell.value) : null;
+}
+
 module.exports = {
   CATEGORY_DESCRIPTIONS,
   GOALKEEPER_DESCRIPTIONS,
   categoryOf,
+  publishedScore,
   comparisonRatingTableHtml,
   comparisonRowModel,
   comparisonRowModels,

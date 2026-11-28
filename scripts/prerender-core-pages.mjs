@@ -139,6 +139,7 @@ const { buildDailyHeadlines } = require("../services/dailyHeadlines.js");
 const { isHomeFixture } = require("../services/homeFixtureVisibility.js");
 const { buildMatchShareText, renderShareBlock } = require("../services/shareText.js");
 const { filterPlayerCards, logRemovedCards, publicPlayerView } = require("../services/cardCredibility.js");
+const { publishedScore } = require("../services/playerRatingView.js");
 const { computeTrendCategories } = require("../services/trendPlayerCategories.js");
 const { fixtureTeamNames, sameClub } = require("../services/superLigTeams.js");
 const { MATCH_LIST_INITIAL } = require("../services/matchListWindow.js");
@@ -1465,8 +1466,12 @@ function staticMomentumRows() {
  * durum basılıyor. Sayfayı doldurmak, okuyucuya doğrulanmamış bir puan
  * göstermenin gerekçesi değil.
  */
-function verifiedTrendPlayers(limit) {
-  const { kept, removed } = filterPlayerCards(excludeHomepageBlockedPlayers(topPlayers), {
+/**
+ * Trend vitrini: hesaplanmış FutbolRadar puanı olan oyuncular.
+ * Puanı olmayan kayıt kart olarak basılmaz — reyting yerinde boş kutu kalmaz.
+ */
+function ratedTrendPlayers(limit, key) {
+  const { kept, removed } = filterPlayerCards(excludeHomepageBlockedPlayers(players), {
     trend: true,
     leagueTeams: fixtureTeamNames()
   });
@@ -1474,7 +1479,12 @@ function verifiedTrendPlayers(limit) {
   if (removed.length > 5) {
     console.warn(`[futbolradar:card-hidden] scope=homepage-trend-players ...ve ${removed.length - 5} kayıt daha`);
   }
-  return kept.slice(0, limit);
+  return kept
+    .map((player) => ({ player, score: publishedScore(player, key) }))
+    .filter((row) => row.score !== null && fs.existsSync(path.join(root, playerUrls.playerPagePath(row.player.id))))
+    .sort((left, right) => right.score - left.score
+      || String(left.player.name).localeCompare(String(right.player.name), "tr"))
+    .slice(0, limit);
 }
 
 function emptyStateCard(title, note) {
@@ -1482,15 +1492,9 @@ function emptyStateCard(title, note) {
 }
 
 function trendPlayerSlot(limit) {
-  const verified = verifiedTrendPlayers(limit);
-  if (!verified.length) {
-    return emptyStateCard(
-      "Veri bekleniyor",
-      "Trend oyuncu kartları yalnızca doğrulanmış, sağlayıcı kimliği olan güncel sezon verisinden üretilir. " +
-      "Kadro senkronu bu veriyi getirdiğinde bu alan otomatik dolar."
-    );
-  }
-  return verified.map(simplePlayerCard).join("");
+  const ranked = ratedTrendPlayers(limit, "overall");
+  if (!ranked.length) return "";
+  return ranked.map((row) => simplePlayerCard(row.player, row.score)).join("");
 }
 
 /**
@@ -1526,9 +1530,10 @@ function homeLeaderLeagueRow(rank, row, metric, unit) {
   return `<li class="leaders-row" data-card="leader-player"><span class="leaders-rank">${rank}</span>${nameHtml}<span class="leaders-value">${value}<small>${escapeHtml(unit)}</small></span></li>`;
 }
 
-function homeLeaderFormRow(rank, player) {
+function homeLeaderFormRow(rank, row) {
+  const player = row.player;
   const kicker = [player.currentTeam || player.team, turkishPosition(player.position)].filter(Boolean).map((value) => escapeHtml(value)).join(" · ");
-  return `<li class="leaders-row" data-card="leader-player"><span class="leaders-rank">${rank}</span><a class="leaders-name" href="${escapeHtml(playerUrls.playerCanonicalHref(player.id, "./"))}"><strong>${escapeHtml(player.name)}</strong><span>${kicker}</span></a></li>`;
+  return `<li class="leaders-row" data-card="leader-player"><span class="leaders-rank">${rank}</span><a class="leaders-name" href="${escapeHtml(playerUrls.playerCanonicalHref(player.id, "./"))}"><strong>${escapeHtml(player.name)}</strong><span>${kicker}</span></a><span class="leaders-value">${escapeHtml(String(row.score))}</span></li>`;
 }
 
 function homeLeaderTeamRow(rank, row) {
@@ -1603,12 +1608,9 @@ function leagueLeaderTableHtml(rows, metric, metricLabel) {
 }
 
 function homeLeadersFormSlot(limit) {
-  const rows = verifiedTrendPlayers(limit);
-  return homeLeadersSlot(
-    rows,
-    homeLeaderFormRow,
-    "Formdaki oyuncular yalnızca doğrulanmış, sağlayıcı kimliği olan güncel sezon verisinden üretilir."
-  );
+  const ranked = ratedTrendPlayers(limit, "form");
+  if (!ranked.length) return "";
+  return `<ol class="leaders-list">${ranked.map((row, index) => homeLeaderFormRow(index + 1, row)).join("")}</ol>`;
 }
 
 function homeLeadersTeamFormSlot(limit) {
@@ -1624,10 +1626,13 @@ function homeLeadersTeamFormSlot(limit) {
  * Ham kayıt okunduğunda normalizePlayer'ın varsayılanları (rating 32,
  * dakika 0, piyasa "Yakında") doğrulanmış kart görünümüyle basılıyordu.
  */
-function simplePlayerCard(player) {
-  const view = publicPlayerView(player);
+function simplePlayerCard(player, ratingOverride) {
+  const view = publicPlayerView(player, { trend: true, leagueTeams: fixtureTeamNames() });
   const age = player.computedAge || player.age || "Bilinmiyor";
-  const ratingValue = view.fields.overallRating || view.fields.aiRating || view.fields.rating;
+  const ratingValue = ratingOverride != null
+    ? ratingOverride
+    : (view.fields.overallRating || view.fields.aiRating || view.fields.rating);
+  if (ratingValue === null || ratingValue === undefined || ratingValue === "") return "";
   const minutesValue = view.fields.minutesPlayed ?? view.fields.minutes;
   const marketValue = view.fields.marketValueEur !== undefined
     ? formatMarketValueEur(view.fields.marketValueEur)
