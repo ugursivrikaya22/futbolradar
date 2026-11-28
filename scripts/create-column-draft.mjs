@@ -12,6 +12,11 @@
  *   node scripts/create-column-draft.mjs --title="..." --author="..." --category=mac-yorumu
  *   node scripts/create-column-draft.mjs --title="..." --author="..." --category=lig-analizi \
  *        --tags=fenerbahce,avrupa --excerpt="..." --dry-run
+ *
+ * HABER KAPISI (services/columnNewsGate.js): transfer yorumu `--news=<haber-id>`
+ * olmadan açılamaz; haber `verified` ve `official` (kulüp/KAP/federasyon
+ * kaynaklı) olmalı. İddia ya da görüşme aşamasındaki habere köşe yazısı
+ * taslağı bile açılmaz.
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -26,6 +31,7 @@ const {
   presentColumn,
   validateColumn
 } = require("../services/columnService.js");
+const { checkColumnNewsBasis } = require("../services/columnNewsGate.js");
 const {
   draftMessage,
   sendTelegramMessage,
@@ -44,6 +50,7 @@ function parseArgs(argv) {
     else if (raw.startsWith("--excerpt=")) args.excerpt = raw.slice(10);
     else if (raw.startsWith("--tags=")) args.tags = raw.slice(7).split(",").map((tag) => tag.trim()).filter(Boolean);
     else if (raw.startsWith("--date=")) args.date = raw.slice(7);
+    else if (raw.startsWith("--news=")) args.news = raw.slice(7).trim();
   }
   return args;
 }
@@ -89,6 +96,7 @@ if (columns.some((entry) => entry && entry.id === slug)) {
 }
 
 const draft = {
+  ...(args.news ? { newsRef: args.news } : {}),
   id: slug,
   slug,
   title: args.title.trim(),
@@ -102,6 +110,12 @@ const draft = {
   excerpt: args.excerpt ? args.excerpt.trim() : "",
   body: []
 };
+
+const basis = checkColumnNewsBasis(draft);
+if (!basis.ok) {
+  console.error(`[column] haber kapısı: ${basis.reason}`);
+  process.exit(1);
+}
 
 const verdict = validateColumn(draft);
 if (!verdict.valid) {
