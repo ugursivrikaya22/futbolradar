@@ -84,6 +84,20 @@ function testStalePlayerRemoved() {
   );
 }
 
+function testTrendUsesFreshSquadStamp() {
+  // lastVerifiedAt aylar öncedir ama kadro senkronu lastUpdatedAt'i tazelemiştir.
+  // Kart yüzeyi hâlâ bayat sayılır; trend bölümü güncel kadroyu kullanır.
+  const player = {
+    ...verified,
+    lastVerifiedAt: "2026-01-01T12:00:00+03:00",
+    lastUpdatedAt: "2026-07-20T12:00:00+03:00"
+  };
+  const card = credibility.evaluatePlayerCard(player, { now });
+  assert.equal(card.publishable, false, "eski doğrulama damgası kart yüzeyini açmamalı");
+  const trend = credibility.evaluateTrendPlayerCard(player, { now, leagueTeams: fixtureTeamNames() });
+  assert.equal(trend.publishable, true, `taze kadro damgası trendde kalmalı: ${trend.reasons.join("; ")}`);
+}
+
 function testUnsourcedPlayerHidden() {
   assert.equal(
     credibility.evaluatePlayerCard({ ...verified, sourceUrl: "" }, { now }).publishable,
@@ -211,6 +225,7 @@ const tests = [
   testMockPlayerRemoved,
   testPlayerWithoutProviderIdHidden,
   testStalePlayerRemoved,
+  testTrendUsesFreshSquadStamp,
   testUnsourcedPlayerHidden,
   testPlayerOutsideLeagueExcludedFromTrend,
   testSourceMetadataIsCarried,

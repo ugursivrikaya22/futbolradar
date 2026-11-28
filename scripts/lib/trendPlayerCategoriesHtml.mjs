@@ -116,15 +116,20 @@ function cardHtml(card, category, locale, hrefFor) {
 export function renderTrendCategoryTabs(result, locale, hrefFor) {
   const t = COPY[locale];
   const prefix = "trend-player";
-  const radios = TREND_CATEGORY_IDS.map((id, index) =>
+  // Verisi olmayan sekme boş kutu olarak basılmaz. Üçü de boşsa blok hiç
+  // çizilmez; çağıran kabuğu da o zaman yazmaz.
+  const ids = TREND_CATEGORY_IDS.filter((id) => {
+    const cards = result && result.categories && result.categories[id];
+    return Array.isArray(cards) && cards.length > 0;
+  });
+  if (!ids.length) return "";
+  const radios = ids.map((id, index) =>
     `<input type="radio" name="${prefix}-tab" id="${prefix}-tab-${id}" class="standings-tabs__radio"${index === 0 ? " checked" : ""}>`).join("");
-  const labels = TREND_CATEGORY_IDS.map((id, index) =>
+  const labels = ids.map((id, index) =>
     `<label class="standings-tabs__label" id="${prefix}-tablabel-${id}" role="tab" aria-selected="${index === 0 ? "true" : "false"}" aria-controls="${prefix}-panel-${id}" for="${prefix}-tab-${id}">${escapeHtml(t.tabs[id])}</label>`).join("");
-  const panels = TREND_CATEGORY_IDS.map((id) => {
-    const cards = (result && result.categories && result.categories[id]) || [];
-    const body = cards.length
-      ? `<div class="trend-category-grid">${cards.map((card) => cardHtml(card, id, locale, hrefFor)).join("")}</div>`
-      : `<article class="card data-empty" data-card="empty-state"><strong>${escapeHtml(t.emptyTitle)}</strong><span>${escapeHtml(t.empty[id])}</span></article>`;
+  const panels = ids.map((id) => {
+    const cards = result.categories[id];
+    const body = `<div class="trend-category-grid">${cards.map((card) => cardHtml(card, id, locale, hrefFor)).join("")}</div>`;
     return `<section class="standings-tabs__panel" id="${prefix}-panel-${id}" role="tabpanel" aria-labelledby="${prefix}-tablabel-${id}" data-trend-panel="${id}"><p class="trend-category-rule">${escapeHtml(t.rules[id])}</p>${body}</section>`;
   }).join("");
   return `<div class="standings-tabs trend-category-tabs" data-trend-player-tabs>${radios}<div class="standings-tabs__list" role="tablist" aria-label="${escapeHtml(t.tablistAria)}">${labels}</div><div class="standings-tabs__panels">${panels}</div><p class="trend-category-source">${escapeHtml(t.source)}</p></div>`;

@@ -111,8 +111,10 @@ const playerUrls = require("../services/playerUrl.js").createPlayerUrlResolver((
 })());
 
 const { filterPlayerCards, publicPlayerView } = require("../services/cardCredibility.js");
+const { publishedScore } = require("../services/playerRatingView.js");
 const { computeTrendCategories } = require("../services/trendPlayerCategories.js");
 const { fixtureTeamNames, slug: teamSlug } = require("../services/superLigTeams.js");
+const { liveTeamMomentum } = require("../services/trendTeams.js");
 // "Başlangıçta kaç kart görünür?" sayısı TEK yerde durur; Türkçe ön derleme,
 // istemci ve bu üretici aynı sabiti okur (bkz. services/matchListWindow.js).
 const { MATCH_LIST_INITIAL } = require("../services/matchListWindow.js");
@@ -1086,29 +1088,40 @@ function radarMatchSection() {
  * gizlenen bir metrik İngilizce tarafta doğrulanmış gibi görünemez.
  */
 function playerRadarSection() {
-  const ranked = players.slice().sort((left, right) =>
-    Number(right.overallRating || 0) - Number(left.overallRating || 0));
-  const { kept } = filterPlayerCards(ranked, { trend: true, leagueTeams: fixtureTeamNames() });
-  const shortlist = kept.slice(0, 3);
+  const { kept } = filterPlayerCards(players, { trend: true, leagueTeams: fixtureTeamNames() });
+  const shortlist = kept
+    .map((player) => ({ player, rating: publishedScore(player, "overall") }))
+    .filter((row) => row.rating !== null && fs.existsSync(path.join(root, playerUrls.enPlayerPagePath(row.player.id))))
+    .sort((left, right) => right.rating - left.rating
+      || String(left.player.name).localeCompare(String(right.player.name)))
+    .slice(0, 3);
 
-  const body = shortlist.length
-    ? shortlist.map((player) => {
-      const view = publicPlayerView(player);
-      const age = player.computedAge || player.age;
-      const rating = view.fields.overallRating || view.fields.aiRating || view.fields.rating;
-      const minutes = view.fields.minutesPlayed ?? view.fields.minutes;
-      const market = view.fields.marketValueEur !== undefined
-        ? formatMarketValueEur(view.fields.marketValueEur)
-        : (view.fields.marketValue || null);
-      const club = view.fields.currentTeam || view.fields.team;
-      const kicker = [club, player.position].filter(Boolean).join(" · ");
-      const badge = rating ? `<strong class="big-value player-rating-badge">${escapeHtml(rating)}</strong>` : "";
-      const metrics = [`<span>Age <b>${escapeHtml(age || label("common.noData"))}</b></span>`];
-      if (minutes !== undefined && minutes !== null) metrics.push(`<span>Minutes <b>${escapeHtml(minutes)}</b></span>`);
-      if (market) metrics.push(`<span>Market value <b>${escapeHtml(market)}</b></span>`);
-      return `<article class="card player-detail-card" data-card="player" data-player="${escapeHtml(player.id)}"><div class="card-head"><div><span class="card-kicker">${escapeHtml(kicker)}</span><h2>${escapeHtml(player.name)}</h2></div>${badge}</div><div class="metric-grid compact">${metrics.join("")}</div><p>Profile metrics and transfer history are on the player page.</p><a class="detail-link" href="./player/${escapeHtml(playerUrls.slugFor(player.id))}.html">Open player profile</a></article>`;
-    }).join("")
-    : `<article class="card data-empty" data-card="empty-state"><strong>Waiting for data</strong><span>Trend player cards are only built from verified current-season records with a provider identity. This area fills in automatically once the squad sync delivers that data.</span></article>`;
+  const body = shortlist.map(({ player, rating }) => {
+    const view = publicPlayerView(player, { trend: true, leagueTeams: fixtureTeamNames() });
+    const age = player.computedAge || player.age;
+    const minutes = view.fields.minutesPlayed ?? view.fields.minutes;
+    const market = view.fields.marketValueEur !== undefined
+      ? formatMarketValueEur(view.fields.marketValueEur)
+      : (view.fields.marketValue || null);
+    const club = view.fields.currentTeam || view.fields.team;
+    const kicker = [club, player.position].filter(Boolean).join(" · ");
+    const badge = `<strong class="big-value player-rating-badge">${escapeHtml(rating)}</strong>`;
+    const metrics = [`<span>Age <b>${escapeHtml(age || label("common.noData"))}</b></span>`];
+    if (minutes !== undefined && minutes !== null) metrics.push(`<span>Minutes <b>${escapeHtml(minutes)}</b></span>`);
+    if (market) metrics.push(`<span>Market value <b>${escapeHtml(market)}</b></span>`);
+    return `<article class="card player-detail-card" data-card="player" data-player="${escapeHtml(player.id)}"><div class="card-head"><div><span class="card-kicker">${escapeHtml(kicker)}</span><h2>${escapeHtml(player.name)}</h2></div>${badge}</div><div class="metric-grid compact">${metrics.join("")}</div><p>Profile metrics and transfer history are on the player page.</p><a class="detail-link" href="./player/${escapeHtml(playerUrls.slugFor(player.id))}.html">Open player profile</a></article>`;
+  }).join("");
+  const categories = trendPlayerCategoriesBlock();
+  if (!body && !categories) return "";
+
+  const slider = body
+    ? `<div class="slider-shell">
+            <div class="slider-rail" id="player-radar-grid">${body}</div>
+          </div>`
+    : "";
+  const shell = categories
+    ? `<div class="trend-category-shell" id="trend-player-categories">${categories}</div>`
+    : "";
 
   return `<section class="container section section-player-radar" id="oyuncu-radar-preview" aria-labelledby="players-title" data-slider>
           ${sliderSectionHead({
@@ -1121,10 +1134,8 @@ function playerRadarSection() {
     linkHref: "./teams.html",
     linkText: "Open all clubs"
   })}
-          <div class="slider-shell">
-            <div class="slider-rail" id="player-radar-grid">${body}</div>
-          </div>
-          <div class="trend-category-shell" id="trend-player-categories">${trendPlayerCategoriesBlock()}</div>
+          ${slider}
+          ${shell}
         </section>`;
 }
 
@@ -1158,31 +1169,37 @@ function trendPlayerCategoriesBlock() {
 /**
  * Trend takımlar — Türkçe .section-trend-teams ile aynı kartlar, aynı sayı.
  *
- * SÜZGEÇ YOK: seçim Türkçe taraftaki `trendTeamCards()` ile birebir aynı
- * olmalı. Buradaki eski `Number.isFinite(momentum)` koşulu, momentum alanı
- * henüz yazılmamış kulüpleri (Başakşehir, Konyaspor, Göztepe) eliyordu ve
- * İngilizce ana sayfa sekiz yerine beş kart gösteriyordu. Kartın momentum
- * değeri yoksa ortak bileşen zaten "–" basıyor; kaydı tümden düşürmek
- * "aynı bölüm, aynı sıra" sözünü bozuyordu.
+ * Puan, Türkçe şeritle aynı canlı momentum hesabından gelir
+ * (services/trendTeams.js). teams.json'da momentum'u boş olan kulüp
+ * (Başakşehir, Konyaspor, Göztepe) bu yüzden "–" kartı olmuyordu.
+ * Hücum/savunma ancak kayıtta gerçekten varsa basılır; yoksa o iki hücre
+ * hiç çizilmez. Hâlâ puanı hesaplanamayan kulüp listeye girmez.
  */
 function trendTeamsSection() {
-  const trending = teams
-    .slice()
-    .sort((left, right) => Number(right.momentum || 0) - Number(left.momentum || 0))
+  const byName = new Map(teams.map((team) => [team.name, team]));
+  const rows = liveTeamMomentum(teams, curatedMatches)
+    .filter((row) => Number.isFinite(Number(row.momentum)))
     .slice(0, 8);
-  if (!trending.length) return "";
-  const cards = trending.map((team) => sharedTrendCard({
-    locale: LOCALE,
-    id: team.id,
-    name: team.name,
-    leagueLabel: team.league,
-    momentum: team.momentum,
-    formDotsHtml: formDotsHtml(team.form, LOCALE),
-    attack: team.attack,
-    defense: team.defense,
-    formScore: team.formScore,
-    actionHref: "./team/" + teamSlug(team.name) + ".html"
-  })).join("\n");
+  if (!rows.length) return "";
+  const cards = rows.map((row) => {
+    const team = byName.get(row.team) || {};
+    const attack = Number(team.attack);
+    const defense = Number(team.defense);
+    const hasSplit = Number.isFinite(attack) && Number.isFinite(defense);
+    return sharedTrendCard({
+      locale: LOCALE,
+      id: team.id || row.id,
+      name: row.team,
+      leagueLabel: team.league,
+      momentum: row.momentum,
+      formDotsHtml: formDotsHtml(team.form, LOCALE),
+      attack: hasSplit ? attack : undefined,
+      defense: hasSplit ? defense : undefined,
+      formScore: row.formScore,
+      liveStatsOnly: !hasSplit,
+      actionHref: "./team/" + teamSlug(row.team) + ".html"
+    });
+  }).join("\n");
   return `<section class="container section section-trend-teams" id="trend-takimlar" aria-labelledby="trend-teams-title" data-slider>
           ${sliderSectionHead({
     kicker: "Trending teams",
@@ -1419,8 +1436,19 @@ function leadersRailSection() {
     players.filter((player) => player && player.id !== "mauro-icardi"),
     { trend: true, leagueTeams: fixtureTeamNames() }
   );
-  const formRows = formPlayers.slice(0, 5).map((player, index) =>
-    homeLeaderRow(index + 1, player.name, [player.currentTeam || player.team, player.position].filter(Boolean).join(" · "), "", enHomePlayerHref(player.id), ""));
+  const formRows = formPlayers
+    .map((player) => ({ player, form: publishedScore(player, "form") }))
+    .filter((row) => row.form !== null)
+    .sort((left, right) => right.form - left.form || String(left.player.name).localeCompare(String(right.player.name)))
+    .slice(0, 5)
+    .map((row, index) => homeLeaderRow(
+      index + 1,
+      row.player.name,
+      [row.player.currentTeam || row.player.team, row.player.position].filter(Boolean).join(" · "),
+      row.form,
+      enHomePlayerHref(row.player.id),
+      ""
+    ));
   const teamRows = teams
     .filter((team) => team && team.name && Number.isFinite(Number(team.momentum)))
     .sort((left, right) => Number(right.momentum || 0) - Number(left.momentum || 0))
@@ -1454,7 +1482,7 @@ function leadersRailSection() {
               <div class="leaders-tabs__panels">
                 ${panel("leaders-panel-scorers", "leaders-tablabel-scorers", leadersListHtml(scorers, "Waiting for data", "The top-scorer table updates as official league matches are played."), "./top-scorers.html", "See all top scorers")}
                 ${panel("leaders-panel-assists", "leaders-tablabel-assists", leadersListHtml(assists, "Waiting for data", "The assist table updates as official league matches are played."), "./top-assists.html", "See all top assists")}
-                ${panel("leaders-panel-form", "leaders-tablabel-form", leadersListHtml(formRows, "Waiting for data", "Players in form are drawn only from verified current-season data."), "./player-radar.html", "See all players in form")}
+                ${panel("leaders-panel-form", "leaders-tablabel-form", formRows.length ? leadersListHtml(formRows, "Waiting for data", "Players in form are drawn only from verified current-season data.") : "", "./player-radar.html", "See all players in form")}
                 ${panel("leaders-panel-team", "leaders-tablabel-team", leadersListHtml(teamRows, "Waiting for data", "Team form is updated from official match results."), "./momentum.html", "See the full team form table")}
               </div>
             </div>
@@ -1902,22 +1930,23 @@ function matchCentrePage() {
  * burada YOKTUR ve çağıran ona "—" basar, sıfır basmaz.
  */
 function verifiedPlayerCards() {
-  const { kept } = filterPlayerCards(players, { leagueTeams: fixtureTeamNames() });
+  const { kept } = filterPlayerCards(players, { trend: true, leagueTeams: fixtureTeamNames() });
   return kept.map((player) => {
-    const view = publicPlayerView(player);
+    const view = publicPlayerView(player, { trend: true, leagueTeams: fixtureTeamNames() });
     const fields = view.fields || {};
     return {
       id: player.id,
-      name: fields.name || fields.fullName || "",
+      name: fields.name || fields.fullName || player.name || "",
       team: fields.currentTeam || fields.team || "",
-      position: fields.position || "",
-      rating: fields.overallRating ?? fields.aiRating ?? fields.rating,
+      position: fields.position || player.position || "",
+      rating: publishedScore(player, "overall"),
       goals: fields.goals,
       assists: fields.assists,
       marketValueEur: fields.marketValueEur,
       verified: view.verified
     };
-  }).filter((row) => row.name);
+  }).filter((row) => row.name && row.rating !== null
+    && fs.existsSync(path.join(root, playerUrls.enPlayerPagePath(row.id))));
 }
 
 /** Gizlenmiş alan sıfırla doldurulmaz: yokluğu açıkça gösterilir. */

@@ -95,6 +95,28 @@ check("sürpriz: son-5 >= sezon + 0,5 ve son 5 dışında en az 2 maç", () => {
   assert.deepEqual(result.categories.surprise.map((card) => card.id), ["a"]);
 });
 
+check("doğrulanmamış dakika yerine maç geçmişindeki ölçülmüş dakika kullanılır", () => {
+  const player = verified({
+    id: "y5", name: "Y5", providerId: "25", birthDate: "2006-05-01",
+    minutes: 0, minutesPlayed: 0, appearances: 0, goals: 0, assists: 0
+  });
+  delete player.statsVerifiedAt;
+  delete player.statsSource;
+  delete player.statsFetchedAt;
+  delete player.statsVerifiedFields;
+  const history = [1, 2, 3].map((index) => ({
+    providerPlayerId: "25",
+    matchId: `y5-${index}`,
+    date: `2026-09-${String(index).padStart(2, "0")}`,
+    competition: "Süper Lig",
+    minutes: 80,
+    rating: 7
+  }));
+  const result = computeTrendCategories({ players: [player], history, now: "2026-10-10T00:00:00Z" });
+  assert.deepEqual(result.categories.young.map((card) => card.id), ["y5"]);
+  assert.equal(result.categories.young[0].minutes, 240);
+});
+
 check("U21 kategorisi <21 yaş ve >=200 dk; dakikası doğrulanmamış genç girmez", () => {
   const players = [
     verified({ id: "y1", name: "Y1", providerId: "21", birthDate: "2006-05-01", minutes: 250, minutesPlayed: 250 }),
@@ -117,6 +139,18 @@ check("kategori en çok 6 kart; önce farklılık, gerekirse tekrar", () => {
   const youngIds = new Set(result.categories.young.map((card) => card.id));
   const fresh = result.categories.form.filter((card) => !youngIds.has(card.id));
   assert.equal(fresh.length, 3, "önce gösterilmemiş 3 oyuncu, sonra tekrar");
+});
+
+check("verisi olmayan kategori boş kutu basmaz; üçü de boşsa blok yok", () => {
+  const one = renderTrendCategoryTabs(
+    { categories: { young: [{ id: "x", name: "X", team: "Galatasaray", age: 19, minutes: 300, goals: null, assists: null, seasonRating: 7.1, lastRating: null, photoUrl: "", photoAlt: "X", initials: "X" }], surprise: [], form: [] } },
+    "en",
+    () => "./player/x.html"
+  );
+  assert.ok(one.includes('id="trend-player-panel-young"'));
+  assert.ok(!one.includes('id="trend-player-panel-surprise"'));
+  assert.ok(!one.includes('data-card="empty-state"'));
+  assert.equal(renderTrendCategoryTabs({ categories: { young: [], surprise: [], form: [] } }, "en", () => "./x"), "");
 });
 
 check("eksik değer '–' basılır, 0 uydurulmaz", () => {
@@ -152,14 +186,17 @@ for (const [file, locale, resolveHref] of [
     ? { age: "Yaş", minutes: "Dakika", rating: "Sezon reytingi" }
     : { age: "Age", minutes: "Minutes", rating: "Season rating" };
 
-  check(`${file}: üç sekme, erişilebilir bağlar`, () => {
+  check(`${file}: sekmeler erişilebilir, boş kutu yok`, () => {
     const b = block(file);
+    assert.ok(!b.includes('data-card="empty-state"'), "boş durum kartı basılmamalı");
     const tabs = b.match(/<label class="standings-tabs__label"[^>]*role="tab"[^>]*>/g) || [];
-    assert.equal(tabs.length, 3);
+    assert.ok(tabs.length >= 1 && tabs.length <= 3, `sekme sayısı ${tabs.length}`);
     for (const id of ["young", "surprise", "form"]) {
-      assert.ok(b.includes(`id="trend-player-tab-${id}"`), `${id} radyosu`);
+      if (!b.includes(`id="trend-player-tab-${id}"`)) continue;
       assert.ok(b.includes(`aria-controls="trend-player-panel-${id}"`), `${id} aria-controls`);
       assert.ok(b.includes(`id="trend-player-panel-${id}" role="tabpanel" aria-labelledby="trend-player-tablabel-${id}"`), `${id} paneli`);
+      const panel = b.slice(b.indexOf(`id="trend-player-panel-${id}"`)).split("</section>")[0];
+      assert.ok(panel.includes("trend-category-card"), `${id} kartı yok`);
     }
   });
 

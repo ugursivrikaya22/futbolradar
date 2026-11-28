@@ -157,7 +157,10 @@ function evaluatePlayerCard(player, options = {}) {
   }
 
   // 5. Tazelik: trend ve kart yüzeyleri "şu an" iddiası taşıyor.
-  const age = verificationAgeDays(player, now);
+  // Trend çağrısı `freshnessStamp` ile kadro senkronunun daha yeni
+  // damgasını verebilir (identityEvidenceStamp). Verilmezse eski kural:
+  // yalnızca lastVerifiedAt / lastSyncedAt.
+  const age = verificationAgeDays(player, now, options.freshnessStamp);
   if (age !== null && age > MAX_VERIFICATION_AGE_DAYS) {
     reasons.push(`son doğrulama ${Math.round(age)} gün önce`);
   }
@@ -172,7 +175,15 @@ function evaluatePlayerCard(player, options = {}) {
  * oyuncu ve yurt dışına giden oyuncular bu yüzden eleniyordu.
  */
 function evaluateTrendPlayerCard(player, options = {}) {
-  const base = evaluatePlayerCard(player, options);
+  // Kadro senkronu lastUpdatedAt / providerSnapshot.lastSyncedAt alanını
+  // tazeler; lastVerifiedAt aylar önce kalabilir. Yalnızca o eski damgaya
+  // bakmak, maç reytingi olan güncel kadro oyuncusunu trend bölümünden
+  // düşürüyor ve sekmeler boş kutu olarak kalıyordu. Kimlik hâlâ
+  // lastVerifiedAt ister; tazelik hesabı en yeni gerçek damgayı kullanır.
+  const base = evaluatePlayerCard(player, {
+    ...options,
+    freshnessStamp: identityEvidenceStamp(player)
+  });
   const reasons = base.reasons.slice();
 
   const team = String((player && (player.currentTeam || player.team)) || "").trim();

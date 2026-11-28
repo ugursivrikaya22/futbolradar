@@ -12,6 +12,9 @@
  *   - Oyuncu kaydı, takım, yaş (birthDate), dakika/gol/asist, fotoğraf:
  *     data/players.json (API-Football kadro + oyuncu senkronu). Dakika/gol/
  *     asist yalnızca cardCredibility.publicPlayerView doğruladıysa basılır.
+ *     Kadro senkronu dakikayı 0 bırakır ve kapı onu gizler. O durumda sezon
+ *     dakikası aynı maç geçmişindeki ölçülmüş dakikalardan toplanır — yeni
+ *     bir sayı uydurulmaz, sağlayıcının maç satırı kullanılır.
  *   - Maç başı reyting: data/player-match-history.json (API-Football
  *     /fixtures/players satırlarından biriktirilen zaman serisi).
  *
@@ -104,6 +107,26 @@ function indexRatedMatches(historyRows, rules = RULES) {
   return sorted;
 }
 
+/** providerPlayerId → bu sezondaki resmî maç dakikası (reyting şartı yok). */
+function indexSeasonMinutes(historyRows, rules = RULES) {
+  const totals = new Map();
+  const seen = new Set();
+  for (const row of Array.isArray(historyRows) ? historyRows : []) {
+    const id = String((row && row.providerPlayerId) || "").trim();
+    const matchId = String((row && row.matchId) || "").trim();
+    if (!/^\d+$/.test(id) || !matchId) continue;
+    if (String(row.date || "") < rules.seasonStart) continue;
+    if (NON_OFFICIAL.test(String(row.competition || ""))) continue;
+    const minutes = num(row.minutes);
+    if (!(minutes > 0)) continue;
+    const key = `${id}:${matchId}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    totals.set(id, (totals.get(id) || 0) + minutes);
+  }
+  return totals;
+}
+
 function ratingSummary(rows, rules = RULES) {
   const all = Array.isArray(rows) ? rows : [];
   const last = all.slice(0, rules.lastN);
@@ -124,7 +147,11 @@ function ratingSummary(rows, rules = RULES) {
 function toCard(player, summary, now, options) {
   const view = publicPlayerView(player, { trend: true, ...(options.viewOptions || {}) });
   const photo = resolvePlayerPhoto({ ...player, photo: view.fields.photo || null, providerId: player.providerId });
-  const minutes = num(view.fields.minutesPlayed ?? view.fields.minutes);
+  const publishedMinutes = num(view.fields.minutesPlayed ?? view.fields.minutes);
+  const historyMinutes = num(options.historyMinutes);
+  const minutes = publishedMinutes !== null
+    ? publishedMinutes
+    : (historyMinutes !== null && historyMinutes > 0 ? historyMinutes : null);
   return {
     id: player.id,
     name: player.name,
@@ -154,6 +181,7 @@ function computeTrendCategories(input, rules = RULES) {
   const now = input.now || new Date();
   const hasProfile = typeof input.hasProfile === "function" ? input.hasProfile : () => true;
   const rated = indexRatedMatches(input.history, rules);
+  const seasonMinutes = indexSeasonMinutes(input.history, rules);
   const options = { viewOptions: input.viewOptions || {} };
 
   const pool = [];
@@ -162,8 +190,12 @@ function computeTrendCategories(input, rules = RULES) {
     if (!player || !player.id || seen.has(player.id)) continue;
     if (!hasProfile(player)) continue;
     seen.add(player.id);
-    const summary = ratingSummary(rated.get(String(player.providerId || "")) || [], rules);
-    pool.push(toCard(player, summary, now, options));
+    const providerId = String(player.providerId || "");
+    const summary = ratingSummary(rated.get(providerId) || [], rules);
+    pool.push(toCard(player, summary, now, {
+      ...options,
+      historyMinutes: seasonMinutes.get(providerId) ?? null
+    }));
   }
 
   const byName = (a, b) => String(a.name).localeCompare(String(b.name), "tr");
@@ -218,4 +250,4 @@ function computeTrendCategories(input, rules = RULES) {
   };
 }
 
-module.exports = { RULES, ageOn, istanbulDay, indexRatedMatches, ratingSummary, computeTrendCategories };
+module.exports = { RULES, ageOn, istanbulDay, indexRatedMatches, indexSeasonMinutes, ratingSummary, computeTrendCategories };
