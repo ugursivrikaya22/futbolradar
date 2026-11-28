@@ -10,8 +10,11 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import vm from "node:vm";
+import { createRequire } from "node:module";
 
 const root = process.cwd();
+// İstemcinin "oynanıyor" kümesi sunucunun kanonik sözlüğüne karşı denetlenir.
+const { LIVE_STATES, STATUS_VOCABULARY, canonicalStatus } = createRequire(import.meta.url)("../services/matchStatus.js");
 
 const { liveTickerBlock } = await import("./lib/liveScoresTicker.mjs");
 
@@ -89,7 +92,7 @@ const sample = [{
 
   const context = { Date, Number, String, isFinite, Object };
   vm.createContext(context);
-  vm.runInContext(block[1] + "\nthis.homeKeepsLiveRow = homeKeepsLiveRow;\nthis.liveMinuteLabel = liveMinuteLabel;", context);
+  vm.runInContext(block[1] + "\nthis.homeKeepsLiveRow = homeKeepsLiveRow;\nthis.liveMinuteLabel = liveMinuteLabel;\nthis.isLiveStatus = isLiveStatus;\nthis.payloadIsLiveFeed = payloadIsLiveFeed;\nthis.PLAYING_TOKENS = PLAYING_TOKENS;\nthis.STOPPAGE_TOKENS = STOPPAGE_TOKENS;", context);
 
   const now = Date.parse("2026-10-05T10:00:00+03:00");
   const stale = {
@@ -109,6 +112,40 @@ const sample = [{
   assert.equal(context.homeKeepsLiveRow(expired, now), false, "maç penceresi dolmuş LIVE satırı listede kalmamalı");
 
   assert.match(source, /label: liveMinuteLabel\(row\)/, "bayat canlı kart son bilinen dakika/durumu yazmalı");
+
+  // ── 4b. "OYNANIYOR" TEK TANIM VE SUNUCUYLA AYNI ───────────────────────────
+  //
+  // Dosyada iki ayrı liste vardı (kartlar için homeLiveStatus, sayaç için
+  // isLiveStatus) ve ayrışmışlardı. Artık tek işlev var; kümesi sunucunun
+  // LIVE_STATES sözlüğünden (services/matchStatus.js) sapamaz.
+  assert.equal((source.match(/function isLiveStatus\(/g) || []).length, 1, "tek isLiveStatus tanımı olmalı");
+  assert.doesNotMatch(source, /homeLiveStatus/, "ikinci canlı listesi geri gelmemeli");
+  assert.equal((source.match(/'IN_PLAY'/g) || []).length, 1, "canlı kodları tek yerde yazılmalı (phaseOf dahil aynı kümeyi kullanır)");
+  assert.equal((source.match(/'SUSP'/g) || []).length, 1, "kesinti kodları tek yerde yazılmalı");
+
+  // İstemci durum jetonunu boşluk/tire → alt çizgi ile normalleştirir (statusTokens).
+  const clientToken = (key) => key.toUpperCase().replace(/[\s-]+/g, "_");
+  const serverLive = Object.keys(STATUS_VOCABULARY).filter((key) => LIVE_STATES.has(STATUS_VOCABULARY[key]));
+  const clientLive = [...context.PLAYING_TOKENS, ...context.STOPPAGE_TOKENS];
+  assert.deepEqual([...clientLive].sort(), serverLive.map(clientToken).sort(), "istemcinin canlı kümesi sunucunun LIVE_STATES sözlüğüyle birebir aynı olmalı");
+  assert.deepEqual([...context.STOPPAGE_TOKENS].sort(), Object.keys(STATUS_VOCABULARY).filter((key) => STATUS_VOCABULARY[key] === "INTERRUPTED").sort(), "kesinti kodları sunucunun INTERRUPTED kümesi");
+  assert.equal(new Set(clientLive).size, clientLive.length, "canlı kümesinde tekrar olmamalı");
+  for (const key of Object.keys(STATUS_VOCABULARY)) {
+    assert.equal(context.isLiveStatus(clientToken(key)), LIVE_STATES.has(canonicalStatus(key)), `${key}: istemci ile sunucu "oynanıyor" kararında ayrışıyor`);
+  }
+  assert.equal(context.isLiveStatus(""), false);
+  assert.equal(context.isLiveStatus("UNKNOWN"), false);
+
+  // Kesintiye uğramış maç oynanıyor sayılır: satır ana sayfada kalır ve hafif
+  // canlı akış "tam gün verisi" sanılmaz (sanılsaydı derleme zamanı kartları silinirdi).
+  const suspended = { status: "INTERRUPTED", providerStatus: "SUSP", kickoff: "2026-10-05T09:00:00+03:00", score: { home: 0, away: 0 } };
+  assert.equal(context.homeKeepsLiveRow(suspended, now), true, "kesintiye uğramış maç canlı satır olarak kalmalı");
+  assert.equal(context.homeKeepsLiveRow({ ...suspended, kickoff: "2026-10-05T06:00:00+03:00" }, now), false, "maç penceresi dolmuş kesinti satırı kalmamalı");
+  assert.equal(context.homeKeepsLiveRow({ status: "IN_PLAY", kickoff: "2026-10-05T09:30:00+03:00" }, now), true);
+  assert.equal(context.payloadIsLiveFeed([stale, suspended]), true, "kesintili maç içeren akış hâlâ canlı akıştır");
+  assert.equal(context.payloadIsLiveFeed([stale, { status: "PAUSED" }, { providerStatus: "BT" }]), true);
+  assert.equal(context.payloadIsLiveFeed([stale, { status: "SCHEDULED" }]), false, "karışık veri tam gündür");
+  assert.equal(context.payloadIsLiveFeed([stale, { status: "FINISHED" }]), false);
 }
 
 // ── 5. Basılmış İngilizce sayfalar kancayı taşır; TR ana sayfa aynı kalır ─
